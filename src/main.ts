@@ -1,8 +1,9 @@
 import * as core from '@actions/core'
 import * as fs from 'node:fs'
-import { checkMime } from './utils.js'
 import path from 'node:path'
 import * as unzipper from 'unzipper'
+import { getMime } from './utils.js'
+import { ICON_PATH, validateIcon } from './validations/icon.js'
 
 /**
  * The main function for the action.
@@ -23,8 +24,8 @@ export async function run(): Promise<void> {
     }
 
     // Check if file is ZIP
-    if (!(await checkMime(packagePath, 'application/zip'))) {
-      core.setFailed("The file at '' must be a ZIP file.")
+    if ((await getMime(packagePath)) !== 'application/zip') {
+      core.setFailed('File defined by input must be a ZIP file.')
       return
     }
 
