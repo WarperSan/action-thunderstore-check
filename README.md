@@ -8,14 +8,16 @@
 
 A GitHub Action for verifying if a mod is valid to be published on Thunderstore
 
-## Thunderstore's format
+## Thunderstore format
 
 This action tries to replicate the format required by TS:
 
 ### Icon
+
 A `256x256` image named `icon.png`.
 
 ### README
+
 Only requires that a `README.md` is present.
 
 ### Manifest
