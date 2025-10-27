@@ -64,7 +64,7 @@ export async function validateManifest(
   const filePath = path.join(directory, fileName)
 
   // Check if MANIFEST exists
-  if (!fs.existsSync(filePath)) throw `File '${filePath}' was not found.`
+  if (!fs.existsSync(filePath)) throw `File '${fileName}' was not found.`
 
   // Check if MANIFEST is valid JSON
   let json: { [key: string]: string | number | object | null } | undefined
@@ -75,7 +75,8 @@ export async function validateManifest(
     json = undefined
   }
 
-  if (json === undefined) throw `'${filePath}' is not a valid JSON file.`
+  if (json === undefined || json instanceof Array)
+    throw `'${fileName}' is not a valid JSON file.`
 
   // Check 'name'
   const name = getString(json, NAME_PATH)
