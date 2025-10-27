@@ -1,6 +1,8 @@
 import * as core from '@actions/core'
 import * as fs from 'node:fs'
 import { checkMime } from './utils.js'
+import path from 'node:path'
+import * as unzipper from 'unzipper'
 
 /**
  * The main function for the action.
@@ -8,6 +10,8 @@ import { checkMime } from './utils.js'
  * @returns Resolves when the action is complete.
  */
 export async function run(): Promise<void> {
+  const destinationPath = path.join(process.cwd(), 'unzipped')
+
   try {
     // Check if input is given
     const packagePath = core.getInput('package-path', { required: true })
@@ -24,9 +28,9 @@ export async function run(): Promise<void> {
       return
     }
 
-    core.warning('Package valid')
-
     // Unzip file
+    const directory = await unzipper.Open.file(packagePath)
+    await directory.extract({ path: destinationPath })
 
     // Check if ICON exists
     // Check if ICON is an image
@@ -51,8 +55,14 @@ export async function run(): Promise<void> {
     // Check if MANIFEST has 'website_url'
     // Check if 'website_url' length is between 0 and 1024
     // Check if 'website_url' matches the REGEX (if not empty)
+
+    core.warning('Package valid')
   } catch (error) {
-    // Fail the workflow run if an error occurs
     if (error instanceof Error) core.setFailed(error.message)
+    else if (typeof error === 'string') core.setFailed(error)
+    else core.setFailed('Unhandled error occurred.')
+  } finally {
+    if (fs.existsSync(destinationPath))
+      fs.rmSync(destinationPath, { recursive: true })
   }
 }
