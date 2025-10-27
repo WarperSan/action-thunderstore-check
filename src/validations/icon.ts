@@ -13,7 +13,7 @@ export async function validateIcon(filePath: string): Promise<void> {
   if (!fs.existsSync(filePath)) throw `File '${ICON_PATH}' was not found.`
 
   // Check if ICON is an image
-  if ((await getMime(filePath)) !== 'image-png')
+  if ((await getMime(filePath)) !== 'image/png')
     throw `'${ICON_PATH}' must be a PNG.`
 
   // Check if ICON is 256x256
