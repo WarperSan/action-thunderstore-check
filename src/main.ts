@@ -40,9 +40,11 @@ export async function run(): Promise<void> {
     await validateReadme(destinationPath, 'README.md')
     await validateManifest(destinationPath, 'manifest.json')
   } catch (error) {
-    if (error instanceof Error) core.setFailed(error.message)
-    else if (typeof error === 'string') core.setFailed(error)
-    else core.setFailed('Unhandled error occurred.')
+    let message: string = 'Unexpected error occurred.'
+
+    if (error instanceof Error) message = error.message
+
+    core.setFailed(message)
   } finally {
     if (fs.existsSync(destinationPath))
       fs.rmSync(destinationPath, { recursive: true })

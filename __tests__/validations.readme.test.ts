@@ -1,4 +1,3 @@
-import { jest } from '@jest/globals'
 import path from 'node:path'
 import { FileNotFoundError } from '../src/errors/FileNotFoundError.js'
 
@@ -23,10 +22,6 @@ async function validate(fileName: string): Promise<Error | undefined> {
 }
 
 describe('README validations', () => {
-  afterEach(() => {
-    jest.resetAllMocks()
-  })
-
   test('Missing README', async () => {
     const fileName = 'missing-readme.md'
 

@@ -1,4 +1,3 @@
-import { jest } from '@jest/globals'
 import path from 'node:path'
 import { FileNotFoundError } from '../src/errors/FileNotFoundError.js'
 import { InvalidMimeError } from '../src/errors/InvalidMimeError.js'
@@ -25,10 +24,6 @@ async function validate(fileName: string): Promise<Error | undefined> {
 }
 
 describe('Icon validations', () => {
-  afterEach(() => {
-    jest.resetAllMocks()
-  })
-
   test('Missing Icon', async () => {
     const fileName = 'missing-valid.png'
 
