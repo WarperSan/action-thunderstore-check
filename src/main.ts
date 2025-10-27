@@ -5,6 +5,7 @@ import * as unzipper from 'unzipper'
 import { getMime } from './utils.js'
 import { ICON_PATH, validateIcon } from './validations/icon.js'
 import { README_PATH, validateReadme } from './validations/readme.js'
+import { MANIFEST_PATH, validateManifest } from './validations/manifest.js'
 
 /**
  * The main function for the action.
@@ -42,23 +43,9 @@ export async function run(): Promise<void> {
     const readmePath = path.join(destinationPath, README_PATH)
     await validateReadme(readmePath)
 
-    // Check if MANIFEST exists
-    // Check if MANIFEST is valid JSON
-    // Check if MANIFEST has 'name'
-    // Check if 'name' length is between 1 and 128
-    // Check if 'name' matches the REGEX
-    // Check if MANIFEST has 'description'
-    // Check if 'description' is between 0 and 250
-    // Check if MANIFEST has 'version_number'
-    // Check if 'version_number' length is between 5 and 16
-    // Check if 'version_number' matches the REGEX
-    // Check if MANIFEST has 'dependencies'
-    // Check if 'dependencies' is an array
-    // Check if 'dependencies' only contains strings
-    // Check if 'dependencies' only contains values that match the REGEX
-    // Check if MANIFEST has 'website_url'
-    // Check if 'website_url' length is between 0 and 1024
-    // Check if 'website_url' matches the REGEX (if not empty)
+    // Validate manifest
+    const manifestPath = path.join(destinationPath, MANIFEST_PATH)
+    await validateManifest(manifestPath)
 
     core.warning('Package valid')
   } catch (error) {
