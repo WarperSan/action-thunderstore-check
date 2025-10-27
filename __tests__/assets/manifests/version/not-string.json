@@ -1,0 +1,9 @@
+{
+  "name": "Ship_Warp",
+  "description": "This is my fabulous mod!",
+  "version_number": {
+    "major": 10,
+    "minor": 1,
+    "patch": 5
+  }
+}

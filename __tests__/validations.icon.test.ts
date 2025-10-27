@@ -1,5 +1,8 @@
 import { jest } from '@jest/globals'
 import path from 'node:path'
+import { FileNotFoundError } from '../src/errors/FileNotFoundError.js'
+import { InvalidMimeError } from '../src/errors/InvalidMimeError.js'
+import { InvalidImageSizeError } from '../src/errors/InvalidImageSizeError.js'
 
 const { validateIcon } = await import('../src/validations/icon.js')
 
@@ -7,16 +10,15 @@ const { validateIcon } = await import('../src/validations/icon.js')
  * Calls the method to test and returns the error
  * @param fileName
  */
-async function validate(fileName: string): Promise<string | undefined> {
+async function validate(fileName: string): Promise<Error | undefined> {
   try {
     await validateIcon(
       path.join(process.cwd(), '__tests__/assets/icons'),
       fileName
     )
   } catch (error) {
-    if (error instanceof Error) return error.message
-    else if (typeof error === 'string') return error
-    return 'Unhandled error'
+    if (error instanceof Error) return error
+    return new Error(String(error))
   }
 
   return undefined
@@ -32,7 +34,7 @@ describe('Icon validations', () => {
 
     const result = await validate(fileName)
 
-    expect(result).toBe(`File '${fileName}' was not found.`)
+    expect(result).toBeInstanceOf(FileNotFoundError)
   })
 
   test('Icon of wrong type', async () => {
@@ -40,7 +42,7 @@ describe('Icon validations', () => {
 
     const result = await validate(fileName)
 
-    expect(result).toBe(`'${fileName}' must be a PNG.`)
+    expect(result).toBeInstanceOf(InvalidMimeError)
   })
 
   test('Icon too small', async () => {
@@ -48,7 +50,7 @@ describe('Icon validations', () => {
 
     const result = await validate(fileName)
 
-    expect(result).toBe(`'${fileName}' must be exactly 256x256.`)
+    expect(result).toBeInstanceOf(InvalidImageSizeError)
   })
 
   test('Icon too large', async () => {
@@ -56,7 +58,7 @@ describe('Icon validations', () => {
 
     const result = await validate(fileName)
 
-    expect(result).toBe(`'${fileName}' must be exactly 256x256.`)
+    expect(result).toBeInstanceOf(InvalidImageSizeError)
   })
 
   test('Valid Icon', async () => {

@@ -1,5 +1,12 @@
 import fs from 'node:fs'
 import path from 'node:path'
+import { FileNotFoundError } from '../errors/FileNotFoundError.js'
+import { InvalidFormatError } from '../errors/InvalidFormatError.js'
+import { PropertyMissingError } from '../errors/PropertyMissingError.js'
+import { PropertyWrongTypeError } from '../errors/PropertyWrongTypeError.js'
+import { UnmatchedRegexError } from '../errors/UnmatchedRegexError.js'
+import { PropertyTooSmallError } from '../errors/PropertyTooSmallError.js'
+import { PropertyTooLargeError } from '../errors/PropertyTooLargeError.js'
 
 const NAME_PATH = 'name'
 const DESCRIPTION_PATH = 'description'
@@ -19,11 +26,12 @@ function getString(
   json: { [key: string]: unknown },
   propertyName: string
 ): string {
-  if (!(propertyName in json)) throw `'${propertyName}' is missing.`
+  if (!(propertyName in json)) throw new PropertyMissingError(propertyName)
 
   const value = json[propertyName] as string | undefined
 
-  if (typeof value !== 'string') throw `'${propertyName}' must be a string.`
+  if (typeof value !== 'string')
+    throw new PropertyWrongTypeError(propertyName, 'string')
 
   return value
 }
@@ -41,15 +49,12 @@ function lengthBetween(
   min: number,
   max: number
 ): void {
-  if (value.length < min)
-    throw `'${propertyName}' must be at least ${min} characters.`
-  if (value.length > max)
-    throw `'${propertyName}' must be at most ${max} characters.`
+  if (value.length < min) throw new PropertyTooSmallError(propertyName, min)
+  if (value.length > max) throw new PropertyTooLargeError(propertyName, max)
 }
 
 function matchRegex(value: string, propertyName: string, regex: RegExp): void {
-  if (!regex.test(value))
-    throw `'${propertyName}' must be valid for the following pattern: ${regex}`
+  if (!regex.test(value)) throw new UnmatchedRegexError(propertyName, regex)
 }
 
 /**
@@ -64,7 +69,7 @@ export async function validateManifest(
   const filePath = path.join(directory, fileName)
 
   // Check if MANIFEST exists
-  if (!fs.existsSync(filePath)) throw `File '${fileName}' was not found.`
+  if (!fs.existsSync(filePath)) throw new FileNotFoundError(fileName)
 
   // Check if MANIFEST is valid JSON
   let json: { [key: string]: string | number | object | null } | undefined
@@ -76,7 +81,7 @@ export async function validateManifest(
   }
 
   if (json === undefined || json instanceof Array)
-    throw `'${fileName}' is not a valid JSON file.`
+    throw new InvalidFormatError(fileName, 'JSON')
 
   // Check 'name'
   const name = getString(json, NAME_PATH)
@@ -96,16 +101,17 @@ export async function validateManifest(
   matchRegex(version, VERSION_NUMBER_PATH, new RegExp(`^${VERSION_REGEX}$`))
 
   // Check 'dependencies'
-  if (!(DEPENDENCIES_PATH in json)) throw `'${DEPENDENCIES_PATH}' is missing.`
+  if (!(DEPENDENCIES_PATH in json))
+    throw new PropertyMissingError(DEPENDENCIES_PATH)
 
   const dependencies = json[DEPENDENCIES_PATH] as Array<unknown> | undefined
 
   if (!(dependencies instanceof Array))
-    throw `'${DEPENDENCIES_PATH}' must be an array.`
+    throw new PropertyWrongTypeError(DEPENDENCIES_PATH, 'array')
 
   for (const dependency of dependencies) {
     if (typeof dependency !== 'string')
-      throw `'${DEPENDENCIES_PATH}' must only contain strings.`
+      throw new PropertyWrongTypeError(DEPENDENCIES_PATH, 'array<string>')
 
     matchRegex(
       dependency,

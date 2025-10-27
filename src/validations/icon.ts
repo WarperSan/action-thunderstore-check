@@ -2,6 +2,9 @@ import fs from 'node:fs'
 import { getMime } from '../utils.js'
 import { imageSizeFromFile } from 'image-size/fromFile'
 import path from 'node:path'
+import { FileNotFoundError } from '../errors/FileNotFoundError.js'
+import { InvalidMimeError } from '../errors/InvalidMimeError.js'
+import { InvalidImageSizeError } from '../errors/InvalidImageSizeError.js'
 
 /**
  * Validates if the given icon is valid
@@ -15,15 +18,15 @@ export async function validateIcon(
   const filePath = path.join(directory, fileName)
 
   // Check if ICON exists
-  if (!fs.existsSync(filePath)) throw `File '${fileName}' was not found.`
+  if (!fs.existsSync(filePath)) throw new FileNotFoundError(fileName)
 
   // Check if ICON is an image
   if ((await getMime(filePath)) !== 'image/png')
-    throw `'${fileName}' must be a PNG.`
+    throw new InvalidMimeError(fileName, 'image/png')
 
   // Check if ICON is 256x256
   const size = await imageSizeFromFile(filePath)
 
   if (size.height !== 256 || size.width !== 256)
-    throw `'${fileName}' must be exactly 256x256.`
+    throw new InvalidImageSizeError(fileName, 256, 256)
 }

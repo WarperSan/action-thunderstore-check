@@ -1,5 +1,6 @@
 import fs from 'node:fs'
 import path from 'node:path'
+import { FileNotFoundError } from '../errors/FileNotFoundError.js'
 
 /**
  * Validates if the given README is valid
@@ -12,5 +13,5 @@ export async function validateReadme(
 ): Promise<void> {
   const filePath = path.join(directory, fileName)
   // Check if README exists
-  if (!fs.existsSync(filePath)) throw `File '${fileName}' was not found.`
+  if (!fs.existsSync(filePath)) throw new FileNotFoundError(fileName)
 }
