@@ -22,7 +22,7 @@ async function validate(fileName: string): Promise<string | undefined> {
   return undefined
 }
 
-describe('Icon validations', () => {
+describe('README validations', () => {
   afterEach(() => {
     jest.resetAllMocks()
   })
