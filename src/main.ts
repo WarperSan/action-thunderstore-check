@@ -46,8 +46,6 @@ export async function run(): Promise<void> {
     // Validate manifest
     const manifestPath = path.join(destinationPath, MANIFEST_PATH)
     await validateManifest(manifestPath)
-
-    core.warning('Package valid')
   } catch (error) {
     if (error instanceof Error) core.setFailed(error.message)
     else if (typeof error === 'string') core.setFailed(error)
