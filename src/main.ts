@@ -4,6 +4,7 @@ import path from 'node:path'
 import * as unzipper from 'unzipper'
 import { getMime } from './utils.js'
 import { ICON_PATH, validateIcon } from './validations/icon.js'
+import { README_PATH, validateReadme } from './validations/readme.js'
 
 /**
  * The main function for the action.
@@ -37,7 +38,9 @@ export async function run(): Promise<void> {
     const iconPath = path.join(destinationPath, ICON_PATH)
     await validateIcon(iconPath)
 
-    // Check if README exists
+    // Validate README
+    const readmePath = path.join(destinationPath, README_PATH)
+    await validateReadme(readmePath)
 
     // Check if MANIFEST exists
     // Check if MANIFEST is valid JSON
