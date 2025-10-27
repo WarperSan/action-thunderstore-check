@@ -5,7 +5,8 @@ import * as fileType from 'file-type'
  * @param filePath
  */
 const getMime = async function (filePath: string): Promise<string | undefined> {
-  const result = await fileType.fileTypeFromFile(filePath)
+  const parser = new fileType.FileTypeParser()
+  const result = await parser.fromFile(filePath)
 
   return result?.mime
 }
