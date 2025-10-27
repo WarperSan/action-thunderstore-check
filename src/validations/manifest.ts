@@ -19,8 +19,7 @@ function getString(
   json: { [key: string]: unknown },
   propertyName: string
 ): string {
-  if (!(propertyName in json))
-    throw `'${propertyName}' is missing.`
+  if (!(propertyName in json)) throw `'${propertyName}' is missing.`
 
   const value = json[propertyName] as string | undefined
 

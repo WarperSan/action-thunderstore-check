@@ -66,9 +66,4 @@ describe('Icon validations', () => {
 
     expect(result).toBe(undefined)
   })
-
-  // icon missing
-  // icon wrong type
-  // icon wrong size
-  // icon valid
 })
