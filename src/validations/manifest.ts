@@ -57,7 +57,7 @@ function matchRegex(value: string, propertyName: string, regex: RegExp): void {
  * @param directory
  * @param fileName
  */
-async function validateManifest(
+export async function validateManifest(
   directory: string,
   fileName: string
 ): Promise<void> {
