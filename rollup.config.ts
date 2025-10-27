@@ -12,8 +12,7 @@ const config = {
     format: 'es',
     sourcemap: true
   },
-  plugins: [typescript(), nodeResolve({ preferBuiltins: true }), commonjs()],
-  external: ['@aws-sdk/client-s3']
+  plugins: [typescript(), nodeResolve({ preferBuiltins: true }), commonjs()]
 }
 
 export default config

@@ -1,17 +1,17 @@
 {
-  "name": "typescript-action",
-  "description": "GitHub Actions TypeScript template",
-  "version": "0.0.0",
-  "author": "",
+  "name": "thunderstore-check",
+  "description": "GitHub Action for checking the validity of a Thunderstore package",
+  "version": "v0.1.0",
+  "author": "WarperSan",
   "type": "module",
   "private": true,
-  "homepage": "https://github.com/actions/typescript-action",
+  "homepage": "https://github.com/WarperSan/action-thunderstore-check",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/actions/typescript-action.git"
+    "url": "git+https://github.com/WarperSan/action-thunderstore-check.git"
   },
   "bugs": {
-    "url": "https://github.com/actions/typescript-action/issues"
+    "url": "https://github.com/WarperSan/action-thunderstore-check/issues"
   },
   "keywords": [
     "actions"
