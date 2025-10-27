@@ -33,9 +33,9 @@ export async function run(): Promise<void> {
     const directory = await unzipper.Open.file(packagePath)
     await directory.extract({ path: destinationPath })
 
-    // Check if ICON exists
-    // Check if ICON is an image
-    // Check if ICON is 256x256
+    // Validate icon
+    const iconPath = path.join(destinationPath, ICON_PATH)
+    await validateIcon(iconPath)
 
     // Check if README exists
 
