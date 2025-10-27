@@ -3,9 +3,9 @@ import * as fs from 'node:fs'
 import path from 'node:path'
 import * as unzipper from 'unzipper'
 import { getMime } from './utils.js'
-import { ICON_PATH, validateIcon } from './validations/icon.js'
-import { README_PATH, validateReadme } from './validations/readme.js'
-import { MANIFEST_PATH, validateManifest } from './validations/manifest.js'
+import { validateIcon } from './validations/icon.js'
+import { validateReadme } from './validations/readme.js'
+import validateManifest from './validations/manifest.js'
 
 /**
  * The main function for the action.
@@ -36,16 +36,9 @@ export async function run(): Promise<void> {
     await directory.extract({ path: destinationPath })
 
     // Validate icon
-    const iconPath = path.join(destinationPath, ICON_PATH)
-    await validateIcon(iconPath)
-
-    // Validate README
-    const readmePath = path.join(destinationPath, README_PATH)
-    await validateReadme(readmePath)
-
-    // Validate manifest
-    const manifestPath = path.join(destinationPath, MANIFEST_PATH)
-    await validateManifest(manifestPath)
+    await validateIcon(destinationPath, 'icon.png')
+    await validateReadme(destinationPath, 'README.md')
+    await validateManifest(destinationPath, 'manifest.json')
   } catch (error) {
     if (error instanceof Error) core.setFailed(error.message)
     else if (typeof error === 'string') core.setFailed(error)

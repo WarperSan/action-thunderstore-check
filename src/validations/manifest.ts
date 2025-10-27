@@ -1,6 +1,5 @@
 import fs from 'node:fs'
-
-export const MANIFEST_PATH = 'manifest.json'
+import path from 'node:path'
 
 const NAME_PATH = 'name'
 const DESCRIPTION_PATH = 'description'
@@ -21,7 +20,7 @@ function getString(
   propertyName: string
 ): string {
   if (!(propertyName in json))
-    throw `'${propertyName}' is missing in '${MANIFEST_PATH}'.`
+    throw `'${propertyName}' is missing.`
 
   const value = json[propertyName] as string | undefined
 
@@ -56,11 +55,17 @@ function matchRegex(value: string, propertyName: string, regex: RegExp): void {
 
 /**
  * Validates if the given manifest is valid
- * @param filePath
+ * @param directory
+ * @param fileName
  */
-export async function validateManifest(filePath: string): Promise<void> {
+async function validateManifest(
+  directory: string,
+  fileName: string
+): Promise<void> {
+  const filePath = path.join(directory, fileName)
+
   // Check if MANIFEST exists
-  if (!fs.existsSync(filePath)) throw `File '${MANIFEST_PATH}' was not found.`
+  if (!fs.existsSync(filePath)) throw `File '${filePath}' was not found.`
 
   // Check if MANIFEST is valid JSON
   let json: { [key: string]: string | number | object | null } | undefined
@@ -71,7 +76,7 @@ export async function validateManifest(filePath: string): Promise<void> {
     json = undefined
   }
 
-  if (json === undefined) throw `'${MANIFEST_PATH}' is not a valid JSON file.`
+  if (json === undefined) throw `'${filePath}' is not a valid JSON file.`
 
   // Check 'name'
   const name = getString(json, NAME_PATH)
@@ -91,8 +96,7 @@ export async function validateManifest(filePath: string): Promise<void> {
   matchRegex(version, VERSION_NUMBER_PATH, new RegExp(`^${VERSION_REGEX}$`))
 
   // Check 'dependencies'
-  if (!(DEPENDENCIES_PATH in json))
-    throw `'${DEPENDENCIES_PATH}' is missing in '${MANIFEST_PATH}'.`
+  if (!(DEPENDENCIES_PATH in json)) throw `'${DEPENDENCIES_PATH}' is missing.`
 
   const dependencies = json[DEPENDENCIES_PATH] as Array<unknown> | undefined
 
@@ -122,3 +126,5 @@ export async function validateManifest(filePath: string): Promise<void> {
       /^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{2,}$/
     )
 }
+
+export default validateManifest

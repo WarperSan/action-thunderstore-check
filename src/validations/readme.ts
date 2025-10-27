@@ -1,12 +1,16 @@
 import fs from 'node:fs'
-
-export const README_PATH = 'README.md'
+import path from 'node:path'
 
 /**
  * Validates if the given README is valid
- * @param filePath
+ * @param directory
+ * @param fileName
  */
-export async function validateReadme(filePath: string): Promise<void> {
+export async function validateReadme(
+  directory: string,
+  fileName: string
+): Promise<void> {
+  const filePath = path.join(directory, fileName)
   // Check if README exists
-  if (!fs.existsSync(filePath)) throw `File '${README_PATH}' was not found.`
+  if (!fs.existsSync(filePath)) throw `File '${fileName}' was not found.`
 }
