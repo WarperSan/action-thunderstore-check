@@ -8,8 +8,8 @@ const VERSION_NUMBER_PATH = 'version_number'
 const DEPENDENCIES_PATH = 'dependencies'
 const WEBSITE_URL_PATH = 'website_url'
 
-const NAME_REGEX = /[a-zA-Z0-9_]+/
-const VERSION_REGEX = /[0-9]+\.[0-9]+\.[0-9]+/
+const NAME_REGEX = '[a-zA-Z0-9_]+'
+const VERSION_REGEX = '[0-9]+.[0-9]+.[0-9]+'
 
 /**
  * Gets the string value for the given property
@@ -113,7 +113,7 @@ export async function validateManifest(filePath: string): Promise<void> {
   // Check 'website_url'
   const websiteURL = getString(json, WEBSITE_URL_PATH)
 
-  lengthBetween(websiteURL, VERSION_NUMBER_PATH, 0, 1024)
+  lengthBetween(websiteURL, WEBSITE_URL_PATH, 0, 1024)
 
   if (websiteURL.length > 0)
     matchRegex(
