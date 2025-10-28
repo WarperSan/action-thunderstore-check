@@ -36970,7 +36970,7 @@ const DESCRIPTION_PATH = 'description';
 const VERSION_NUMBER_PATH = 'version_number';
 const DEPENDENCIES_PATH = 'dependencies';
 const WEBSITE_URL_PATH = 'website_url';
-const NAME_REGEX = '[a-zA-Z0-9_]+';
+const NAME_REGEX = '[a-zA-Z 0-9_]+';
 const VERSION_REGEX = '[0-9]+.[0-9]+.[0-9]+';
 // --- ASSERTS ---
 function assertIn(obj, key) {
@@ -37056,13 +37056,13 @@ async function validateManifest(directory, fileName) {
     assertType(dependencies, DEPENDENCIES_PATH, Array);
     for (const dependency of dependencies) {
         assertType(dependency, DEPENDENCIES_PATH, String);
-        matchRegex(dependency.toString(), DEPENDENCIES_PATH, new RegExp(`^.*?-${NAME_REGEX}-${VERSION_REGEX}$`));
+        matchRegex(dependency.toString(), DEPENDENCIES_PATH, new RegExp(`^(?!_)[a-zA-Z0-9_]+(?<!_)-${NAME_REGEX}-${VERSION_REGEX}$`));
     }
     // Check 'website_url'
     const websiteURL = getString(json, WEBSITE_URL_PATH);
     lengthBetween(websiteURL, WEBSITE_URL_PATH, 0, 1024);
     if (websiteURL.length > 0)
-        matchRegex(websiteURL, WEBSITE_URL_PATH, /^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{2,}$/);
+        matchRegex(websiteURL, WEBSITE_URL_PATH, /^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b[-a-zA-Z0-9()@:%_+.~#?&/=]*$/);
 }
 
 /**
