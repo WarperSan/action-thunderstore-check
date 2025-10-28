@@ -1,7 +1,7 @@
 import * as core from '@actions/core'
 import * as fs from 'node:fs'
 import path from 'node:path'
-import * as unzipper from 'unzipper'
+import AdmZip from 'adm-zip'
 import { getMime } from './utils.js'
 import { validateIcon } from './validations/icon.js'
 import { validateReadme } from './validations/readme.js'
@@ -32,8 +32,8 @@ export async function run(): Promise<void> {
     }
 
     // Unzip file
-    const directory = await unzipper.Open.file(packagePath)
-    await directory.extract({ path: destinationPath })
+    const zip = new AdmZip(packagePath)
+    zip.extractAllTo(destinationPath, true)
 
     // Validate icon
     await validateIcon(destinationPath, 'icon.png')
