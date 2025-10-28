@@ -1,11 +1,5 @@
 import path from 'node:path'
-import { FileNotFoundError } from '../src/errors/FileNotFoundError.js'
-import { InvalidFormatError } from '../src/errors/InvalidFormatError.js'
-import { PropertyMissingError } from '../src/errors/PropertyMissingError.js'
-import { PropertyWrongTypeError } from '../src/errors/PropertyWrongTypeError.js'
-import { UnmatchedRegexError } from '../src/errors/UnmatchedRegexError.js'
-import { PropertyTooSmallError } from '../src/errors/PropertyTooSmallError.js'
-import { PropertyTooLargeError } from '../src/errors/PropertyTooLargeError.js'
+import { ErrorCodes, ValidationError } from '../src/errors.js'
 
 const { validateManifest } = await import('../src/validations/manifest.js')
 
@@ -32,22 +26,24 @@ describe('Manifest validations', () => {
     const fileName = 'missing-valid.json'
 
     const result = await validate(fileName)
-
-    expect(result).toBeInstanceOf(FileNotFoundError)
+    expect(result).toBeInstanceOf(ValidationError)
+    expect(result).toHaveProperty('code', ErrorCodes.FILE_NOT_FOUND)
   })
 
   test('Invalid JSON syntax', async () => {
     const fileName = 'invalid-json-syntax.json'
 
     const result = await validate(fileName)
-    expect(result).toBeInstanceOf(InvalidFormatError)
+    expect(result).toBeInstanceOf(ValidationError)
+    expect(result).toHaveProperty('code', ErrorCodes.FILE_WRONG_FORMAT)
   })
 
   test('Invalid JSON format', async () => {
     const fileName = 'invalid-json-format.json'
 
     const result = await validate(fileName)
-    expect(result).toBeInstanceOf(InvalidFormatError)
+    expect(result).toBeInstanceOf(ValidationError)
+    expect(result).toHaveProperty('code', ErrorCodes.FILE_WRONG_FORMAT)
   })
 
   // --- NAME ---
@@ -55,35 +51,40 @@ describe('Manifest validations', () => {
     const fileName = 'name/missing.json'
 
     const result = await validate(fileName)
-    expect(result).toBeInstanceOf(PropertyMissingError)
+    expect(result).toBeInstanceOf(ValidationError)
+    expect(result).toHaveProperty('code', ErrorCodes.PROPERTY_MISSING)
   })
 
   test('Name not string', async () => {
     const fileName = 'name/not-string.json'
 
     const result = await validate(fileName)
-    expect(result).toBeInstanceOf(PropertyWrongTypeError)
+    expect(result).toBeInstanceOf(ValidationError)
+    expect(result).toHaveProperty('code', ErrorCodes.PROPERTY_WRONG_TYPE)
   })
 
   test('Name Empty', async () => {
     const fileName = 'name/empty.json'
 
     const result = await validate(fileName)
-    expect(result).toBeInstanceOf(PropertyTooSmallError)
+    expect(result).toBeInstanceOf(ValidationError)
+    expect(result).toHaveProperty('code', ErrorCodes.TEXT_TOO_SMALL)
   })
 
   test('Name Too Big', async () => {
     const fileName = 'name/too-large.json'
 
     const result = await validate(fileName)
-    expect(result).toBeInstanceOf(PropertyTooLargeError)
+    expect(result).toBeInstanceOf(ValidationError)
+    expect(result).toHaveProperty('code', ErrorCodes.TEXT_TOO_BIG)
   })
 
   test("Name doesn't match regex", async () => {
     const fileName = 'name/no-match.json'
 
     const result = await validate(fileName)
-    expect(result).toBeInstanceOf(UnmatchedRegexError)
+    expect(result).toBeInstanceOf(ValidationError)
+    expect(result).toHaveProperty('code', ErrorCodes.NO_REGEX_MATCH)
   })
 
   // --- DESCRIPTION ---
@@ -91,21 +92,25 @@ describe('Manifest validations', () => {
     const fileName = 'description/missing.json'
 
     const result = await validate(fileName)
-    expect(result).toBeInstanceOf(PropertyMissingError)
+    expect(result).toBeInstanceOf(ValidationError)
+    expect(result).toHaveProperty('code', ErrorCodes.PROPERTY_MISSING)
   })
 
   test('Description not string', async () => {
     const fileName = 'description/not-string.json'
 
     const result = await validate(fileName)
-    expect(result).toBeInstanceOf(PropertyWrongTypeError)
+
+    expect(result).toBeInstanceOf(ValidationError)
+    expect(result).toHaveProperty('code', ErrorCodes.PROPERTY_WRONG_TYPE)
   })
 
   test('Description Too Big', async () => {
     const fileName = 'description/too-large.json'
 
     const result = await validate(fileName)
-    expect(result).toBeInstanceOf(PropertyTooLargeError)
+    expect(result).toBeInstanceOf(ValidationError)
+    expect(result).toHaveProperty('code', ErrorCodes.TEXT_TOO_BIG)
   })
 
   // --- VERSION ---
@@ -113,35 +118,41 @@ describe('Manifest validations', () => {
     const fileName = 'version/missing.json'
 
     const result = await validate(fileName)
-    expect(result).toBeInstanceOf(PropertyMissingError)
+    expect(result).toBeInstanceOf(ValidationError)
+    expect(result).toHaveProperty('code', ErrorCodes.PROPERTY_MISSING)
   })
 
   test('Version not string', async () => {
     const fileName = 'version/not-string.json'
 
     const result = await validate(fileName)
-    expect(result).toBeInstanceOf(PropertyWrongTypeError)
+
+    expect(result).toBeInstanceOf(ValidationError)
+    expect(result).toHaveProperty('code', ErrorCodes.PROPERTY_WRONG_TYPE)
   })
 
   test('Version too small', async () => {
     const fileName = 'version/too-small.json'
 
     const result = await validate(fileName)
-    expect(result).toBeInstanceOf(PropertyTooSmallError)
+    expect(result).toBeInstanceOf(ValidationError)
+    expect(result).toHaveProperty('code', ErrorCodes.TEXT_TOO_SMALL)
   })
 
   test('Version too large', async () => {
     const fileName = 'version/too-large.json'
 
     const result = await validate(fileName)
-    expect(result).toBeInstanceOf(PropertyTooLargeError)
+    expect(result).toBeInstanceOf(ValidationError)
+    expect(result).toHaveProperty('code', ErrorCodes.TEXT_TOO_BIG)
   })
 
   test("Version doesn't match regex", async () => {
     const fileName = 'version/no-match.json'
 
     const result = await validate(fileName)
-    expect(result).toBeInstanceOf(UnmatchedRegexError)
+    expect(result).toBeInstanceOf(ValidationError)
+    expect(result).toHaveProperty('code', ErrorCodes.NO_REGEX_MATCH)
   })
 
   // --- DEPENDENCIES ---
@@ -149,28 +160,34 @@ describe('Manifest validations', () => {
     const fileName = 'dependencies/missing.json'
 
     const result = await validate(fileName)
-    expect(result).toBeInstanceOf(PropertyMissingError)
+    expect(result).toBeInstanceOf(ValidationError)
+    expect(result).toHaveProperty('code', ErrorCodes.PROPERTY_MISSING)
   })
 
   test('Dependencies not array', async () => {
     const fileName = 'dependencies/not-array.json'
 
     const result = await validate(fileName)
-    expect(result).toBeInstanceOf(PropertyWrongTypeError)
+
+    expect(result).toBeInstanceOf(ValidationError)
+    expect(result).toHaveProperty('code', ErrorCodes.PROPERTY_WRONG_TYPE)
   })
 
   test('Dependencies wrong array', async () => {
     const fileName = 'dependencies/wrong-array.json'
 
     const result = await validate(fileName)
-    expect(result).toBeInstanceOf(PropertyWrongTypeError)
+
+    expect(result).toBeInstanceOf(ValidationError)
+    expect(result).toHaveProperty('code', ErrorCodes.PROPERTY_WRONG_TYPE)
   })
 
   test("Dependencies doesn't match regex", async () => {
     const fileName = 'dependencies/no-match.json'
 
     const result = await validate(fileName)
-    expect(result).toBeInstanceOf(UnmatchedRegexError)
+    expect(result).toBeInstanceOf(ValidationError)
+    expect(result).toHaveProperty('code', ErrorCodes.NO_REGEX_MATCH)
   })
 
   // --- WEBSITE ---
@@ -178,27 +195,32 @@ describe('Manifest validations', () => {
     const fileName = 'website/missing.json'
 
     const result = await validate(fileName)
-    expect(result).toBeInstanceOf(PropertyMissingError)
+    expect(result).toBeInstanceOf(ValidationError)
+    expect(result).toHaveProperty('code', ErrorCodes.PROPERTY_MISSING)
   })
 
   test('Website not string', async () => {
     const fileName = 'website/not-string.json'
 
     const result = await validate(fileName)
-    expect(result).toBeInstanceOf(PropertyWrongTypeError)
+
+    expect(result).toBeInstanceOf(ValidationError)
+    expect(result).toHaveProperty('code', ErrorCodes.PROPERTY_WRONG_TYPE)
   })
 
   test('Website too large', async () => {
     const fileName = 'website/too-large.json'
 
     const result = await validate(fileName)
-    expect(result).toBeInstanceOf(PropertyTooLargeError)
+    expect(result).toBeInstanceOf(ValidationError)
+    expect(result).toHaveProperty('code', ErrorCodes.TEXT_TOO_BIG)
   })
 
   test("Website doesn't match regex", async () => {
     const fileName = 'website/no-match.json'
 
     const result = await validate(fileName)
-    expect(result).toBeInstanceOf(UnmatchedRegexError)
+    expect(result).toBeInstanceOf(ValidationError)
+    expect(result).toHaveProperty('code', ErrorCodes.NO_REGEX_MATCH)
   })
 })

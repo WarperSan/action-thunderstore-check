@@ -1,5 +1,5 @@
 import path from 'node:path'
-import { FileNotFoundError } from '../src/errors/FileNotFoundError.js'
+import { ErrorCodes, ValidationError } from '../src/errors.js'
 
 const { validateReadme } = await import('../src/validations/readme.js')
 
@@ -27,7 +27,8 @@ describe('README validations', () => {
 
     const result = await validate(fileName)
 
-    expect(result).toBeInstanceOf(FileNotFoundError)
+    expect(result).toBeInstanceOf(ValidationError)
+    expect(result).toHaveProperty('code', ErrorCodes.FILE_NOT_FOUND)
   })
 
   test('Valid README', async () => {

@@ -1,7 +1,5 @@
 import path from 'node:path'
-import { FileNotFoundError } from '../src/errors/FileNotFoundError.js'
-import { InvalidMimeError } from '../src/errors/InvalidMimeError.js'
-import { InvalidImageSizeError } from '../src/errors/InvalidImageSizeError.js'
+import { ValidationError, ErrorCodes } from '../src/errors.js'
 
 const { validateIcon } = await import('../src/validations/icon.js')
 
@@ -29,7 +27,8 @@ describe('Icon validations', () => {
 
     const result = await validate(fileName)
 
-    expect(result).toBeInstanceOf(FileNotFoundError)
+    expect(result).toBeInstanceOf(ValidationError)
+    expect(result).toHaveProperty('code', ErrorCodes.FILE_NOT_FOUND)
   })
 
   test('Icon of wrong type', async () => {
@@ -37,7 +36,8 @@ describe('Icon validations', () => {
 
     const result = await validate(fileName)
 
-    expect(result).toBeInstanceOf(InvalidMimeError)
+    expect(result).toBeInstanceOf(ValidationError)
+    expect(result).toHaveProperty('code', ErrorCodes.INVALID_MIME)
   })
 
   test('Icon too small', async () => {
@@ -45,7 +45,8 @@ describe('Icon validations', () => {
 
     const result = await validate(fileName)
 
-    expect(result).toBeInstanceOf(InvalidImageSizeError)
+    expect(result).toBeInstanceOf(ValidationError)
+    expect(result).toHaveProperty('code', ErrorCodes.INVALID_IMAGE_SIZE)
   })
 
   test('Icon too large', async () => {
@@ -53,7 +54,8 @@ describe('Icon validations', () => {
 
     const result = await validate(fileName)
 
-    expect(result).toBeInstanceOf(InvalidImageSizeError)
+    expect(result).toBeInstanceOf(ValidationError)
+    expect(result).toHaveProperty('code', ErrorCodes.INVALID_IMAGE_SIZE)
   })
 
   test('Valid Icon', async () => {
