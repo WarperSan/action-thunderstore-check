@@ -57,7 +57,7 @@ jobs:
         id: test-action
         uses: ./
         with:
-          package-path: "__tests__/assets/main/valid.zip"
+          package-path: '__tests__/assets/main/valid.zip'
 
       - name: Print Output
         id: output
