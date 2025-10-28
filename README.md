@@ -111,7 +111,7 @@ listed here, field by field:
          <li>Required</li>
          <li><code>[]</code> value</li>
          <li>Every item must be a <code>string</code></li>
-         <li>Every item must respect this pattern <code>${TEAM}-${NAME}-${VERSION}</code>, where section is replaced with their corresponding pattern:
+         <li>Every item must respect this pattern <code>${TEAM}-${NAME}-${VERSION}</code>:
             <ul>
             <li><code>${TEAM}</code>: <code>(?!_)[a-zA-Z0-9_]+(?&lt;!_)</code></li>
             <li><code>${NAME}</code>: same as <code>name</code>;</li>
