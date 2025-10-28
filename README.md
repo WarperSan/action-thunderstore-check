@@ -15,8 +15,10 @@ may not be perfect, and not always be up to date. However, most restrictions
 have been found from testing, and from the
 [official format requirements](https://thunderstore.io/package/create/docs/).
 
-> [!NOTE] Theses are the restrictions enforced by this action. Thunderstore
-> themselves might have other restrictions hidden.
+> [!NOTE]
+>
+> Theses are the restrictions enforced by this action. Thunderstore themselves
+> might have other restrictions hidden.
 
 ### Files
 
