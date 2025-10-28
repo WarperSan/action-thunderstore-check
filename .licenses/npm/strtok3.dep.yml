@@ -1,16 +1,16 @@
 ---
-name: undici
-version: 5.29.0
+name: strtok3
+version: 10.3.4
 type: npm
-summary: An HTTP/1.1 client, written from scratch for Node.js
-homepage: https://undici.nodejs.org
+summary: A promise based streaming tokenizer
+homepage:
 license: mit
 licenses:
-- sources: LICENSE
+- sources: LICENSE.txt
   text: |
     MIT License
 
-    Copyright (c) Matteo Collina and Undici contributors
+    Copyright © 2025 Borewit
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -30,5 +30,6 @@ licenses:
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 - sources: README.md
-  text: MIT
+  text: This project is licensed under the [MIT License](LICENSE.txt). Feel free to
+    use, modify, and distribute as needed.
 notices: []

@@ -1,16 +1,16 @@
 ---
-name: undici
-version: 5.29.0
+name: fflate
+version: 0.8.2
 type: npm
-summary: An HTTP/1.1 client, written from scratch for Node.js
-homepage: https://undici.nodejs.org
-license: mit
+summary: High performance (de)compression in an 8kB package
+homepage: https://101arrowz.github.io/fflate
+license: other
 licenses:
 - sources: LICENSE
-  text: |
+  text: |-
     MIT License
 
-    Copyright (c) Matteo Collina and Undici contributors
+    Copyright (c) 2023 Arjun Barrett
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -30,5 +30,10 @@ licenses:
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 - sources: README.md
-  text: MIT
+  text: |-
+    This software is [MIT Licensed](./LICENSE), with special exemptions for projects
+    and organizations as noted below:
+
+    - [SheetJS](https://github.com/SheetJS/) is exempt from MIT licensing and may
+      license any source code from this software under the BSD Zero Clause License
 notices: []
