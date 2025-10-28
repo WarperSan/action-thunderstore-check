@@ -1,16 +1,17 @@
 ---
-name: safe-buffer
-version: 5.1.2
+name: adm-zip
+version: 0.5.16
 type: npm
-summary: Safer Node.js Buffer API
-homepage: https://github.com/feross/safe-buffer
+summary: Javascript implementation of zip for nodejs with support for electron original-fs.
+  Allows user to create or extract zip files both in memory or to/from disk
+homepage: https://github.com/cthackers/adm-zip
 license: mit
 licenses:
 - sources: LICENSE
   text: |
-    The MIT License (MIT)
+    MIT License
 
-    Copyright (c) Feross Aboukhadijeh
+    Copyright (c) 2012 Another-D-Mention Software and other contributors
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -19,16 +20,14 @@ licenses:
     copies of the Software, and to permit persons to whom the Software is
     furnished to do so, subject to the following conditions:
 
-    The above copyright notice and this permission notice shall be included in
-    all copies or substantial portions of the Software.
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
 
     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
     IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
     FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
     AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-    THE SOFTWARE.
-- sources: README.md
-  text: MIT. Copyright (C) [Feross Aboukhadijeh](http://feross.org)
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
 notices: []
