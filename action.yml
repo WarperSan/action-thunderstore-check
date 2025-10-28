@@ -1,24 +1,18 @@
-name: The name of your action here
-description: Provide a description here
+name: 'Thunderstore Check'
+description: 'GitHub Action for checking the validity of a Thunderstore package'
 author: Your name or organization here
 
 # Add your action's branding here. This will appear on the GitHub Marketplace.
 branding:
-  icon: heart
-  color: red
+  icon: package
+  color: purple
 
 # Define your inputs here.
 inputs:
-  milliseconds:
-    description: Your input description here
+  package-path:
+    description: 'Path to the Thunderstore package to check'
     required: true
-    default: '1000'
-
-# Define your outputs here.
-outputs:
-  time:
-    description: Your output description here
 
 runs:
-  using: node24
+  using: node20
   main: dist/index.js

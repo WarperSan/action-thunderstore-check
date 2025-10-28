@@ -1,5 +1,11 @@
 import * as core from '@actions/core'
-import { wait } from './wait.js'
+import * as fs from 'node:fs'
+import path from 'node:path'
+import AdmZip from 'adm-zip'
+import { getMime } from './utils.js'
+import { validateIcon } from './validations/icon.js'
+import { validateReadme } from './validations/readme.js'
+import validateManifest from './validations/manifest.js'
 
 /**
  * The main function for the action.
@@ -7,21 +13,40 @@ import { wait } from './wait.js'
  * @returns Resolves when the action is complete.
  */
 export async function run(): Promise<void> {
+  const destinationPath = path.join(process.cwd(), 'unzipped')
+
   try {
-    const ms: string = core.getInput('milliseconds')
+    // Check if input is given
+    const packagePath = core.getInput('package-path', { required: true })
 
-    // Debug logs are only output if the `ACTIONS_STEP_DEBUG` secret is true
-    core.debug(`Waiting ${ms} milliseconds ...`)
+    // Check if package exists
+    if (!fs.existsSync(packagePath)) {
+      core.setFailed('File defined by input was not found.')
+      return
+    }
 
-    // Log the current timestamp, wait, then log the new timestamp
-    core.debug(new Date().toTimeString())
-    await wait(parseInt(ms, 10))
-    core.debug(new Date().toTimeString())
+    // Check if file is ZIP
+    if ((await getMime(packagePath)) !== 'application/zip') {
+      core.setFailed('File defined by input must be a ZIP file.')
+      return
+    }
 
-    // Set outputs for other workflow steps to use
-    core.setOutput('time', new Date().toTimeString())
+    // Unzip file
+    const zip = new AdmZip(packagePath)
+    zip.extractAllTo(destinationPath, true)
+
+    // Validate icon
+    await validateIcon(destinationPath, 'icon.png')
+    await validateReadme(destinationPath, 'README.md')
+    await validateManifest(destinationPath, 'manifest.json')
   } catch (error) {
-    // Fail the workflow run if an error occurs
-    if (error instanceof Error) core.setFailed(error.message)
+    let message: string = 'Unexpected error occurred.'
+
+    if (error instanceof Error) message = error.message
+
+    core.setFailed(message)
+  } finally {
+    if (fs.existsSync(destinationPath))
+      fs.rmSync(destinationPath, { recursive: true })
   }
 }

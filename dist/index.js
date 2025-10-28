@@ -13,7 +13,7 @@ import require$$0$5 from 'stream';
 import require$$7 from 'buffer';
 import require$$8 from 'querystring';
 import require$$14 from 'stream/web';
-import require$$0$7 from 'node:stream';
+import require$$0$7, { Readable, PassThrough, pipeline } from 'node:stream';
 import require$$1$2 from 'node:util';
 import require$$0$6 from 'node:events';
 import require$$0$8 from 'worker_threads';
@@ -22,29 +22,41 @@ import require$$5 from 'util/types';
 import require$$4$1 from 'async_hooks';
 import require$$1$3 from 'console';
 import require$$1$4 from 'url';
-import require$$3$1 from 'zlib';
+import require$$0$9 from 'zlib';
 import require$$6 from 'string_decoder';
-import require$$0$9 from 'diagnostics_channel';
+import require$$0$a from 'diagnostics_channel';
 import require$$2$2 from 'child_process';
 import require$$6$1 from 'timers';
+import * as fs from 'node:fs';
+import fs__default from 'node:fs';
+import * as path from 'node:path';
+import path__default from 'node:path';
+import { ReadableStream } from 'node:stream/web';
+import { open, stat } from 'node:fs/promises';
+import { createRequire } from 'module';
+import require$$1$6 from 'tty';
 
 var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
+
+function getDefaultExportFromCjs (x) {
+	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
+}
 
 var core = {};
 
 var command = {};
 
-var utils$1 = {};
+var utils$2 = {};
 
-var hasRequiredUtils$1;
+var hasRequiredUtils$2;
 
-function requireUtils$1 () {
-	if (hasRequiredUtils$1) return utils$1;
-	hasRequiredUtils$1 = 1;
+function requireUtils$2 () {
+	if (hasRequiredUtils$2) return utils$2;
+	hasRequiredUtils$2 = 1;
 	// We use any as a valid input type
 	/* eslint-disable @typescript-eslint/no-explicit-any */
-	Object.defineProperty(utils$1, "__esModule", { value: true });
-	utils$1.toCommandProperties = utils$1.toCommandValue = void 0;
+	Object.defineProperty(utils$2, "__esModule", { value: true });
+	utils$2.toCommandProperties = utils$2.toCommandValue = void 0;
 	/**
 	 * Sanitizes an input into a string so it can be passed into issueCommand safely
 	 * @param input input to sanitize into a string
@@ -58,7 +70,7 @@ function requireUtils$1 () {
 	    }
 	    return JSON.stringify(input);
 	}
-	utils$1.toCommandValue = toCommandValue;
+	utils$2.toCommandValue = toCommandValue;
 	/**
 	 *
 	 * @param annotationProperties
@@ -78,9 +90,9 @@ function requireUtils$1 () {
 	        endColumn: annotationProperties.endColumn
 	    };
 	}
-	utils$1.toCommandProperties = toCommandProperties;
+	utils$2.toCommandProperties = toCommandProperties;
 	
-	return utils$1;
+	return utils$2;
 }
 
 var hasRequiredCommand;
@@ -114,7 +126,7 @@ function requireCommand () {
 	Object.defineProperty(command, "__esModule", { value: true });
 	command.issue = command.issueCommand = void 0;
 	const os = __importStar(require$$0);
-	const utils_1 = requireUtils$1();
+	const utils_1 = requireUtils$2();
 	/**
 	 * Commands
 	 *
@@ -224,7 +236,7 @@ function requireFileCommand () {
 	const crypto = __importStar(require$$0$1);
 	const fs = __importStar(require$$1);
 	const os = __importStar(require$$0);
-	const utils_1 = requireUtils$1();
+	const utils_1 = requireUtils$2();
 	function issueFileCommand(command, message) {
 	    const filePath = process.env[`GITHUB_${command}`];
 	    if (!filePath) {
@@ -719,12 +731,12 @@ function requireSymbols$4 () {
 	return symbols$4;
 }
 
-var errors;
-var hasRequiredErrors;
+var errors$1;
+var hasRequiredErrors$1;
 
-function requireErrors () {
-	if (hasRequiredErrors) return errors;
-	hasRequiredErrors = 1;
+function requireErrors$1 () {
+	if (hasRequiredErrors$1) return errors$1;
+	hasRequiredErrors$1 = 1;
 
 	class UndiciError extends Error {
 	  constructor (message) {
@@ -932,7 +944,7 @@ function requireErrors () {
 	  }
 	}
 
-	errors = {
+	errors$1 = {
 	  HTTPParserError,
 	  UndiciError,
 	  HeadersTimeoutError,
@@ -954,15 +966,15 @@ function requireErrors () {
 	  ResponseExceededMaxSizeError,
 	  RequestRetryError
 	};
-	return errors;
+	return errors$1;
 }
 
-var constants$4;
-var hasRequiredConstants$4;
+var constants$5;
+var hasRequiredConstants$5;
 
-function requireConstants$4 () {
-	if (hasRequiredConstants$4) return constants$4;
-	hasRequiredConstants$4 = 1;
+function requireConstants$5 () {
+	if (hasRequiredConstants$5) return constants$5;
+	hasRequiredConstants$5 = 1;
 
 	/** @type {Record<string, string | undefined>} */
 	const headerNameLowerCasedRecord = {};
@@ -1076,30 +1088,30 @@ function requireConstants$4 () {
 	// Note: object prototypes should not be able to be referenced. e.g. `Object#hasOwnProperty`.
 	Object.setPrototypeOf(headerNameLowerCasedRecord, null);
 
-	constants$4 = {
+	constants$5 = {
 	  wellknownHeaderNames,
 	  headerNameLowerCasedRecord
 	};
-	return constants$4;
+	return constants$5;
 }
 
-var util$6;
-var hasRequiredUtil$6;
+var util$7;
+var hasRequiredUtil$7;
 
-function requireUtil$6 () {
-	if (hasRequiredUtil$6) return util$6;
-	hasRequiredUtil$6 = 1;
+function requireUtil$7 () {
+	if (hasRequiredUtil$7) return util$7;
+	hasRequiredUtil$7 = 1;
 
 	const assert = require$$0$3;
 	const { kDestroyed, kBodyUsed } = requireSymbols$4();
 	const { IncomingMessage } = require$$2;
 	const stream = require$$0$5;
 	const net = require$$0$4;
-	const { InvalidArgumentError } = requireErrors();
+	const { InvalidArgumentError } = requireErrors$1();
 	const { Blob } = require$$7;
 	const nodeUtil = require$$0$2;
 	const { stringify } = require$$8;
-	const { headerNameLowerCasedRecord } = requireConstants$4();
+	const { headerNameLowerCasedRecord } = requireConstants$5();
 
 	const [nodeMajor, nodeMinor] = process.versions.node.split('.').map(v => Number(v));
 
@@ -1573,7 +1585,7 @@ function requireUtil$6 () {
 	const kEnumerableProperty = Object.create(null);
 	kEnumerableProperty.enumerable = true;
 
-	util$6 = {
+	util$7 = {
 	  kEnumerableProperty,
 	  nop,
 	  isDisturbed,
@@ -1610,7 +1622,7 @@ function requireUtil$6 () {
 	  nodeHasAutoSelectFamily: nodeMajor > 18 || (nodeMajor === 18 && nodeMinor >= 13),
 	  safeHTTPMethods: ['GET', 'HEAD', 'OPTIONS', 'TRACE']
 	};
-	return util$6;
+	return util$7;
 }
 
 var timers;
@@ -2994,11 +3006,11 @@ function requireMultipart () {
 }
 
 var Decoder_1;
-var hasRequiredDecoder;
+var hasRequiredDecoder$1;
 
-function requireDecoder () {
-	if (hasRequiredDecoder) return Decoder_1;
-	hasRequiredDecoder = 1;
+function requireDecoder$1 () {
+	if (hasRequiredDecoder$1) return Decoder_1;
+	hasRequiredDecoder$1 = 1;
 
 	const RE_PLUS = /\+/g;
 
@@ -3062,7 +3074,7 @@ function requireUrlencoded () {
 	if (hasRequiredUrlencoded) return urlencoded;
 	hasRequiredUrlencoded = 1;
 
-	const Decoder = requireDecoder();
+	const Decoder = requireDecoder$1();
 	const decodeText = requireDecodeText();
 	const getLimit = requireGetLimit();
 
@@ -3345,12 +3357,12 @@ function requireMain () {
 	return main.exports;
 }
 
-var constants$3;
-var hasRequiredConstants$3;
+var constants$4;
+var hasRequiredConstants$4;
 
-function requireConstants$3 () {
-	if (hasRequiredConstants$3) return constants$3;
-	hasRequiredConstants$3 = 1;
+function requireConstants$4 () {
+	if (hasRequiredConstants$4) return constants$4;
+	hasRequiredConstants$4 = 1;
 
 	const { MessageChannel, receiveMessageOnPort } = require$$0$8;
 
@@ -3476,7 +3488,7 @@ function requireConstants$3 () {
 	    return receiveMessageOnPort(channel.port2).message
 	  };
 
-	constants$3 = {
+	constants$4 = {
 	  DOMException,
 	  structuredClone,
 	  subresource,
@@ -3501,7 +3513,7 @@ function requireConstants$3 () {
 	  forbiddenMethodsSet,
 	  referrerPolicySet
 	};
-	return constants$3;
+	return constants$4;
 }
 
 var global$2;
@@ -3552,17 +3564,17 @@ function requireGlobal$1 () {
 	return global$2;
 }
 
-var util$5;
-var hasRequiredUtil$5;
+var util$6;
+var hasRequiredUtil$6;
 
-function requireUtil$5 () {
-	if (hasRequiredUtil$5) return util$5;
-	hasRequiredUtil$5 = 1;
+function requireUtil$6 () {
+	if (hasRequiredUtil$6) return util$6;
+	hasRequiredUtil$6 = 1;
 
-	const { redirectStatusSet, referrerPolicySet: referrerPolicyTokens, badPortsSet } = requireConstants$3();
+	const { redirectStatusSet, referrerPolicySet: referrerPolicyTokens, badPortsSet } = requireConstants$4();
 	const { getGlobalOrigin } = requireGlobal$1();
 	const { performance } = require$$2$1;
-	const { isBlobLike, toUSVString, ReadableStreamFrom } = requireUtil$6();
+	const { isBlobLike, toUSVString, ReadableStreamFrom } = requireUtil$7();
 	const assert = require$$0$3;
 	const { isUint8Array } = require$$5;
 
@@ -4653,7 +4665,7 @@ function requireUtil$5 () {
 	 */
 	const hasOwn = Object.hasOwn || ((dict, key) => Object.prototype.hasOwnProperty.call(dict, key));
 
-	util$5 = {
+	util$6 = {
 	  isAborted,
 	  isCancelled,
 	  createDeferredPromise,
@@ -4700,7 +4712,7 @@ function requireUtil$5 () {
 	  normalizeMethodRecord,
 	  parseMetadata
 	};
-	return util$5;
+	return util$6;
 }
 
 var symbols$3;
@@ -4729,7 +4741,7 @@ function requireWebidl () {
 	hasRequiredWebidl = 1;
 
 	const { types } = require$$0$2;
-	const { hasOwn, toUSVString } = requireUtil$5();
+	const { hasOwn, toUSVString } = requireUtil$6();
 
 	/** @type {import('../../types/webidl').Webidl} */
 	const webidl = {};
@@ -5383,7 +5395,7 @@ function requireDataURL () {
 	hasRequiredDataURL = 1;
 	const assert = require$$0$3;
 	const { atob } = require$$7;
-	const { isomorphicDecode } = requireUtil$5();
+	const { isomorphicDecode } = requireUtil$6();
 
 	const encoder = new TextEncoder();
 
@@ -6021,10 +6033,10 @@ function requireFile () {
 	const { Blob, File: NativeFile } = require$$7;
 	const { types } = require$$0$2;
 	const { kState } = requireSymbols$3();
-	const { isBlobLike } = requireUtil$5();
+	const { isBlobLike } = requireUtil$6();
 	const { webidl } = requireWebidl();
 	const { parseMIMEType, serializeAMimeType } = requireDataURL();
-	const { kEnumerableProperty } = requireUtil$6();
+	const { kEnumerableProperty } = requireUtil$7();
 	const encoder = new TextEncoder();
 
 	class File extends Blob {
@@ -6370,7 +6382,7 @@ function requireFormdata () {
 	if (hasRequiredFormdata) return formdata;
 	hasRequiredFormdata = 1;
 
-	const { isBlobLike, toUSVString, makeIterator } = requireUtil$5();
+	const { isBlobLike, toUSVString, makeIterator } = requireUtil$6();
 	const { kState } = requireSymbols$3();
 	const { File: UndiciFile, FileLike, isFileLike } = requireFile();
 	const { webidl } = requireWebidl();
@@ -6644,7 +6656,7 @@ function requireBody () {
 	hasRequiredBody = 1;
 
 	const Busboy = requireMain();
-	const util = requireUtil$6();
+	const util = requireUtil$7();
 	const {
 	  ReadableStreamFrom,
 	  isBlobLike,
@@ -6652,15 +6664,15 @@ function requireBody () {
 	  readableStreamClose,
 	  createDeferredPromise,
 	  fullyReadBody
-	} = requireUtil$5();
+	} = requireUtil$6();
 	const { FormData } = requireFormdata();
 	const { kState } = requireSymbols$3();
 	const { webidl } = requireWebidl();
-	const { DOMException, structuredClone } = requireConstants$3();
+	const { DOMException, structuredClone } = requireConstants$4();
 	const { Blob, File: NativeFile } = require$$7;
 	const { kBodyUsed } = requireSymbols$4();
 	const assert = require$$0$3;
-	const { isErrored } = requireUtil$6();
+	const { isErrored } = requireUtil$7();
 	const { isUint8Array, isArrayBuffer } = require$$5;
 	const { File: UndiciFile } = requireFile();
 	const { parseMIMEType, serializeAMimeType } = requireDataURL();
@@ -7267,10 +7279,10 @@ function requireRequest$1 () {
 	const {
 	  InvalidArgumentError,
 	  NotSupportedError
-	} = requireErrors();
+	} = requireErrors$1();
 	const assert = require$$0$3;
 	const { kHTTP2BuildRequest, kHTTP2CopyHeaders, kHTTP1BuildRequest } = requireSymbols$4();
-	const util = requireUtil$6();
+	const util = requireUtil$7();
 
 	// tokenRegExp and headerCharRegex have been lifted from
 	// https://github.com/nodejs/node/blob/main/lib/_http_common.js
@@ -7803,7 +7815,7 @@ function requireDispatcherBase () {
 	  ClientDestroyedError,
 	  ClientClosedError,
 	  InvalidArgumentError
-	} = requireErrors();
+	} = requireErrors$1();
 	const { kDestroy, kClose, kDispatch, kInterceptors } = requireSymbols$4();
 
 	const kDestroyed = Symbol('destroyed');
@@ -8000,8 +8012,8 @@ function requireConnect () {
 
 	const net = require$$0$4;
 	const assert = require$$0$3;
-	const util = requireUtil$6();
-	const { InvalidArgumentError, ConnectTimeoutError } = requireErrors();
+	const util = requireUtil$7();
+	const { InvalidArgumentError, ConnectTimeoutError } = requireErrors$1();
 
 	let tls; // include tls conditionally since it is not always available
 
@@ -8188,17 +8200,17 @@ function requireConnect () {
 	return connect;
 }
 
-var constants$2 = {};
+var constants$3 = {};
 
-var utils = {};
+var utils$1 = {};
 
-var hasRequiredUtils;
+var hasRequiredUtils$1;
 
-function requireUtils () {
-	if (hasRequiredUtils) return utils;
-	hasRequiredUtils = 1;
-	Object.defineProperty(utils, "__esModule", { value: true });
-	utils.enumToMap = void 0;
+function requireUtils$1 () {
+	if (hasRequiredUtils$1) return utils$1;
+	hasRequiredUtils$1 = 1;
+	Object.defineProperty(utils$1, "__esModule", { value: true });
+	utils$1.enumToMap = void 0;
 	function enumToMap(obj) {
 	    const res = {};
 	    Object.keys(obj).forEach((key) => {
@@ -8209,20 +8221,20 @@ function requireUtils () {
 	    });
 	    return res;
 	}
-	utils.enumToMap = enumToMap;
+	utils$1.enumToMap = enumToMap;
 	
-	return utils;
+	return utils$1;
 }
 
-var hasRequiredConstants$2;
+var hasRequiredConstants$3;
 
-function requireConstants$2 () {
-	if (hasRequiredConstants$2) return constants$2;
-	hasRequiredConstants$2 = 1;
+function requireConstants$3 () {
+	if (hasRequiredConstants$3) return constants$3;
+	hasRequiredConstants$3 = 1;
 	(function (exports) {
 		Object.defineProperty(exports, "__esModule", { value: true });
 		exports.SPECIAL_HEADERS = exports.HEADER_STATE = exports.MINOR = exports.MAJOR = exports.CONNECTION_TOKEN_CHARS = exports.HEADER_CHARS = exports.TOKEN = exports.STRICT_TOKEN = exports.HEX = exports.URL_CHAR = exports.STRICT_URL_CHAR = exports.USERINFO_CHARS = exports.MARK = exports.ALPHANUM = exports.NUM = exports.HEX_MAP = exports.NUM_MAP = exports.ALPHA = exports.FINISH = exports.H_METHOD_MAP = exports.METHOD_MAP = exports.METHODS_RTSP = exports.METHODS_ICE = exports.METHODS_HTTP = exports.METHODS = exports.LENIENT_FLAGS = exports.FLAGS = exports.TYPE = exports.ERROR = void 0;
-		const utils_1 = requireUtils();
+		const utils_1 = requireUtils$1();
 		(function (ERROR) {
 		    ERROR[ERROR["OK"] = 0] = "OK";
 		    ERROR[ERROR["INTERNAL"] = 1] = "INTERNAL";
@@ -8491,8 +8503,8 @@ function requireConstants$2 () {
 		    'upgrade': HEADER_STATE.UPGRADE,
 		};
 		
-	} (constants$2));
-	return constants$2;
+	} (constants$3));
+	return constants$3;
 }
 
 var RedirectHandler_1;
@@ -8502,10 +8514,10 @@ function requireRedirectHandler () {
 	if (hasRequiredRedirectHandler) return RedirectHandler_1;
 	hasRequiredRedirectHandler = 1;
 
-	const util = requireUtil$6();
+	const util = requireUtil$7();
 	const { kBodyUsed } = requireSymbols$4();
 	const assert = require$$0$3;
-	const { InvalidArgumentError } = requireErrors();
+	const { InvalidArgumentError } = requireErrors$1();
 	const EE = require$$4;
 
 	const redirectableStatusCodes = [300, 301, 302, 303, 307, 308];
@@ -8768,7 +8780,7 @@ function requireClient () {
 	const net = require$$0$4;
 	const http = require$$2;
 	const { pipeline } = require$$0$5;
-	const util = requireUtil$6();
+	const util = requireUtil$7();
 	const timers = requireTimers();
 	const Request = requireRequest$1();
 	const DispatcherBase = requireDispatcherBase();
@@ -8785,7 +8797,7 @@ function requireClient () {
 	  HTTPParserError,
 	  ResponseExceededMaxSizeError,
 	  ClientDestroyedError
-	} = requireErrors();
+	} = requireErrors$1();
 	const buildConnector = requireConnect();
 	const {
 	  kUrl,
@@ -9242,7 +9254,7 @@ function requireClient () {
 	  resume(client);
 	}
 
-	const constants = requireConstants$2();
+	const constants = requireConstants$3();
 	const createRedirectInterceptor = requireRedirectInterceptor();
 	const EMPTY_BUF = Buffer.alloc(0);
 
@@ -11429,8 +11441,8 @@ function requirePool () {
 	const Client = requireClient();
 	const {
 	  InvalidArgumentError
-	} = requireErrors();
-	const util = requireUtil$6();
+	} = requireErrors$1();
+	const util = requireUtil$7();
 	const { kUrl, kInterceptors } = requireSymbols$4();
 	const buildConnector = requireConnect();
 
@@ -11538,7 +11550,7 @@ function requireBalancedPool () {
 	const {
 	  BalancedPoolMissingUpstreamError,
 	  InvalidArgumentError
-	} = requireErrors();
+	} = requireErrors$1();
 	const {
 	  PoolBase,
 	  kClients,
@@ -11549,7 +11561,7 @@ function requireBalancedPool () {
 	} = requirePoolBase();
 	const Pool = requirePool();
 	const { kUrl, kInterceptors } = requireSymbols$4();
-	const { parseOrigin } = requireUtil$6();
+	const { parseOrigin } = requireUtil$7();
 	const kFactory = Symbol('factory');
 
 	const kOptions = Symbol('options');
@@ -11789,12 +11801,12 @@ function requireAgent () {
 	if (hasRequiredAgent) return agent;
 	hasRequiredAgent = 1;
 
-	const { InvalidArgumentError } = requireErrors();
+	const { InvalidArgumentError } = requireErrors$1();
 	const { kClients, kRunning, kClose, kDestroy, kDispatch, kInterceptors } = requireSymbols$4();
 	const DispatcherBase = requireDispatcherBase();
 	const Pool = requirePool();
 	const Client = requireClient();
-	const util = requireUtil$6();
+	const util = requireUtil$7();
 	const createRedirectInterceptor = requireRedirectInterceptor();
 	const { WeakRef, FinalizationRegistry } = requireDispatcherWeakref()();
 
@@ -11951,9 +11963,9 @@ function requireReadable () {
 
 	const assert = require$$0$3;
 	const { Readable } = require$$0$5;
-	const { RequestAbortedError, NotSupportedError, InvalidArgumentError } = requireErrors();
-	const util = requireUtil$6();
-	const { ReadableStreamFrom, toUSVString } = requireUtil$6();
+	const { RequestAbortedError, NotSupportedError, InvalidArgumentError } = requireErrors$1();
+	const util = requireUtil$7();
+	const { ReadableStreamFrom, toUSVString } = requireUtil$7();
 
 	let Blob;
 
@@ -12270,17 +12282,17 @@ function requireReadable () {
 	return readable;
 }
 
-var util$4;
-var hasRequiredUtil$4;
+var util$5;
+var hasRequiredUtil$5;
 
-function requireUtil$4 () {
-	if (hasRequiredUtil$4) return util$4;
-	hasRequiredUtil$4 = 1;
+function requireUtil$5 () {
+	if (hasRequiredUtil$5) return util$5;
+	hasRequiredUtil$5 = 1;
 	const assert = require$$0$3;
 	const {
 	  ResponseStatusCodeError
-	} = requireErrors();
-	const { toUSVString } = requireUtil$6();
+	} = requireErrors$1();
+	const { toUSVString } = requireUtil$7();
 
 	async function getResolveErrorBodyCallback ({ callback, body, contentType, statusCode, statusMessage, headers }) {
 	  assert(body);
@@ -12321,8 +12333,8 @@ function requireUtil$4 () {
 	  process.nextTick(callback, new ResponseStatusCodeError(`Response status code ${statusCode}${statusMessage ? `: ${statusMessage}` : ''}`, statusCode, headers));
 	}
 
-	util$4 = { getResolveErrorBodyCallback };
-	return util$4;
+	util$5 = { getResolveErrorBodyCallback };
+	return util$5;
 }
 
 var abortSignal;
@@ -12331,8 +12343,8 @@ var hasRequiredAbortSignal;
 function requireAbortSignal () {
 	if (hasRequiredAbortSignal) return abortSignal;
 	hasRequiredAbortSignal = 1;
-	const { addAbortListener } = requireUtil$6();
-	const { RequestAbortedError } = requireErrors();
+	const { addAbortListener } = requireUtil$7();
+	const { RequestAbortedError } = requireErrors$1();
 
 	const kListener = Symbol('kListener');
 	const kSignal = Symbol('kSignal');
@@ -12398,9 +12410,9 @@ function requireApiRequest () {
 	const {
 	  InvalidArgumentError,
 	  RequestAbortedError
-	} = requireErrors();
-	const util = requireUtil$6();
-	const { getResolveErrorBodyCallback } = requireUtil$4();
+	} = requireErrors$1();
+	const util = requireUtil$7();
+	const { getResolveErrorBodyCallback } = requireUtil$5();
 	const { AsyncResource } = require$$4$1;
 	const { addSignal, removeSignal } = requireAbortSignal();
 
@@ -12587,9 +12599,9 @@ function requireApiStream () {
 	  InvalidArgumentError,
 	  InvalidReturnValueError,
 	  RequestAbortedError
-	} = requireErrors();
-	const util = requireUtil$6();
-	const { getResolveErrorBodyCallback } = requireUtil$4();
+	} = requireErrors$1();
+	const util = requireUtil$7();
+	const { getResolveErrorBodyCallback } = requireUtil$5();
 	const { AsyncResource } = require$$4$1;
 	const { addSignal, removeSignal } = requireAbortSignal();
 
@@ -12819,8 +12831,8 @@ function requireApiPipeline () {
 	  InvalidArgumentError,
 	  InvalidReturnValueError,
 	  RequestAbortedError
-	} = requireErrors();
-	const util = requireUtil$6();
+	} = requireErrors$1();
+	const util = requireUtil$7();
 	const { AsyncResource } = require$$4$1;
 	const { addSignal, removeSignal } = requireAbortSignal();
 	const assert = require$$0$3;
@@ -13067,9 +13079,9 @@ function requireApiUpgrade () {
 	if (hasRequiredApiUpgrade) return apiUpgrade;
 	hasRequiredApiUpgrade = 1;
 
-	const { InvalidArgumentError, RequestAbortedError, SocketError } = requireErrors();
+	const { InvalidArgumentError, RequestAbortedError, SocketError } = requireErrors$1();
 	const { AsyncResource } = require$$4$1;
-	const util = requireUtil$6();
+	const util = requireUtil$7();
 	const { addSignal, removeSignal } = requireAbortSignal();
 	const assert = require$$0$3;
 
@@ -13181,8 +13193,8 @@ function requireApiConnect () {
 	hasRequiredApiConnect = 1;
 
 	const { AsyncResource } = require$$4$1;
-	const { InvalidArgumentError, RequestAbortedError, SocketError } = requireErrors();
-	const util = requireUtil$6();
+	const { InvalidArgumentError, RequestAbortedError, SocketError } = requireErrors$1();
+	const util = requireUtil$7();
 	const { addSignal, removeSignal } = requireAbortSignal();
 
 	class ConnectHandler extends AsyncResource {
@@ -13306,7 +13318,7 @@ function requireMockErrors () {
 	if (hasRequiredMockErrors) return mockErrors;
 	hasRequiredMockErrors = 1;
 
-	const { UndiciError } = requireErrors();
+	const { UndiciError } = requireErrors$1();
 
 	class MockNotMatchedError extends UndiciError {
 	  constructor (message) {
@@ -13370,7 +13382,7 @@ function requireMockUtils () {
 	  kOrigin,
 	  kGetNetConnect
 	} = requireMockSymbols();
-	const { buildURL, nop } = requireUtil$6();
+	const { buildURL, nop } = requireUtil$7();
 	const { STATUS_CODES } = require$$2;
 	const {
 	  types: {
@@ -13731,8 +13743,8 @@ function requireMockInterceptor () {
 	  kContentLength,
 	  kMockDispatch
 	} = requireMockSymbols();
-	const { InvalidArgumentError } = requireErrors();
-	const { buildURL } = requireUtil$6();
+	const { InvalidArgumentError } = requireErrors$1();
+	const { buildURL } = requireUtil$7();
 
 	/**
 	 * Defines the scope API for an interceptor reply
@@ -13950,7 +13962,7 @@ function requireMockClient () {
 	} = requireMockSymbols();
 	const { MockInterceptor } = requireMockInterceptor();
 	const Symbols = requireSymbols$4();
-	const { InvalidArgumentError } = requireErrors();
+	const { InvalidArgumentError } = requireErrors$1();
 
 	/**
 	 * MockClient provides an API that extends the Client to influence the mockDispatches.
@@ -14017,7 +14029,7 @@ function requireMockPool () {
 	} = requireMockSymbols();
 	const { MockInterceptor } = requireMockInterceptor();
 	const Symbols = requireSymbols$4();
-	const { InvalidArgumentError } = requireErrors();
+	const { InvalidArgumentError } = requireErrors$1();
 
 	/**
 	 * MockPool provides an API that extends the Pool to influence the mockDispatches.
@@ -14171,7 +14183,7 @@ function requireMockAgent () {
 	const MockClient = requireMockClient();
 	const MockPool = requireMockPool();
 	const { matchValue, buildMockOptions } = requireMockUtils();
-	const { InvalidArgumentError, UndiciError } = requireErrors();
+	const { InvalidArgumentError, UndiciError } = requireErrors$1();
 	const Dispatcher = requireDispatcher();
 	const Pluralizer = requirePluralizer();
 	const PendingInterceptorsFormatter = requirePendingInterceptorsFormatter();
@@ -14339,7 +14351,7 @@ function requireProxyAgent () {
 	const Agent = requireAgent();
 	const Pool = requirePool();
 	const DispatcherBase = requireDispatcherBase();
-	const { InvalidArgumentError, RequestAbortedError } = requireErrors();
+	const { InvalidArgumentError, RequestAbortedError } = requireErrors$1();
 	const buildConnector = requireConnect();
 
 	const kAgent = Symbol('proxy agent');
@@ -14533,8 +14545,8 @@ function requireRetryHandler () {
 	const assert = require$$0$3;
 
 	const { kRetryHandlerDefaultRetry } = requireSymbols$4();
-	const { RequestRetryError } = requireErrors();
-	const { isDisturbed, parseHeaders, parseRangeHeader } = requireUtil$6();
+	const { RequestRetryError } = requireErrors$1();
+	const { isDisturbed, parseHeaders, parseRangeHeader } = requireUtil$7();
 
 	function calculateRetryAfterHeader (retryAfter) {
 	  const current = Date.now();
@@ -14879,7 +14891,7 @@ function requireGlobal () {
 	// We include a version number for the Dispatcher API. In case of breaking changes,
 	// this version number must be increased to avoid conflicts.
 	const globalDispatcher = Symbol.for('undici.globalDispatcher.1');
-	const { InvalidArgumentError } = requireErrors();
+	const { InvalidArgumentError } = requireErrors$1();
 	const Agent = requireAgent();
 
 	if (getGlobalDispatcher() === undefined) {
@@ -14952,21 +14964,21 @@ function requireDecoratorHandler () {
 	return DecoratorHandler_1;
 }
 
-var headers;
-var hasRequiredHeaders;
+var headers$1;
+var hasRequiredHeaders$1;
 
-function requireHeaders () {
-	if (hasRequiredHeaders) return headers;
-	hasRequiredHeaders = 1;
+function requireHeaders$1 () {
+	if (hasRequiredHeaders$1) return headers$1;
+	hasRequiredHeaders$1 = 1;
 
 	const { kHeadersList, kConstruct } = requireSymbols$4();
 	const { kGuard } = requireSymbols$3();
-	const { kEnumerableProperty } = requireUtil$6();
+	const { kEnumerableProperty } = requireUtil$7();
 	const {
 	  makeIterator,
 	  isValidHeaderName,
 	  isValidHeaderValue
-	} = requireUtil$5();
+	} = requireUtil$6();
 	const util = require$$0$2;
 	const { webidl } = requireWebidl();
 	const assert = require$$0$3;
@@ -15536,12 +15548,12 @@ function requireHeaders () {
 	  })
 	};
 
-	headers = {
+	headers$1 = {
 	  fill,
 	  Headers,
 	  HeadersList
 	};
-	return headers;
+	return headers$1;
 }
 
 var response;
@@ -15551,9 +15563,9 @@ function requireResponse () {
 	if (hasRequiredResponse) return response;
 	hasRequiredResponse = 1;
 
-	const { Headers, HeadersList, fill } = requireHeaders();
+	const { Headers, HeadersList, fill } = requireHeaders$1();
 	const { extractBody, cloneBody, mixinBody } = requireBody();
-	const util = requireUtil$6();
+	const util = requireUtil$7();
 	const { kEnumerableProperty } = util;
 	const {
 	  isValidReasonPhrase,
@@ -15563,12 +15575,12 @@ function requireResponse () {
 	  serializeJavascriptValueToJSONString,
 	  isErrorLike,
 	  isomorphicEncode
-	} = requireUtil$5();
+	} = requireUtil$6();
 	const {
 	  redirectStatusSet,
 	  nullBodyStatus,
 	  DOMException
-	} = requireConstants$3();
+	} = requireConstants$4();
 	const { kState, kHeaders, kGuard, kRealm } = requireSymbols$3();
 	const { webidl } = requireWebidl();
 	const { FormData } = requireFormdata();
@@ -16133,16 +16145,16 @@ function requireRequest () {
 	hasRequiredRequest = 1;
 
 	const { extractBody, mixinBody, cloneBody } = requireBody();
-	const { Headers, fill: fillHeaders, HeadersList } = requireHeaders();
+	const { Headers, fill: fillHeaders, HeadersList } = requireHeaders$1();
 	const { FinalizationRegistry } = requireDispatcherWeakref()();
-	const util = requireUtil$6();
+	const util = requireUtil$7();
 	const {
 	  isValidHTTPToken,
 	  sameOrigin,
 	  normalizeMethod,
 	  makePolicyContainer,
 	  normalizeMethodRecord
-	} = requireUtil$5();
+	} = requireUtil$6();
 	const {
 	  forbiddenMethodsSet,
 	  corsSafeListedMethodsSet,
@@ -16152,7 +16164,7 @@ function requireRequest () {
 	  requestCredentials,
 	  requestCache,
 	  requestDuplex
-	} = requireConstants$3();
+	} = requireConstants$4();
 	const { kEnumerableProperty } = util;
 	const { kHeaders, kSignal, kState, kGuard, kRealm } = requireSymbols$3();
 	const { webidl } = requireWebidl();
@@ -17091,9 +17103,9 @@ function requireFetch () {
 	  filterResponse,
 	  makeResponse
 	} = requireResponse();
-	const { Headers } = requireHeaders();
+	const { Headers } = requireHeaders$1();
 	const { Request, makeRequest } = requireRequest();
-	const zlib = require$$3$1;
+	const zlib = require$$0$9;
 	const {
 	  bytesMatch,
 	  makePolicyContainer,
@@ -17123,7 +17135,7 @@ function requireFetch () {
 	  urlIsLocal,
 	  urlIsHttpHttpsScheme,
 	  urlHasHttpsScheme
-	} = requireUtil$5();
+	} = requireUtil$6();
 	const { kState, kHeaders, kGuard, kRealm } = requireSymbols$3();
 	const assert = require$$0$3;
 	const { safelyExtractBody } = requireBody();
@@ -17134,11 +17146,11 @@ function requireFetch () {
 	  requestBodyHeader,
 	  subresourceSet,
 	  DOMException
-	} = requireConstants$3();
+	} = requireConstants$4();
 	const { kHeadersList } = requireSymbols$4();
 	const EE = require$$4;
 	const { Readable, pipeline } = require$$0$5;
-	const { addAbortListener, isErrored, isReadable, nodeMajor, nodeMinor } = requireUtil$6();
+	const { addAbortListener, isErrored, isReadable, nodeMajor, nodeMinor } = requireUtil$7();
 	const { dataURLProcessor, serializeAMimeType } = requireDataURL();
 	const { TransformStream } = require$$14;
 	const { getGlobalDispatcher } = requireGlobal();
@@ -19559,12 +19571,12 @@ function requireEncoding () {
 	return encoding;
 }
 
-var util$3;
-var hasRequiredUtil$3;
+var util$4;
+var hasRequiredUtil$4;
 
-function requireUtil$3 () {
-	if (hasRequiredUtil$3) return util$3;
-	hasRequiredUtil$3 = 1;
+function requireUtil$4 () {
+	if (hasRequiredUtil$4) return util$4;
+	hasRequiredUtil$4 = 1;
 
 	const {
 	  kState,
@@ -19575,7 +19587,7 @@ function requireUtil$3 () {
 	} = requireSymbols$2();
 	const { ProgressEvent } = requireProgressevent();
 	const { getEncoding } = requireEncoding();
-	const { DOMException } = requireConstants$3();
+	const { DOMException } = requireConstants$4();
 	const { serializeAMimeType, parseMIMEType } = requireDataURL();
 	const { types } = require$$0$2;
 	const { StringDecoder } = require$$6;
@@ -19951,12 +19963,12 @@ function requireUtil$3 () {
 	  }, new Uint8Array(size))
 	}
 
-	util$3 = {
+	util$4 = {
 	  staticPropertyDescriptors,
 	  readOperation,
 	  fireAProgressEvent
 	};
-	return util$3;
+	return util$4;
 }
 
 var filereader;
@@ -19970,7 +19982,7 @@ function requireFilereader () {
 	  staticPropertyDescriptors,
 	  readOperation,
 	  fireAProgressEvent
-	} = requireUtil$3();
+	} = requireUtil$4();
 	const {
 	  kState,
 	  kError,
@@ -19979,7 +19991,7 @@ function requireFilereader () {
 	  kAborted
 	} = requireSymbols$2();
 	const { webidl } = requireWebidl();
-	const { kEnumerableProperty } = requireUtil$6();
+	const { kEnumerableProperty } = requireUtil$7();
 
 	class FileReader extends EventTarget {
 	  constructor () {
@@ -20324,16 +20336,16 @@ function requireSymbols$1 () {
 	return symbols$1;
 }
 
-var util$2;
-var hasRequiredUtil$2;
+var util$3;
+var hasRequiredUtil$3;
 
-function requireUtil$2 () {
-	if (hasRequiredUtil$2) return util$2;
-	hasRequiredUtil$2 = 1;
+function requireUtil$3 () {
+	if (hasRequiredUtil$3) return util$3;
+	hasRequiredUtil$3 = 1;
 
 	const assert = require$$0$3;
 	const { URLSerializer } = requireDataURL();
-	const { isValidHeaderName } = requireUtil$5();
+	const { isValidHeaderName } = requireUtil$6();
 
 	/**
 	 * @see https://url.spec.whatwg.org/#concept-url-equals
@@ -20374,11 +20386,11 @@ function requireUtil$2 () {
 	  return values
 	}
 
-	util$2 = {
+	util$3 = {
 	  urlEquals,
 	  fieldValues
 	};
-	return util$2;
+	return util$3;
 }
 
 var cache;
@@ -20389,15 +20401,15 @@ function requireCache () {
 	hasRequiredCache = 1;
 
 	const { kConstruct } = requireSymbols$1();
-	const { urlEquals, fieldValues: getFieldValues } = requireUtil$2();
-	const { kEnumerableProperty, isDisturbed } = requireUtil$6();
+	const { urlEquals, fieldValues: getFieldValues } = requireUtil$3();
+	const { kEnumerableProperty, isDisturbed } = requireUtil$7();
 	const { kHeadersList } = requireSymbols$4();
 	const { webidl } = requireWebidl();
 	const { Response, cloneResponse } = requireResponse();
 	const { Request } = requireRequest();
 	const { kState, kHeaders, kGuard, kRealm } = requireSymbols$3();
 	const { fetching } = requireFetch();
-	const { urlIsHttpHttpsScheme, createDeferredPromise, readAllBytes } = requireUtil$5();
+	const { urlIsHttpHttpsScheme, createDeferredPromise, readAllBytes } = requireUtil$6();
 	const assert = require$$0$3;
 	const { getGlobalDispatcher } = requireGlobal();
 
@@ -21237,7 +21249,7 @@ function requireCachestorage () {
 	const { kConstruct } = requireSymbols$1();
 	const { Cache } = requireCache();
 	const { webidl } = requireWebidl();
-	const { kEnumerableProperty } = requireUtil$6();
+	const { kEnumerableProperty } = requireUtil$7();
 
 	class CacheStorage {
 	  /**
@@ -21379,12 +21391,12 @@ function requireCachestorage () {
 	return cachestorage;
 }
 
-var constants$1;
-var hasRequiredConstants$1;
+var constants$2;
+var hasRequiredConstants$2;
 
-function requireConstants$1 () {
-	if (hasRequiredConstants$1) return constants$1;
-	hasRequiredConstants$1 = 1;
+function requireConstants$2 () {
+	if (hasRequiredConstants$2) return constants$2;
+	hasRequiredConstants$2 = 1;
 
 	// https://wicg.github.io/cookie-store/#cookie-maximum-attribute-value-size
 	const maxAttributeValueSize = 1024;
@@ -21392,19 +21404,19 @@ function requireConstants$1 () {
 	// https://wicg.github.io/cookie-store/#cookie-maximum-name-value-pair-size
 	const maxNameValuePairSize = 4096;
 
-	constants$1 = {
+	constants$2 = {
 	  maxAttributeValueSize,
 	  maxNameValuePairSize
 	};
-	return constants$1;
+	return constants$2;
 }
 
-var util$1;
-var hasRequiredUtil$1;
+var util$2;
+var hasRequiredUtil$2;
 
-function requireUtil$1 () {
-	if (hasRequiredUtil$1) return util$1;
-	hasRequiredUtil$1 = 1;
+function requireUtil$2 () {
+	if (hasRequiredUtil$2) return util$2;
+	hasRequiredUtil$2 = 1;
 
 	/**
 	 * @param {string} value
@@ -21670,7 +21682,7 @@ function requireUtil$1 () {
 	  return out.join('; ')
 	}
 
-	util$1 = {
+	util$2 = {
 	  isCTLExcludingHtab,
 	  validateCookieName,
 	  validateCookiePath,
@@ -21678,7 +21690,7 @@ function requireUtil$1 () {
 	  toIMFDate,
 	  stringify
 	};
-	return util$1;
+	return util$2;
 }
 
 var parse;
@@ -21688,8 +21700,8 @@ function requireParse () {
 	if (hasRequiredParse) return parse;
 	hasRequiredParse = 1;
 
-	const { maxNameValuePairSize, maxAttributeValueSize } = requireConstants$1();
-	const { isCTLExcludingHtab } = requireUtil$1();
+	const { maxNameValuePairSize, maxAttributeValueSize } = requireConstants$2();
+	const { isCTLExcludingHtab } = requireUtil$2();
 	const { collectASequenceOfCodePointsFast } = requireDataURL();
 	const assert = require$$0$3;
 
@@ -22014,9 +22026,9 @@ function requireCookies () {
 	hasRequiredCookies = 1;
 
 	const { parseSetCookie } = requireParse();
-	const { stringify } = requireUtil$1();
+	const { stringify } = requireUtil$2();
 	const { webidl } = requireWebidl();
-	const { Headers } = requireHeaders();
+	const { Headers } = requireHeaders$1();
 
 	/**
 	 * @typedef {Object} Cookie
@@ -22197,12 +22209,12 @@ function requireCookies () {
 	return cookies;
 }
 
-var constants;
-var hasRequiredConstants;
+var constants$1;
+var hasRequiredConstants$1;
 
-function requireConstants () {
-	if (hasRequiredConstants) return constants;
-	hasRequiredConstants = 1;
+function requireConstants$1 () {
+	if (hasRequiredConstants$1) return constants$1;
+	hasRequiredConstants$1 = 1;
 
 	// This is a Globally Unique Identifier unique used
 	// to validate that the endpoint accepts websocket
@@ -22244,7 +22256,7 @@ function requireConstants () {
 
 	const emptyBuffer = Buffer.allocUnsafe(0);
 
-	constants = {
+	constants$1 = {
 	  uid,
 	  staticPropertyDescriptors,
 	  states,
@@ -22253,7 +22265,7 @@ function requireConstants () {
 	  parserStates,
 	  emptyBuffer
 	};
-	return constants;
+	return constants$1;
 }
 
 var symbols;
@@ -22284,7 +22296,7 @@ function requireEvents () {
 	hasRequiredEvents = 1;
 
 	const { webidl } = requireWebidl();
-	const { kEnumerableProperty } = requireUtil$6();
+	const { kEnumerableProperty } = requireUtil$7();
 	const { MessagePort } = require$$0$8;
 
 	/**
@@ -22587,15 +22599,15 @@ function requireEvents () {
 	return events;
 }
 
-var util;
-var hasRequiredUtil;
+var util$1;
+var hasRequiredUtil$1;
 
-function requireUtil () {
-	if (hasRequiredUtil) return util;
-	hasRequiredUtil = 1;
+function requireUtil$1 () {
+	if (hasRequiredUtil$1) return util$1;
+	hasRequiredUtil$1 = 1;
 
 	const { kReadyState, kController, kResponse, kBinaryType, kWebSocketURL } = requireSymbols();
-	const { states, opcodes } = requireConstants();
+	const { states, opcodes } = requireConstants$1();
 	const { MessageEvent, ErrorEvent } = requireEvents();
 
 	/* globals Blob */
@@ -22782,7 +22794,7 @@ function requireUtil () {
 	  }
 	}
 
-	util = {
+	util$1 = {
 	  isEstablished,
 	  isClosing,
 	  isClosed,
@@ -22792,7 +22804,7 @@ function requireUtil () {
 	  failWebsocketConnection,
 	  websocketMessageReceived
 	};
-	return util;
+	return util$1;
 }
 
 var connection;
@@ -22802,19 +22814,19 @@ function requireConnection () {
 	if (hasRequiredConnection) return connection;
 	hasRequiredConnection = 1;
 
-	const diagnosticsChannel = require$$0$9;
-	const { uid, states } = requireConstants();
+	const diagnosticsChannel = require$$0$a;
+	const { uid, states } = requireConstants$1();
 	const {
 	  kReadyState,
 	  kSentClose,
 	  kByteParser,
 	  kReceivedClose
 	} = requireSymbols();
-	const { fireEvent, failWebsocketConnection } = requireUtil();
+	const { fireEvent, failWebsocketConnection } = requireUtil$1();
 	const { CloseEvent } = requireEvents();
 	const { makeRequest } = requireRequest();
 	const { fetching } = requireFetch();
-	const { Headers } = requireHeaders();
+	const { Headers } = requireHeaders$1();
 	const { getGlobalDispatcher } = requireGlobal();
 	const { kHeadersList } = requireSymbols$4();
 
@@ -23101,7 +23113,7 @@ function requireFrame () {
 	if (hasRequiredFrame) return frame;
 	hasRequiredFrame = 1;
 
-	const { maxUnsigned16Bit } = requireConstants();
+	const { maxUnsigned16Bit } = requireConstants$1();
 
 	/** @type {import('crypto')} */
 	let crypto;
@@ -23183,10 +23195,10 @@ function requireReceiver () {
 	hasRequiredReceiver = 1;
 
 	const { Writable } = require$$0$5;
-	const diagnosticsChannel = require$$0$9;
-	const { parserStates, opcodes, states, emptyBuffer } = requireConstants();
+	const diagnosticsChannel = require$$0$a;
+	const { parserStates, opcodes, states, emptyBuffer } = requireConstants$1();
 	const { kReadyState, kSentClose, kResponse, kReceivedClose } = requireSymbols();
-	const { isValidStatusCode, failWebsocketConnection, websocketMessageReceived } = requireUtil();
+	const { isValidStatusCode, failWebsocketConnection, websocketMessageReceived } = requireUtil$1();
 	const { WebsocketFrameSend } = requireFrame();
 
 	// This code was influenced by ws released under the MIT license.
@@ -23535,10 +23547,10 @@ function requireWebsocket () {
 	hasRequiredWebsocket = 1;
 
 	const { webidl } = requireWebidl();
-	const { DOMException } = requireConstants$3();
+	const { DOMException } = requireConstants$4();
 	const { URLSerializer } = requireDataURL();
 	const { getGlobalOrigin } = requireGlobal$1();
-	const { staticPropertyDescriptors, states, opcodes, emptyBuffer } = requireConstants();
+	const { staticPropertyDescriptors, states, opcodes, emptyBuffer } = requireConstants$1();
 	const {
 	  kWebSocketURL,
 	  kReadyState,
@@ -23548,11 +23560,11 @@ function requireWebsocket () {
 	  kSentClose,
 	  kByteParser
 	} = requireSymbols();
-	const { isEstablished, isClosing, isValidSubprotocol, failWebsocketConnection, fireEvent } = requireUtil();
+	const { isEstablished, isClosing, isValidSubprotocol, failWebsocketConnection, fireEvent } = requireUtil$1();
 	const { establishWebSocketConnection } = requireConnection();
 	const { WebsocketFrameSend } = requireFrame();
 	const { ByteParser } = requireReceiver();
-	const { kEnumerableProperty, isBlobLike } = requireUtil$6();
+	const { kEnumerableProperty, isBlobLike } = requireUtil$7();
 	const { getGlobalDispatcher } = requireGlobal();
 	const { types } = require$$0$2;
 
@@ -24181,11 +24193,11 @@ function requireUndici () {
 
 	const Client = requireClient();
 	const Dispatcher = requireDispatcher();
-	const errors = requireErrors();
+	const errors = requireErrors$1();
 	const Pool = requirePool();
 	const BalancedPool = requireBalancedPool();
 	const Agent = requireAgent();
-	const util = requireUtil$6();
+	const util = requireUtil$7();
 	const { InvalidArgumentError } = errors;
 	const api = requireApi();
 	const buildConnector = requireConnect();
@@ -24294,7 +24306,7 @@ function requireUndici () {
 	      throw err
 	    }
 	  };
-	  undici.Headers = requireHeaders().Headers;
+	  undici.Headers = requireHeaders$1().Headers;
 	  undici.Response = requireResponse().Response;
 	  undici.Request = requireRequest().Request;
 	  undici.FormData = requireFormdata().FormData;
@@ -26933,7 +26945,7 @@ function requireCore () {
 		exports.platform = exports.toPlatformPath = exports.toWin32Path = exports.toPosixPath = exports.markdownSummary = exports.summary = exports.getIDToken = exports.getState = exports.saveState = exports.group = exports.endGroup = exports.startGroup = exports.info = exports.notice = exports.warning = exports.error = exports.debug = exports.isDebug = exports.setFailed = exports.setCommandEcho = exports.setOutput = exports.getBooleanInput = exports.getMultilineInput = exports.getInput = exports.addPath = exports.setSecret = exports.exportVariable = exports.ExitCode = void 0;
 		const command_1 = requireCommand();
 		const file_command_1 = requireFileCommand();
-		const utils_1 = requireUtils$1();
+		const utils_1 = requireUtils$2();
 		const os = __importStar(require$$0);
 		const path = __importStar(require$$1$5);
 		const oidc_utils_1 = requireOidcUtils();
@@ -27246,18 +27258,9811 @@ function requireCore () {
 
 var coreExports = requireCore();
 
+var util = {exports: {}};
+
+var constants;
+var hasRequiredConstants;
+
+function requireConstants () {
+	if (hasRequiredConstants) return constants;
+	hasRequiredConstants = 1;
+	constants = {
+	    /* The local file header */
+	    LOCHDR           : 30, // LOC header size
+	    LOCSIG           : 0x04034b50, // "PK\003\004"
+	    LOCVER           : 4,	// version needed to extract
+	    LOCFLG           : 6, // general purpose bit flag
+	    LOCHOW           : 8, // compression method
+	    LOCTIM           : 10, // modification time (2 bytes time, 2 bytes date)
+	    LOCCRC           : 14, // uncompressed file crc-32 value
+	    LOCSIZ           : 18, // compressed size
+	    LOCLEN           : 22, // uncompressed size
+	    LOCNAM           : 26, // filename length
+	    LOCEXT           : 28, // extra field length
+
+	    /* The Data descriptor */
+	    EXTSIG           : 0x08074b50, // "PK\007\008"
+	    EXTHDR           : 16, // EXT header size
+	    EXTCRC           : 4, // uncompressed file crc-32 value
+	    EXTSIZ           : 8, // compressed size
+	    EXTLEN           : 12, // uncompressed size
+
+	    /* The central directory file header */
+	    CENHDR           : 46, // CEN header size
+	    CENSIG           : 0x02014b50, // "PK\001\002"
+	    CENVEM           : 4, // version made by
+	    CENVER           : 6, // version needed to extract
+	    CENFLG           : 8, // encrypt, decrypt flags
+	    CENHOW           : 10, // compression method
+	    CENTIM           : 12, // modification time (2 bytes time, 2 bytes date)
+	    CENCRC           : 16, // uncompressed file crc-32 value
+	    CENSIZ           : 20, // compressed size
+	    CENLEN           : 24, // uncompressed size
+	    CENNAM           : 28, // filename length
+	    CENEXT           : 30, // extra field length
+	    CENCOM           : 32, // file comment length
+	    CENDSK           : 34, // volume number start
+	    CENATT           : 36, // internal file attributes
+	    CENATX           : 38, // external file attributes (host system dependent)
+	    CENOFF           : 42, // LOC header offset
+
+	    /* The entries in the end of central directory */
+	    ENDHDR           : 22, // END header size
+	    ENDSIG           : 0x06054b50, // "PK\005\006"
+	    ENDSUB           : 8, // number of entries on this disk
+	    ENDTOT           : 10, // total number of entries
+	    ENDSIZ           : 12, // central directory size in bytes
+	    ENDOFF           : 16, // offset of first CEN header
+	    ENDCOM           : 20, // zip file comment length
+
+	    END64HDR         : 20, // zip64 END header size
+	    END64SIG         : 0x07064b50, // zip64 Locator signature, "PK\006\007"
+	    END64START       : 4, // number of the disk with the start of the zip64
+	    END64OFF         : 8, // relative offset of the zip64 end of central directory
+	    END64NUMDISKS    : 16, // total number of disks
+
+	    ZIP64SIG         : 0x06064b50, // zip64 signature, "PK\006\006"
+	    ZIP64HDR         : 56, // zip64 record minimum size
+	    ZIP64LEAD        : 12, // leading bytes at the start of the record, not counted by the value stored in ZIP64SIZE
+	    ZIP64SIZE        : 4, // zip64 size of the central directory record
+	    ZIP64VEM         : 12, // zip64 version made by
+	    ZIP64VER         : 14, // zip64 version needed to extract
+	    ZIP64DSK         : 16, // zip64 number of this disk
+	    ZIP64DSKDIR      : 20, // number of the disk with the start of the record directory
+	    ZIP64SUB         : 24, // number of entries on this disk
+	    ZIP64TOT         : 32, // total number of entries
+	    ZIP64SIZB        : 40, // zip64 central directory size in bytes
+	    ZIP64OFF         : 48, // offset of start of central directory with respect to the starting disk number
+	    ZIP64EXTRA       : 56, // extensible data sector
+
+	    /* Compression methods */
+	    STORED           : 0, // no compression
+	    SHRUNK           : 1, // shrunk
+	    REDUCED1         : 2, // reduced with compression factor 1
+	    REDUCED2         : 3, // reduced with compression factor 2
+	    REDUCED3         : 4, // reduced with compression factor 3
+	    REDUCED4         : 5, // reduced with compression factor 4
+	    IMPLODED         : 6, // imploded
+	    // 7 reserved for Tokenizing compression algorithm
+	    DEFLATED         : 8, // deflated
+	    ENHANCED_DEFLATED: 9, // enhanced deflated
+	    PKWARE           : 10,// PKWare DCL imploded
+	    // 11 reserved by PKWARE
+	    BZIP2            : 12, //  compressed using BZIP2
+	    // 13 reserved by PKWARE
+	    LZMA             : 14, // LZMA
+	    // 15-17 reserved by PKWARE
+	    IBM_TERSE        : 18, // compressed using IBM TERSE
+	    IBM_LZ77         : 19, // IBM LZ77 z
+	    AES_ENCRYPT      : 99, // WinZIP AES encryption method
+
+	    /* General purpose bit flag */
+	    // values can obtained with expression 2**bitnr
+	    FLG_ENC          : 1,    // Bit 0: encrypted file
+	    FLG_COMP1        : 2,    // Bit 1, compression option
+	    FLG_COMP2        : 4,    // Bit 2, compression option
+	    FLG_DESC         : 8,    // Bit 3, data descriptor
+	    FLG_ENH          : 16,   // Bit 4, enhanced deflating
+	    FLG_PATCH        : 32,   // Bit 5, indicates that the file is compressed patched data.
+	    FLG_STR          : 64,   // Bit 6, strong encryption (patented)
+	                             // Bits 7-10: Currently unused.
+	    FLG_EFS          : 2048, // Bit 11: Language encoding flag (EFS)
+	                             // Bit 12: Reserved by PKWARE for enhanced compression.
+	                             // Bit 13: encrypted the Central Directory (patented).
+	                             // Bits 14-15: Reserved by PKWARE.
+	    FLG_MSK          : 4096, // mask header values
+
+	    /* Load type */
+	    FILE             : 2,
+	    BUFFER           : 1,
+	    NONE             : 0,
+
+	    /* 4.5 Extensible data fields */
+	    EF_ID            : 0,
+	    EF_SIZE          : 2,
+
+	    /* Header IDs */
+	    ID_ZIP64         : 0x0001,
+	    ID_AVINFO        : 0x0007,
+	    ID_PFS           : 0x0008,
+	    ID_OS2           : 0x0009,
+	    ID_NTFS          : 0x000a,
+	    ID_OPENVMS       : 0x000c,
+	    ID_UNIX          : 0x000d,
+	    ID_FORK          : 0x000e,
+	    ID_PATCH         : 0x000f,
+	    ID_X509_PKCS7    : 0x0014,
+	    ID_X509_CERTID_F : 0x0015,
+	    ID_X509_CERTID_C : 0x0016,
+	    ID_STRONGENC     : 0x0017,
+	    ID_RECORD_MGT    : 0x0018,
+	    ID_X509_PKCS7_RL : 0x0019,
+	    ID_IBM1          : 0x0065,
+	    ID_IBM2          : 0x0066,
+	    ID_POSZIP        : 0x4690,
+
+	    EF_ZIP64_OR_32   : 0xffffffff,
+	    EF_ZIP64_OR_16   : 0xffff,
+	    EF_ZIP64_SUNCOMP : 0,
+	    EF_ZIP64_SCOMP   : 8,
+	    EF_ZIP64_RHO     : 16,
+	    EF_ZIP64_DSN     : 24
+	};
+	return constants;
+}
+
+var errors = {};
+
+var hasRequiredErrors;
+
+function requireErrors () {
+	if (hasRequiredErrors) return errors;
+	hasRequiredErrors = 1;
+	(function (exports) {
+		const errors = {
+		    /* Header error messages */
+		    INVALID_LOC: "Invalid LOC header (bad signature)",
+		    INVALID_CEN: "Invalid CEN header (bad signature)",
+		    INVALID_END: "Invalid END header (bad signature)",
+
+		    /* Descriptor */
+		    DESCRIPTOR_NOT_EXIST: "No descriptor present",
+		    DESCRIPTOR_UNKNOWN: "Unknown descriptor format",
+		    DESCRIPTOR_FAULTY: "Descriptor data is malformed",
+
+		    /* ZipEntry error messages*/
+		    NO_DATA: "Nothing to decompress",
+		    BAD_CRC: "CRC32 checksum failed {0}",
+		    FILE_IN_THE_WAY: "There is a file in the way: {0}",
+		    UNKNOWN_METHOD: "Invalid/unsupported compression method",
+
+		    /* Inflater error messages */
+		    AVAIL_DATA: "inflate::Available inflate data did not terminate",
+		    INVALID_DISTANCE: "inflate::Invalid literal/length or distance code in fixed or dynamic block",
+		    TO_MANY_CODES: "inflate::Dynamic block code description: too many length or distance codes",
+		    INVALID_REPEAT_LEN: "inflate::Dynamic block code description: repeat more than specified lengths",
+		    INVALID_REPEAT_FIRST: "inflate::Dynamic block code description: repeat lengths with no first length",
+		    INCOMPLETE_CODES: "inflate::Dynamic block code description: code lengths codes incomplete",
+		    INVALID_DYN_DISTANCE: "inflate::Dynamic block code description: invalid distance code lengths",
+		    INVALID_CODES_LEN: "inflate::Dynamic block code description: invalid literal/length code lengths",
+		    INVALID_STORE_BLOCK: "inflate::Stored block length did not match one's complement",
+		    INVALID_BLOCK_TYPE: "inflate::Invalid block type (type == 3)",
+
+		    /* ADM-ZIP error messages */
+		    CANT_EXTRACT_FILE: "Could not extract the file",
+		    CANT_OVERRIDE: "Target file already exists",
+		    DISK_ENTRY_TOO_LARGE: "Number of disk entries is too large",
+		    NO_ZIP: "No zip file was loaded",
+		    NO_ENTRY: "Entry doesn't exist",
+		    DIRECTORY_CONTENT_ERROR: "A directory cannot have content",
+		    FILE_NOT_FOUND: 'File not found: "{0}"',
+		    NOT_IMPLEMENTED: "Not implemented",
+		    INVALID_FILENAME: "Invalid filename",
+		    INVALID_FORMAT: "Invalid or unsupported zip format. No END header found",
+		    INVALID_PASS_PARAM: "Incompatible password parameter",
+		    WRONG_PASSWORD: "Wrong Password",
+
+		    /* ADM-ZIP */
+		    COMMENT_TOO_LONG: "Comment is too long", // Comment can be max 65535 bytes long (NOTE: some non-US characters may take more space)
+		    EXTRA_FIELD_PARSE_ERROR: "Extra field parsing error"
+		};
+
+		// template
+		function E(message) {
+		    return function (...args) {
+		        if (args.length) { // Allow {0} .. {9} arguments in error message, based on argument number
+		            message = message.replace(/\{(\d)\}/g, (_, n) => args[n] || '');
+		        }
+
+		        return new Error('ADM-ZIP: ' + message);
+		    };
+		}
+
+		// Init errors with template
+		for (const msg of Object.keys(errors)) {
+		    exports[msg] = E(errors[msg]);
+		} 
+	} (errors));
+	return errors;
+}
+
+var utils;
+var hasRequiredUtils;
+
+function requireUtils () {
+	if (hasRequiredUtils) return utils;
+	hasRequiredUtils = 1;
+	const fsystem = require$$1;
+	const pth = require$$1$5;
+	const Constants = requireConstants();
+	const Errors = requireErrors();
+	const isWin = typeof process === "object" && "win32" === process.platform;
+
+	const is_Obj = (obj) => typeof obj === "object" && obj !== null;
+
+	// generate CRC32 lookup table
+	const crcTable = new Uint32Array(256).map((t, c) => {
+	    for (let k = 0; k < 8; k++) {
+	        if ((c & 1) !== 0) {
+	            c = 0xedb88320 ^ (c >>> 1);
+	        } else {
+	            c >>>= 1;
+	        }
+	    }
+	    return c >>> 0;
+	});
+
+	// UTILS functions
+
+	function Utils(opts) {
+	    this.sep = pth.sep;
+	    this.fs = fsystem;
+
+	    if (is_Obj(opts)) {
+	        // custom filesystem
+	        if (is_Obj(opts.fs) && typeof opts.fs.statSync === "function") {
+	            this.fs = opts.fs;
+	        }
+	    }
+	}
+
+	utils = Utils;
+
+	// INSTANTIABLE functions
+
+	Utils.prototype.makeDir = function (/*String*/ folder) {
+	    const self = this;
+
+	    // Sync - make directories tree
+	    function mkdirSync(/*String*/ fpath) {
+	        let resolvedPath = fpath.split(self.sep)[0];
+	        fpath.split(self.sep).forEach(function (name) {
+	            if (!name || name.substr(-1, 1) === ":") return;
+	            resolvedPath += self.sep + name;
+	            var stat;
+	            try {
+	                stat = self.fs.statSync(resolvedPath);
+	            } catch (e) {
+	                self.fs.mkdirSync(resolvedPath);
+	            }
+	            if (stat && stat.isFile()) throw Errors.FILE_IN_THE_WAY(`"${resolvedPath}"`);
+	        });
+	    }
+
+	    mkdirSync(folder);
+	};
+
+	Utils.prototype.writeFileTo = function (/*String*/ path, /*Buffer*/ content, /*Boolean*/ overwrite, /*Number*/ attr) {
+	    const self = this;
+	    if (self.fs.existsSync(path)) {
+	        if (!overwrite) return false; // cannot overwrite
+
+	        var stat = self.fs.statSync(path);
+	        if (stat.isDirectory()) {
+	            return false;
+	        }
+	    }
+	    var folder = pth.dirname(path);
+	    if (!self.fs.existsSync(folder)) {
+	        self.makeDir(folder);
+	    }
+
+	    var fd;
+	    try {
+	        fd = self.fs.openSync(path, "w", 0o666); // 0666
+	    } catch (e) {
+	        self.fs.chmodSync(path, 0o666);
+	        fd = self.fs.openSync(path, "w", 0o666);
+	    }
+	    if (fd) {
+	        try {
+	            self.fs.writeSync(fd, content, 0, content.length, 0);
+	        } finally {
+	            self.fs.closeSync(fd);
+	        }
+	    }
+	    self.fs.chmodSync(path, attr || 0o666);
+	    return true;
+	};
+
+	Utils.prototype.writeFileToAsync = function (/*String*/ path, /*Buffer*/ content, /*Boolean*/ overwrite, /*Number*/ attr, /*Function*/ callback) {
+	    if (typeof attr === "function") {
+	        callback = attr;
+	        attr = undefined;
+	    }
+
+	    const self = this;
+
+	    self.fs.exists(path, function (exist) {
+	        if (exist && !overwrite) return callback(false);
+
+	        self.fs.stat(path, function (err, stat) {
+	            if (exist && stat.isDirectory()) {
+	                return callback(false);
+	            }
+
+	            var folder = pth.dirname(path);
+	            self.fs.exists(folder, function (exists) {
+	                if (!exists) self.makeDir(folder);
+
+	                self.fs.open(path, "w", 0o666, function (err, fd) {
+	                    if (err) {
+	                        self.fs.chmod(path, 0o666, function () {
+	                            self.fs.open(path, "w", 0o666, function (err, fd) {
+	                                self.fs.write(fd, content, 0, content.length, 0, function () {
+	                                    self.fs.close(fd, function () {
+	                                        self.fs.chmod(path, attr || 0o666, function () {
+	                                            callback(true);
+	                                        });
+	                                    });
+	                                });
+	                            });
+	                        });
+	                    } else if (fd) {
+	                        self.fs.write(fd, content, 0, content.length, 0, function () {
+	                            self.fs.close(fd, function () {
+	                                self.fs.chmod(path, attr || 0o666, function () {
+	                                    callback(true);
+	                                });
+	                            });
+	                        });
+	                    } else {
+	                        self.fs.chmod(path, attr || 0o666, function () {
+	                            callback(true);
+	                        });
+	                    }
+	                });
+	            });
+	        });
+	    });
+	};
+
+	Utils.prototype.findFiles = function (/*String*/ path) {
+	    const self = this;
+
+	    function findSync(/*String*/ dir, /*RegExp*/ pattern, /*Boolean*/ recursive) {
+	        let files = [];
+	        self.fs.readdirSync(dir).forEach(function (file) {
+	            const path = pth.join(dir, file);
+	            const stat = self.fs.statSync(path);
+
+	            {
+	                files.push(pth.normalize(path) + (stat.isDirectory() ? self.sep : ""));
+	            }
+
+	            if (stat.isDirectory() && recursive) files = files.concat(findSync(path, pattern, recursive));
+	        });
+	        return files;
+	    }
+
+	    return findSync(path, undefined, true);
+	};
+
+	/**
+	 * Callback for showing if everything was done.
+	 *
+	 * @callback filelistCallback
+	 * @param {Error} err - Error object
+	 * @param {string[]} list - was request fully completed
+	 */
+
+	/**
+	 *
+	 * @param {string} dir
+	 * @param {filelistCallback} cb
+	 */
+	Utils.prototype.findFilesAsync = function (dir, cb) {
+	    const self = this;
+	    let results = [];
+	    self.fs.readdir(dir, function (err, list) {
+	        if (err) return cb(err);
+	        let list_length = list.length;
+	        if (!list_length) return cb(null, results);
+	        list.forEach(function (file) {
+	            file = pth.join(dir, file);
+	            self.fs.stat(file, function (err, stat) {
+	                if (err) return cb(err);
+	                if (stat) {
+	                    results.push(pth.normalize(file) + (stat.isDirectory() ? self.sep : ""));
+	                    if (stat.isDirectory()) {
+	                        self.findFilesAsync(file, function (err, res) {
+	                            if (err) return cb(err);
+	                            results = results.concat(res);
+	                            if (!--list_length) cb(null, results);
+	                        });
+	                    } else {
+	                        if (!--list_length) cb(null, results);
+	                    }
+	                }
+	            });
+	        });
+	    });
+	};
+
+	Utils.prototype.getAttributes = function () {};
+
+	Utils.prototype.setAttributes = function () {};
+
+	// STATIC functions
+
+	// crc32 single update (it is part of crc32)
+	Utils.crc32update = function (crc, byte) {
+	    return crcTable[(crc ^ byte) & 0xff] ^ (crc >>> 8);
+	};
+
+	Utils.crc32 = function (buf) {
+	    if (typeof buf === "string") {
+	        buf = Buffer.from(buf, "utf8");
+	    }
+
+	    let len = buf.length;
+	    let crc = -1;
+	    for (let off = 0; off < len; ) crc = Utils.crc32update(crc, buf[off++]);
+	    // xor and cast as uint32 number
+	    return ~crc >>> 0;
+	};
+
+	Utils.methodToString = function (/*Number*/ method) {
+	    switch (method) {
+	        case Constants.STORED:
+	            return "STORED (" + method + ")";
+	        case Constants.DEFLATED:
+	            return "DEFLATED (" + method + ")";
+	        default:
+	            return "UNSUPPORTED (" + method + ")";
+	    }
+	};
+
+	/**
+	 * removes ".." style path elements
+	 * @param {string} path - fixable path
+	 * @returns string - fixed filepath
+	 */
+	Utils.canonical = function (/*string*/ path) {
+	    if (!path) return "";
+	    // trick normalize think path is absolute
+	    const safeSuffix = pth.posix.normalize("/" + path.split("\\").join("/"));
+	    return pth.join(".", safeSuffix);
+	};
+
+	/**
+	 * fix file names in achive
+	 * @param {string} path - fixable path
+	 * @returns string - fixed filepath
+	 */
+
+	Utils.zipnamefix = function (path) {
+	    if (!path) return "";
+	    // trick normalize think path is absolute
+	    const safeSuffix = pth.posix.normalize("/" + path.split("\\").join("/"));
+	    return pth.posix.join(".", safeSuffix);
+	};
+
+	/**
+	 *
+	 * @param {Array} arr
+	 * @param {function} callback
+	 * @returns
+	 */
+	Utils.findLast = function (arr, callback) {
+	    if (!Array.isArray(arr)) throw new TypeError("arr is not array");
+
+	    const len = arr.length >>> 0;
+	    for (let i = len - 1; i >= 0; i--) {
+	        if (callback(arr[i], i, arr)) {
+	            return arr[i];
+	        }
+	    }
+	    return void 0;
+	};
+
+	// make abolute paths taking prefix as root folder
+	Utils.sanitize = function (/*string*/ prefix, /*string*/ name) {
+	    prefix = pth.resolve(pth.normalize(prefix));
+	    var parts = name.split("/");
+	    for (var i = 0, l = parts.length; i < l; i++) {
+	        var path = pth.normalize(pth.join(prefix, parts.slice(i, l).join(pth.sep)));
+	        if (path.indexOf(prefix) === 0) {
+	            return path;
+	        }
+	    }
+	    return pth.normalize(pth.join(prefix, pth.basename(name)));
+	};
+
+	// converts buffer, Uint8Array, string types to buffer
+	Utils.toBuffer = function toBuffer(/*buffer, Uint8Array, string*/ input, /* function */ encoder) {
+	    if (Buffer.isBuffer(input)) {
+	        return input;
+	    } else if (input instanceof Uint8Array) {
+	        return Buffer.from(input);
+	    } else {
+	        // expect string all other values are invalid and return empty buffer
+	        return typeof input === "string" ? encoder(input) : Buffer.alloc(0);
+	    }
+	};
+
+	Utils.readBigUInt64LE = function (/*Buffer*/ buffer, /*int*/ index) {
+	    var slice = Buffer.from(buffer.slice(index, index + 8));
+	    slice.swap64();
+
+	    return parseInt(`0x${slice.toString("hex")}`);
+	};
+
+	Utils.fromDOS2Date = function (val) {
+	    return new Date(((val >> 25) & 0x7f) + 1980, Math.max(((val >> 21) & 0x0f) - 1, 0), Math.max((val >> 16) & 0x1f, 1), (val >> 11) & 0x1f, (val >> 5) & 0x3f, (val & 0x1f) << 1);
+	};
+
+	Utils.fromDate2DOS = function (val) {
+	    let date = 0;
+	    let time = 0;
+	    if (val.getFullYear() > 1979) {
+	        date = (((val.getFullYear() - 1980) & 0x7f) << 9) | ((val.getMonth() + 1) << 5) | val.getDate();
+	        time = (val.getHours() << 11) | (val.getMinutes() << 5) | (val.getSeconds() >> 1);
+	    }
+	    return (date << 16) | time;
+	};
+
+	Utils.isWin = isWin; // Do we have windows system
+	Utils.crcTable = crcTable;
+	return utils;
+}
+
+var fattr;
+var hasRequiredFattr;
+
+function requireFattr () {
+	if (hasRequiredFattr) return fattr;
+	hasRequiredFattr = 1;
+	const pth = require$$1$5;
+
+	fattr = function (/*String*/ path, /*Utils object*/ { fs }) {
+	    var _path = path || "",
+	        _obj = newAttr(),
+	        _stat = null;
+
+	    function newAttr() {
+	        return {
+	            directory: false,
+	            readonly: false,
+	            hidden: false,
+	            executable: false,
+	            mtime: 0,
+	            atime: 0
+	        };
+	    }
+
+	    if (_path && fs.existsSync(_path)) {
+	        _stat = fs.statSync(_path);
+	        _obj.directory = _stat.isDirectory();
+	        _obj.mtime = _stat.mtime;
+	        _obj.atime = _stat.atime;
+	        _obj.executable = (0o111 & _stat.mode) !== 0; // file is executable who ever har right not just owner
+	        _obj.readonly = (0o200 & _stat.mode) === 0; // readonly if owner has no write right
+	        _obj.hidden = pth.basename(_path)[0] === ".";
+	    } else {
+	        console.warn("Invalid path: " + _path);
+	    }
+
+	    return {
+	        get directory() {
+	            return _obj.directory;
+	        },
+
+	        get readOnly() {
+	            return _obj.readonly;
+	        },
+
+	        get hidden() {
+	            return _obj.hidden;
+	        },
+
+	        get mtime() {
+	            return _obj.mtime;
+	        },
+
+	        get atime() {
+	            return _obj.atime;
+	        },
+
+	        get executable() {
+	            return _obj.executable;
+	        },
+
+	        decodeAttributes: function () {},
+
+	        encodeAttributes: function () {},
+
+	        toJSON: function () {
+	            return {
+	                path: _path,
+	                isDirectory: _obj.directory,
+	                isReadOnly: _obj.readonly,
+	                isHidden: _obj.hidden,
+	                isExecutable: _obj.executable,
+	                mTime: _obj.mtime,
+	                aTime: _obj.atime
+	            };
+	        },
+
+	        toString: function () {
+	            return JSON.stringify(this.toJSON(), null, "\t");
+	        }
+	    };
+	};
+	return fattr;
+}
+
+var decoder$1;
+var hasRequiredDecoder;
+
+function requireDecoder () {
+	if (hasRequiredDecoder) return decoder$1;
+	hasRequiredDecoder = 1;
+	decoder$1 = {
+	    efs: true,
+	    encode: (data) => Buffer.from(data, "utf8"),
+	    decode: (data) => data.toString("utf8")
+	};
+	return decoder$1;
+}
+
+var hasRequiredUtil;
+
+function requireUtil () {
+	if (hasRequiredUtil) return util.exports;
+	hasRequiredUtil = 1;
+	util.exports = requireUtils();
+	util.exports.Constants = requireConstants();
+	util.exports.Errors = requireErrors();
+	util.exports.FileAttr = requireFattr();
+	util.exports.decoder = requireDecoder();
+	return util.exports;
+}
+
+var headers = {};
+
+var entryHeader;
+var hasRequiredEntryHeader;
+
+function requireEntryHeader () {
+	if (hasRequiredEntryHeader) return entryHeader;
+	hasRequiredEntryHeader = 1;
+	var Utils = requireUtil(),
+	    Constants = Utils.Constants;
+
+	/* The central directory file header */
+	entryHeader = function () {
+	    var _verMade = 20, // v2.0
+	        _version = 10, // v1.0
+	        _flags = 0,
+	        _method = 0,
+	        _time = 0,
+	        _crc = 0,
+	        _compressedSize = 0,
+	        _size = 0,
+	        _fnameLen = 0,
+	        _extraLen = 0,
+	        _comLen = 0,
+	        _diskStart = 0,
+	        _inattr = 0,
+	        _attr = 0,
+	        _offset = 0;
+
+	    _verMade |= Utils.isWin ? 0x0a00 : 0x0300;
+
+	    // Set EFS flag since filename and comment fields are all by default encoded using UTF-8.
+	    // Without it file names may be corrupted for other apps when file names use unicode chars
+	    _flags |= Constants.FLG_EFS;
+
+	    const _localHeader = {
+	        extraLen: 0
+	    };
+
+	    // casting
+	    const uint32 = (val) => Math.max(0, val) >>> 0;
+	    const uint8 = (val) => Math.max(0, val) & 0xff;
+
+	    _time = Utils.fromDate2DOS(new Date());
+
+	    return {
+	        get made() {
+	            return _verMade;
+	        },
+	        set made(val) {
+	            _verMade = val;
+	        },
+
+	        get version() {
+	            return _version;
+	        },
+	        set version(val) {
+	            _version = val;
+	        },
+
+	        get flags() {
+	            return _flags;
+	        },
+	        set flags(val) {
+	            _flags = val;
+	        },
+
+	        get flags_efs() {
+	            return (_flags & Constants.FLG_EFS) > 0;
+	        },
+	        set flags_efs(val) {
+	            if (val) {
+	                _flags |= Constants.FLG_EFS;
+	            } else {
+	                _flags &= ~Constants.FLG_EFS;
+	            }
+	        },
+
+	        get flags_desc() {
+	            return (_flags & Constants.FLG_DESC) > 0;
+	        },
+	        set flags_desc(val) {
+	            if (val) {
+	                _flags |= Constants.FLG_DESC;
+	            } else {
+	                _flags &= ~Constants.FLG_DESC;
+	            }
+	        },
+
+	        get method() {
+	            return _method;
+	        },
+	        set method(val) {
+	            switch (val) {
+	                case Constants.STORED:
+	                    this.version = 10;
+	                case Constants.DEFLATED:
+	                default:
+	                    this.version = 20;
+	            }
+	            _method = val;
+	        },
+
+	        get time() {
+	            return Utils.fromDOS2Date(this.timeval);
+	        },
+	        set time(val) {
+	            this.timeval = Utils.fromDate2DOS(val);
+	        },
+
+	        get timeval() {
+	            return _time;
+	        },
+	        set timeval(val) {
+	            _time = uint32(val);
+	        },
+
+	        get timeHighByte() {
+	            return uint8(_time >>> 8);
+	        },
+	        get crc() {
+	            return _crc;
+	        },
+	        set crc(val) {
+	            _crc = uint32(val);
+	        },
+
+	        get compressedSize() {
+	            return _compressedSize;
+	        },
+	        set compressedSize(val) {
+	            _compressedSize = uint32(val);
+	        },
+
+	        get size() {
+	            return _size;
+	        },
+	        set size(val) {
+	            _size = uint32(val);
+	        },
+
+	        get fileNameLength() {
+	            return _fnameLen;
+	        },
+	        set fileNameLength(val) {
+	            _fnameLen = val;
+	        },
+
+	        get extraLength() {
+	            return _extraLen;
+	        },
+	        set extraLength(val) {
+	            _extraLen = val;
+	        },
+
+	        get extraLocalLength() {
+	            return _localHeader.extraLen;
+	        },
+	        set extraLocalLength(val) {
+	            _localHeader.extraLen = val;
+	        },
+
+	        get commentLength() {
+	            return _comLen;
+	        },
+	        set commentLength(val) {
+	            _comLen = val;
+	        },
+
+	        get diskNumStart() {
+	            return _diskStart;
+	        },
+	        set diskNumStart(val) {
+	            _diskStart = uint32(val);
+	        },
+
+	        get inAttr() {
+	            return _inattr;
+	        },
+	        set inAttr(val) {
+	            _inattr = uint32(val);
+	        },
+
+	        get attr() {
+	            return _attr;
+	        },
+	        set attr(val) {
+	            _attr = uint32(val);
+	        },
+
+	        // get Unix file permissions
+	        get fileAttr() {
+	            return (_attr || 0) >> 16 & 0xfff;
+	        },
+
+	        get offset() {
+	            return _offset;
+	        },
+	        set offset(val) {
+	            _offset = uint32(val);
+	        },
+
+	        get encrypted() {
+	            return (_flags & Constants.FLG_ENC) === Constants.FLG_ENC;
+	        },
+
+	        get centralHeaderSize() {
+	            return Constants.CENHDR + _fnameLen + _extraLen + _comLen;
+	        },
+
+	        get realDataOffset() {
+	            return _offset + Constants.LOCHDR + _localHeader.fnameLen + _localHeader.extraLen;
+	        },
+
+	        get localHeader() {
+	            return _localHeader;
+	        },
+
+	        loadLocalHeaderFromBinary: function (/*Buffer*/ input) {
+	            var data = input.slice(_offset, _offset + Constants.LOCHDR);
+	            // 30 bytes and should start with "PK\003\004"
+	            if (data.readUInt32LE(0) !== Constants.LOCSIG) {
+	                throw Utils.Errors.INVALID_LOC();
+	            }
+
+	            // version needed to extract
+	            _localHeader.version = data.readUInt16LE(Constants.LOCVER);
+	            // general purpose bit flag
+	            _localHeader.flags = data.readUInt16LE(Constants.LOCFLG);
+	            // compression method
+	            _localHeader.method = data.readUInt16LE(Constants.LOCHOW);
+	            // modification time (2 bytes time, 2 bytes date)
+	            _localHeader.time = data.readUInt32LE(Constants.LOCTIM);
+	            // uncompressed file crc-32 valu
+	            _localHeader.crc = data.readUInt32LE(Constants.LOCCRC);
+	            // compressed size
+	            _localHeader.compressedSize = data.readUInt32LE(Constants.LOCSIZ);
+	            // uncompressed size
+	            _localHeader.size = data.readUInt32LE(Constants.LOCLEN);
+	            // filename length
+	            _localHeader.fnameLen = data.readUInt16LE(Constants.LOCNAM);
+	            // extra field length
+	            _localHeader.extraLen = data.readUInt16LE(Constants.LOCEXT);
+
+	            // read extra data
+	            const extraStart = _offset + Constants.LOCHDR + _localHeader.fnameLen;
+	            const extraEnd = extraStart + _localHeader.extraLen;
+	            return input.slice(extraStart, extraEnd);
+	        },
+
+	        loadFromBinary: function (/*Buffer*/ data) {
+	            // data should be 46 bytes and start with "PK 01 02"
+	            if (data.length !== Constants.CENHDR || data.readUInt32LE(0) !== Constants.CENSIG) {
+	                throw Utils.Errors.INVALID_CEN();
+	            }
+	            // version made by
+	            _verMade = data.readUInt16LE(Constants.CENVEM);
+	            // version needed to extract
+	            _version = data.readUInt16LE(Constants.CENVER);
+	            // encrypt, decrypt flags
+	            _flags = data.readUInt16LE(Constants.CENFLG);
+	            // compression method
+	            _method = data.readUInt16LE(Constants.CENHOW);
+	            // modification time (2 bytes time, 2 bytes date)
+	            _time = data.readUInt32LE(Constants.CENTIM);
+	            // uncompressed file crc-32 value
+	            _crc = data.readUInt32LE(Constants.CENCRC);
+	            // compressed size
+	            _compressedSize = data.readUInt32LE(Constants.CENSIZ);
+	            // uncompressed size
+	            _size = data.readUInt32LE(Constants.CENLEN);
+	            // filename length
+	            _fnameLen = data.readUInt16LE(Constants.CENNAM);
+	            // extra field length
+	            _extraLen = data.readUInt16LE(Constants.CENEXT);
+	            // file comment length
+	            _comLen = data.readUInt16LE(Constants.CENCOM);
+	            // volume number start
+	            _diskStart = data.readUInt16LE(Constants.CENDSK);
+	            // internal file attributes
+	            _inattr = data.readUInt16LE(Constants.CENATT);
+	            // external file attributes
+	            _attr = data.readUInt32LE(Constants.CENATX);
+	            // LOC header offset
+	            _offset = data.readUInt32LE(Constants.CENOFF);
+	        },
+
+	        localHeaderToBinary: function () {
+	            // LOC header size (30 bytes)
+	            var data = Buffer.alloc(Constants.LOCHDR);
+	            // "PK\003\004"
+	            data.writeUInt32LE(Constants.LOCSIG, 0);
+	            // version needed to extract
+	            data.writeUInt16LE(_version, Constants.LOCVER);
+	            // general purpose bit flag
+	            data.writeUInt16LE(_flags, Constants.LOCFLG);
+	            // compression method
+	            data.writeUInt16LE(_method, Constants.LOCHOW);
+	            // modification time (2 bytes time, 2 bytes date)
+	            data.writeUInt32LE(_time, Constants.LOCTIM);
+	            // uncompressed file crc-32 value
+	            data.writeUInt32LE(_crc, Constants.LOCCRC);
+	            // compressed size
+	            data.writeUInt32LE(_compressedSize, Constants.LOCSIZ);
+	            // uncompressed size
+	            data.writeUInt32LE(_size, Constants.LOCLEN);
+	            // filename length
+	            data.writeUInt16LE(_fnameLen, Constants.LOCNAM);
+	            // extra field length
+	            data.writeUInt16LE(_localHeader.extraLen, Constants.LOCEXT);
+	            return data;
+	        },
+
+	        centralHeaderToBinary: function () {
+	            // CEN header size (46 bytes)
+	            var data = Buffer.alloc(Constants.CENHDR + _fnameLen + _extraLen + _comLen);
+	            // "PK\001\002"
+	            data.writeUInt32LE(Constants.CENSIG, 0);
+	            // version made by
+	            data.writeUInt16LE(_verMade, Constants.CENVEM);
+	            // version needed to extract
+	            data.writeUInt16LE(_version, Constants.CENVER);
+	            // encrypt, decrypt flags
+	            data.writeUInt16LE(_flags, Constants.CENFLG);
+	            // compression method
+	            data.writeUInt16LE(_method, Constants.CENHOW);
+	            // modification time (2 bytes time, 2 bytes date)
+	            data.writeUInt32LE(_time, Constants.CENTIM);
+	            // uncompressed file crc-32 value
+	            data.writeUInt32LE(_crc, Constants.CENCRC);
+	            // compressed size
+	            data.writeUInt32LE(_compressedSize, Constants.CENSIZ);
+	            // uncompressed size
+	            data.writeUInt32LE(_size, Constants.CENLEN);
+	            // filename length
+	            data.writeUInt16LE(_fnameLen, Constants.CENNAM);
+	            // extra field length
+	            data.writeUInt16LE(_extraLen, Constants.CENEXT);
+	            // file comment length
+	            data.writeUInt16LE(_comLen, Constants.CENCOM);
+	            // volume number start
+	            data.writeUInt16LE(_diskStart, Constants.CENDSK);
+	            // internal file attributes
+	            data.writeUInt16LE(_inattr, Constants.CENATT);
+	            // external file attributes
+	            data.writeUInt32LE(_attr, Constants.CENATX);
+	            // LOC header offset
+	            data.writeUInt32LE(_offset, Constants.CENOFF);
+	            return data;
+	        },
+
+	        toJSON: function () {
+	            const bytes = function (nr) {
+	                return nr + " bytes";
+	            };
+
+	            return {
+	                made: _verMade,
+	                version: _version,
+	                flags: _flags,
+	                method: Utils.methodToString(_method),
+	                time: this.time,
+	                crc: "0x" + _crc.toString(16).toUpperCase(),
+	                compressedSize: bytes(_compressedSize),
+	                size: bytes(_size),
+	                fileNameLength: bytes(_fnameLen),
+	                extraLength: bytes(_extraLen),
+	                commentLength: bytes(_comLen),
+	                diskNumStart: _diskStart,
+	                inAttr: _inattr,
+	                attr: _attr,
+	                offset: _offset,
+	                centralHeaderSize: bytes(Constants.CENHDR + _fnameLen + _extraLen + _comLen)
+	            };
+	        },
+
+	        toString: function () {
+	            return JSON.stringify(this.toJSON(), null, "\t");
+	        }
+	    };
+	};
+	return entryHeader;
+}
+
+var mainHeader;
+var hasRequiredMainHeader;
+
+function requireMainHeader () {
+	if (hasRequiredMainHeader) return mainHeader;
+	hasRequiredMainHeader = 1;
+	var Utils = requireUtil(),
+	    Constants = Utils.Constants;
+
+	/* The entries in the end of central directory */
+	mainHeader = function () {
+	    var _volumeEntries = 0,
+	        _totalEntries = 0,
+	        _size = 0,
+	        _offset = 0,
+	        _commentLength = 0;
+
+	    return {
+	        get diskEntries() {
+	            return _volumeEntries;
+	        },
+	        set diskEntries(/*Number*/ val) {
+	            _volumeEntries = _totalEntries = val;
+	        },
+
+	        get totalEntries() {
+	            return _totalEntries;
+	        },
+	        set totalEntries(/*Number*/ val) {
+	            _totalEntries = _volumeEntries = val;
+	        },
+
+	        get size() {
+	            return _size;
+	        },
+	        set size(/*Number*/ val) {
+	            _size = val;
+	        },
+
+	        get offset() {
+	            return _offset;
+	        },
+	        set offset(/*Number*/ val) {
+	            _offset = val;
+	        },
+
+	        get commentLength() {
+	            return _commentLength;
+	        },
+	        set commentLength(/*Number*/ val) {
+	            _commentLength = val;
+	        },
+
+	        get mainHeaderSize() {
+	            return Constants.ENDHDR + _commentLength;
+	        },
+
+	        loadFromBinary: function (/*Buffer*/ data) {
+	            // data should be 22 bytes and start with "PK 05 06"
+	            // or be 56+ bytes and start with "PK 06 06" for Zip64
+	            if (
+	                (data.length !== Constants.ENDHDR || data.readUInt32LE(0) !== Constants.ENDSIG) &&
+	                (data.length < Constants.ZIP64HDR || data.readUInt32LE(0) !== Constants.ZIP64SIG)
+	            ) {
+	                throw Utils.Errors.INVALID_END();
+	            }
+
+	            if (data.readUInt32LE(0) === Constants.ENDSIG) {
+	                // number of entries on this volume
+	                _volumeEntries = data.readUInt16LE(Constants.ENDSUB);
+	                // total number of entries
+	                _totalEntries = data.readUInt16LE(Constants.ENDTOT);
+	                // central directory size in bytes
+	                _size = data.readUInt32LE(Constants.ENDSIZ);
+	                // offset of first CEN header
+	                _offset = data.readUInt32LE(Constants.ENDOFF);
+	                // zip file comment length
+	                _commentLength = data.readUInt16LE(Constants.ENDCOM);
+	            } else {
+	                // number of entries on this volume
+	                _volumeEntries = Utils.readBigUInt64LE(data, Constants.ZIP64SUB);
+	                // total number of entries
+	                _totalEntries = Utils.readBigUInt64LE(data, Constants.ZIP64TOT);
+	                // central directory size in bytes
+	                _size = Utils.readBigUInt64LE(data, Constants.ZIP64SIZE);
+	                // offset of first CEN header
+	                _offset = Utils.readBigUInt64LE(data, Constants.ZIP64OFF);
+
+	                _commentLength = 0;
+	            }
+	        },
+
+	        toBinary: function () {
+	            var b = Buffer.alloc(Constants.ENDHDR + _commentLength);
+	            // "PK 05 06" signature
+	            b.writeUInt32LE(Constants.ENDSIG, 0);
+	            b.writeUInt32LE(0, 4);
+	            // number of entries on this volume
+	            b.writeUInt16LE(_volumeEntries, Constants.ENDSUB);
+	            // total number of entries
+	            b.writeUInt16LE(_totalEntries, Constants.ENDTOT);
+	            // central directory size in bytes
+	            b.writeUInt32LE(_size, Constants.ENDSIZ);
+	            // offset of first CEN header
+	            b.writeUInt32LE(_offset, Constants.ENDOFF);
+	            // zip file comment length
+	            b.writeUInt16LE(_commentLength, Constants.ENDCOM);
+	            // fill comment memory with spaces so no garbage is left there
+	            b.fill(" ", Constants.ENDHDR);
+
+	            return b;
+	        },
+
+	        toJSON: function () {
+	            // creates 0x0000 style output
+	            const offset = function (nr, len) {
+	                let offs = nr.toString(16).toUpperCase();
+	                while (offs.length < len) offs = "0" + offs;
+	                return "0x" + offs;
+	            };
+
+	            return {
+	                diskEntries: _volumeEntries,
+	                totalEntries: _totalEntries,
+	                size: _size + " bytes",
+	                offset: offset(_offset, 4),
+	                commentLength: _commentLength
+	            };
+	        },
+
+	        toString: function () {
+	            return JSON.stringify(this.toJSON(), null, "\t");
+	        }
+	    };
+	};
+	// Misspelled
+	return mainHeader;
+}
+
+var hasRequiredHeaders;
+
+function requireHeaders () {
+	if (hasRequiredHeaders) return headers;
+	hasRequiredHeaders = 1;
+	headers.EntryHeader = requireEntryHeader();
+	headers.MainHeader = requireMainHeader();
+	return headers;
+}
+
+var methods$1 = {};
+
+var deflater;
+var hasRequiredDeflater;
+
+function requireDeflater () {
+	if (hasRequiredDeflater) return deflater;
+	hasRequiredDeflater = 1;
+	deflater = function (/*Buffer*/ inbuf) {
+	    var zlib = require$$0$9;
+
+	    var opts = { chunkSize: (parseInt(inbuf.length / 1024) + 1) * 1024 };
+
+	    return {
+	        deflate: function () {
+	            return zlib.deflateRawSync(inbuf, opts);
+	        },
+
+	        deflateAsync: function (/*Function*/ callback) {
+	            var tmp = zlib.createDeflateRaw(opts),
+	                parts = [],
+	                total = 0;
+	            tmp.on("data", function (data) {
+	                parts.push(data);
+	                total += data.length;
+	            });
+	            tmp.on("end", function () {
+	                var buf = Buffer.alloc(total),
+	                    written = 0;
+	                buf.fill(0);
+	                for (var i = 0; i < parts.length; i++) {
+	                    var part = parts[i];
+	                    part.copy(buf, written);
+	                    written += part.length;
+	                }
+	                callback && callback(buf);
+	            });
+	            tmp.end(inbuf);
+	        }
+	    };
+	};
+	return deflater;
+}
+
+var inflater;
+var hasRequiredInflater;
+
+function requireInflater () {
+	if (hasRequiredInflater) return inflater;
+	hasRequiredInflater = 1;
+	const version = +(process.versions ? process.versions.node : "").split(".")[0] || 0;
+
+	inflater = function (/*Buffer*/ inbuf, /*number*/ expectedLength) {
+	    var zlib = require$$0$9;
+	    const option = version >= 15 && expectedLength > 0 ? { maxOutputLength: expectedLength } : {};
+
+	    return {
+	        inflate: function () {
+	            return zlib.inflateRawSync(inbuf, option);
+	        },
+
+	        inflateAsync: function (/*Function*/ callback) {
+	            var tmp = zlib.createInflateRaw(option),
+	                parts = [],
+	                total = 0;
+	            tmp.on("data", function (data) {
+	                parts.push(data);
+	                total += data.length;
+	            });
+	            tmp.on("end", function () {
+	                var buf = Buffer.alloc(total),
+	                    written = 0;
+	                buf.fill(0);
+	                for (var i = 0; i < parts.length; i++) {
+	                    var part = parts[i];
+	                    part.copy(buf, written);
+	                    written += part.length;
+	                }
+	                callback && callback(buf);
+	            });
+	            tmp.end(inbuf);
+	        }
+	    };
+	};
+	return inflater;
+}
+
+var zipcrypto;
+var hasRequiredZipcrypto;
+
+function requireZipcrypto () {
+	if (hasRequiredZipcrypto) return zipcrypto;
+	hasRequiredZipcrypto = 1;
+
+	// node crypt, we use it for generate salt
+	// eslint-disable-next-line node/no-unsupported-features/node-builtins
+	const { randomFillSync } = require$$0$1;
+	const Errors = requireErrors();
+
+	// generate CRC32 lookup table
+	const crctable = new Uint32Array(256).map((t, crc) => {
+	    for (let j = 0; j < 8; j++) {
+	        if (0 !== (crc & 1)) {
+	            crc = (crc >>> 1) ^ 0xedb88320;
+	        } else {
+	            crc >>>= 1;
+	        }
+	    }
+	    return crc >>> 0;
+	});
+
+	// C-style uInt32 Multiply (discards higher bits, when JS multiply discards lower bits)
+	const uMul = (a, b) => Math.imul(a, b) >>> 0;
+
+	// crc32 byte single update (actually same function is part of utils.crc32 function :) )
+	const crc32update = (pCrc32, bval) => {
+	    return crctable[(pCrc32 ^ bval) & 0xff] ^ (pCrc32 >>> 8);
+	};
+
+	// function for generating salt for encrytion header
+	const genSalt = () => {
+	    if ("function" === typeof randomFillSync) {
+	        return randomFillSync(Buffer.alloc(12));
+	    } else {
+	        // fallback if function is not defined
+	        return genSalt.node();
+	    }
+	};
+
+	// salt generation with node random function (mainly as fallback)
+	genSalt.node = () => {
+	    const salt = Buffer.alloc(12);
+	    const len = salt.length;
+	    for (let i = 0; i < len; i++) salt[i] = (Math.random() * 256) & 0xff;
+	    return salt;
+	};
+
+	// general config
+	const config = {
+	    genSalt
+	};
+
+	// Class Initkeys handles same basic ops with keys
+	function Initkeys(pw) {
+	    const pass = Buffer.isBuffer(pw) ? pw : Buffer.from(pw);
+	    this.keys = new Uint32Array([0x12345678, 0x23456789, 0x34567890]);
+	    for (let i = 0; i < pass.length; i++) {
+	        this.updateKeys(pass[i]);
+	    }
+	}
+
+	Initkeys.prototype.updateKeys = function (byteValue) {
+	    const keys = this.keys;
+	    keys[0] = crc32update(keys[0], byteValue);
+	    keys[1] += keys[0] & 0xff;
+	    keys[1] = uMul(keys[1], 134775813) + 1;
+	    keys[2] = crc32update(keys[2], keys[1] >>> 24);
+	    return byteValue;
+	};
+
+	Initkeys.prototype.next = function () {
+	    const k = (this.keys[2] | 2) >>> 0; // key
+	    return (uMul(k, k ^ 1) >> 8) & 0xff; // decode
+	};
+
+	function make_decrypter(/*Buffer*/ pwd) {
+	    // 1. Stage initialize key
+	    const keys = new Initkeys(pwd);
+
+	    // return decrypter function
+	    return function (/*Buffer*/ data) {
+	        // result - we create new Buffer for results
+	        const result = Buffer.alloc(data.length);
+	        let pos = 0;
+	        // process input data
+	        for (let c of data) {
+	            //c ^= keys.next();
+	            //result[pos++] = c; // decode & Save Value
+	            result[pos++] = keys.updateKeys(c ^ keys.next()); // update keys with decoded byte
+	        }
+	        return result;
+	    };
+	}
+
+	function make_encrypter(/*Buffer*/ pwd) {
+	    // 1. Stage initialize key
+	    const keys = new Initkeys(pwd);
+
+	    // return encrypting function, result and pos is here so we dont have to merge buffers later
+	    return function (/*Buffer*/ data, /*Buffer*/ result, /* Number */ pos = 0) {
+	        // result - we create new Buffer for results
+	        if (!result) result = Buffer.alloc(data.length);
+	        // process input data
+	        for (let c of data) {
+	            const k = keys.next(); // save key byte
+	            result[pos++] = c ^ k; // save val
+	            keys.updateKeys(c); // update keys with decoded byte
+	        }
+	        return result;
+	    };
+	}
+
+	function decrypt(/*Buffer*/ data, /*Object*/ header, /*String, Buffer*/ pwd) {
+	    if (!data || !Buffer.isBuffer(data) || data.length < 12) {
+	        return Buffer.alloc(0);
+	    }
+
+	    // 1. We Initialize and generate decrypting function
+	    const decrypter = make_decrypter(pwd);
+
+	    // 2. decrypt salt what is always 12 bytes and is a part of file content
+	    const salt = decrypter(data.slice(0, 12));
+
+	    // if bit 3 (0x08) of the general-purpose flags field is set, check salt[11] with the high byte of the header time
+	    // 2 byte data block (as per Info-Zip spec), otherwise check with the high byte of the header entry
+	    const verifyByte = (header.flags & 0x8) === 0x8 ? header.timeHighByte : header.crc >>> 24;
+
+	    //3. does password meet expectations
+	    if (salt[11] !== verifyByte) {
+	        throw Errors.WRONG_PASSWORD();
+	    }
+
+	    // 4. decode content
+	    return decrypter(data.slice(12));
+	}
+
+	// lets add way to populate salt, NOT RECOMMENDED for production but maybe useful for testing general functionality
+	function _salter(data) {
+	    if (Buffer.isBuffer(data) && data.length >= 12) {
+	        // be aware - currently salting buffer data is modified
+	        config.genSalt = function () {
+	            return data.slice(0, 12);
+	        };
+	    } else if (data === "node") {
+	        // test salt generation with node random function
+	        config.genSalt = genSalt.node;
+	    } else {
+	        // if value is not acceptable config gets reset.
+	        config.genSalt = genSalt;
+	    }
+	}
+
+	function encrypt(/*Buffer*/ data, /*Object*/ header, /*String, Buffer*/ pwd, /*Boolean*/ oldlike = false) {
+	    // 1. test data if data is not Buffer we make buffer from it
+	    if (data == null) data = Buffer.alloc(0);
+	    // if data is not buffer be make buffer from it
+	    if (!Buffer.isBuffer(data)) data = Buffer.from(data.toString());
+
+	    // 2. We Initialize and generate encrypting function
+	    const encrypter = make_encrypter(pwd);
+
+	    // 3. generate salt (12-bytes of random data)
+	    const salt = config.genSalt();
+	    salt[11] = (header.crc >>> 24) & 0xff;
+
+	    // old implementations (before PKZip 2.04g) used two byte check
+	    if (oldlike) salt[10] = (header.crc >>> 16) & 0xff;
+
+	    // 4. create output
+	    const result = Buffer.alloc(data.length + 12);
+	    encrypter(salt, result);
+
+	    // finally encode content
+	    return encrypter(data, result, 12);
+	}
+
+	zipcrypto = { decrypt, encrypt, _salter };
+	return zipcrypto;
+}
+
+var hasRequiredMethods;
+
+function requireMethods () {
+	if (hasRequiredMethods) return methods$1;
+	hasRequiredMethods = 1;
+	methods$1.Deflater = requireDeflater();
+	methods$1.Inflater = requireInflater();
+	methods$1.ZipCrypto = requireZipcrypto();
+	return methods$1;
+}
+
+var zipEntry;
+var hasRequiredZipEntry;
+
+function requireZipEntry () {
+	if (hasRequiredZipEntry) return zipEntry;
+	hasRequiredZipEntry = 1;
+	var Utils = requireUtil(),
+	    Headers = requireHeaders(),
+	    Constants = Utils.Constants,
+	    Methods = requireMethods();
+
+	zipEntry = function (/** object */ options, /*Buffer*/ input) {
+	    var _centralHeader = new Headers.EntryHeader(),
+	        _entryName = Buffer.alloc(0),
+	        _comment = Buffer.alloc(0),
+	        _isDirectory = false,
+	        uncompressedData = null,
+	        _extra = Buffer.alloc(0),
+	        _extralocal = Buffer.alloc(0),
+	        _efs = true;
+
+	    // assign options
+	    const opts = options;
+
+	    const decoder = typeof opts.decoder === "object" ? opts.decoder : Utils.decoder;
+	    _efs = decoder.hasOwnProperty("efs") ? decoder.efs : false;
+
+	    function getCompressedDataFromZip() {
+	        //if (!input || !Buffer.isBuffer(input)) {
+	        if (!input || !(input instanceof Uint8Array)) {
+	            return Buffer.alloc(0);
+	        }
+	        _extralocal = _centralHeader.loadLocalHeaderFromBinary(input);
+	        return input.slice(_centralHeader.realDataOffset, _centralHeader.realDataOffset + _centralHeader.compressedSize);
+	    }
+
+	    function crc32OK(data) {
+	        // if bit 3 (0x08) of the general-purpose flags field is set, then the CRC-32 and file sizes are not known when the local header is written
+	        if (!_centralHeader.flags_desc) {
+	            if (Utils.crc32(data) !== _centralHeader.localHeader.crc) {
+	                return false;
+	            }
+	        } else {
+	            const descriptor = {};
+	            const dataEndOffset = _centralHeader.realDataOffset + _centralHeader.compressedSize;
+	            // no descriptor after compressed data, instead new local header
+	            if (input.readUInt32LE(dataEndOffset) == Constants.LOCSIG || input.readUInt32LE(dataEndOffset) == Constants.CENSIG) {
+	                throw Utils.Errors.DESCRIPTOR_NOT_EXIST();
+	            }
+
+	            // get decriptor data
+	            if (input.readUInt32LE(dataEndOffset) == Constants.EXTSIG) {
+	                // descriptor with signature
+	                descriptor.crc = input.readUInt32LE(dataEndOffset + Constants.EXTCRC);
+	                descriptor.compressedSize = input.readUInt32LE(dataEndOffset + Constants.EXTSIZ);
+	                descriptor.size = input.readUInt32LE(dataEndOffset + Constants.EXTLEN);
+	            } else if (input.readUInt16LE(dataEndOffset + 12) === 0x4b50) {
+	                // descriptor without signature (we check is new header starting where we expect)
+	                descriptor.crc = input.readUInt32LE(dataEndOffset + Constants.EXTCRC - 4);
+	                descriptor.compressedSize = input.readUInt32LE(dataEndOffset + Constants.EXTSIZ - 4);
+	                descriptor.size = input.readUInt32LE(dataEndOffset + Constants.EXTLEN - 4);
+	            } else {
+	                throw Utils.Errors.DESCRIPTOR_UNKNOWN();
+	            }
+
+	            // check data integrity
+	            if (descriptor.compressedSize !== _centralHeader.compressedSize || descriptor.size !== _centralHeader.size || descriptor.crc !== _centralHeader.crc) {
+	                throw Utils.Errors.DESCRIPTOR_FAULTY();
+	            }
+	            if (Utils.crc32(data) !== descriptor.crc) {
+	                return false;
+	            }
+
+	            // @TODO: zip64 bit descriptor fields
+	            // if bit 3 is set and any value in local header "zip64 Extended information" extra field are set 0 (place holder)
+	            // then 64-bit descriptor format is used instead of 32-bit
+	            // central header - "zip64 Extended information" extra field should store real values and not place holders
+	        }
+	        return true;
+	    }
+
+	    function decompress(/*Boolean*/ async, /*Function*/ callback, /*String, Buffer*/ pass) {
+	        if (typeof callback === "undefined" && typeof async === "string") {
+	            pass = async;
+	            async = void 0;
+	        }
+	        if (_isDirectory) {
+	            if (async && callback) {
+	                callback(Buffer.alloc(0), Utils.Errors.DIRECTORY_CONTENT_ERROR()); //si added error.
+	            }
+	            return Buffer.alloc(0);
+	        }
+
+	        var compressedData = getCompressedDataFromZip();
+
+	        if (compressedData.length === 0) {
+	            // File is empty, nothing to decompress.
+	            if (async && callback) callback(compressedData);
+	            return compressedData;
+	        }
+
+	        if (_centralHeader.encrypted) {
+	            if ("string" !== typeof pass && !Buffer.isBuffer(pass)) {
+	                throw Utils.Errors.INVALID_PASS_PARAM();
+	            }
+	            compressedData = Methods.ZipCrypto.decrypt(compressedData, _centralHeader, pass);
+	        }
+
+	        var data = Buffer.alloc(_centralHeader.size);
+
+	        switch (_centralHeader.method) {
+	            case Utils.Constants.STORED:
+	                compressedData.copy(data);
+	                if (!crc32OK(data)) {
+	                    if (async && callback) callback(data, Utils.Errors.BAD_CRC()); //si added error
+	                    throw Utils.Errors.BAD_CRC();
+	                } else {
+	                    //si added otherwise did not seem to return data.
+	                    if (async && callback) callback(data);
+	                    return data;
+	                }
+	            case Utils.Constants.DEFLATED:
+	                var inflater = new Methods.Inflater(compressedData, _centralHeader.size);
+	                if (!async) {
+	                    const result = inflater.inflate(data);
+	                    result.copy(data, 0);
+	                    if (!crc32OK(data)) {
+	                        throw Utils.Errors.BAD_CRC(`"${decoder.decode(_entryName)}"`);
+	                    }
+	                    return data;
+	                } else {
+	                    inflater.inflateAsync(function (result) {
+	                        result.copy(result, 0);
+	                        if (callback) {
+	                            if (!crc32OK(result)) {
+	                                callback(result, Utils.Errors.BAD_CRC()); //si added error
+	                            } else {
+	                                callback(result);
+	                            }
+	                        }
+	                    });
+	                }
+	                break;
+	            default:
+	                if (async && callback) callback(Buffer.alloc(0), Utils.Errors.UNKNOWN_METHOD());
+	                throw Utils.Errors.UNKNOWN_METHOD();
+	        }
+	    }
+
+	    function compress(/*Boolean*/ async, /*Function*/ callback) {
+	        if ((!uncompressedData || !uncompressedData.length) && Buffer.isBuffer(input)) {
+	            // no data set or the data wasn't changed to require recompression
+	            if (async && callback) callback(getCompressedDataFromZip());
+	            return getCompressedDataFromZip();
+	        }
+
+	        if (uncompressedData.length && !_isDirectory) {
+	            var compressedData;
+	            // Local file header
+	            switch (_centralHeader.method) {
+	                case Utils.Constants.STORED:
+	                    _centralHeader.compressedSize = _centralHeader.size;
+
+	                    compressedData = Buffer.alloc(uncompressedData.length);
+	                    uncompressedData.copy(compressedData);
+
+	                    if (async && callback) callback(compressedData);
+	                    return compressedData;
+	                default:
+	                case Utils.Constants.DEFLATED:
+	                    var deflater = new Methods.Deflater(uncompressedData);
+	                    if (!async) {
+	                        var deflated = deflater.deflate();
+	                        _centralHeader.compressedSize = deflated.length;
+	                        return deflated;
+	                    } else {
+	                        deflater.deflateAsync(function (data) {
+	                            compressedData = Buffer.alloc(data.length);
+	                            _centralHeader.compressedSize = data.length;
+	                            data.copy(compressedData);
+	                            callback && callback(compressedData);
+	                        });
+	                    }
+	                    deflater = null;
+	                    break;
+	            }
+	        } else if (async && callback) {
+	            callback(Buffer.alloc(0));
+	        } else {
+	            return Buffer.alloc(0);
+	        }
+	    }
+
+	    function readUInt64LE(buffer, offset) {
+	        return (buffer.readUInt32LE(offset + 4) << 4) + buffer.readUInt32LE(offset);
+	    }
+
+	    function parseExtra(data) {
+	        try {
+	            var offset = 0;
+	            var signature, size, part;
+	            while (offset + 4 < data.length) {
+	                signature = data.readUInt16LE(offset);
+	                offset += 2;
+	                size = data.readUInt16LE(offset);
+	                offset += 2;
+	                part = data.slice(offset, offset + size);
+	                offset += size;
+	                if (Constants.ID_ZIP64 === signature) {
+	                    parseZip64ExtendedInformation(part);
+	                }
+	            }
+	        } catch (error) {
+	            throw Utils.Errors.EXTRA_FIELD_PARSE_ERROR();
+	        }
+	    }
+
+	    //Override header field values with values from the ZIP64 extra field
+	    function parseZip64ExtendedInformation(data) {
+	        var size, compressedSize, offset, diskNumStart;
+
+	        if (data.length >= Constants.EF_ZIP64_SCOMP) {
+	            size = readUInt64LE(data, Constants.EF_ZIP64_SUNCOMP);
+	            if (_centralHeader.size === Constants.EF_ZIP64_OR_32) {
+	                _centralHeader.size = size;
+	            }
+	        }
+	        if (data.length >= Constants.EF_ZIP64_RHO) {
+	            compressedSize = readUInt64LE(data, Constants.EF_ZIP64_SCOMP);
+	            if (_centralHeader.compressedSize === Constants.EF_ZIP64_OR_32) {
+	                _centralHeader.compressedSize = compressedSize;
+	            }
+	        }
+	        if (data.length >= Constants.EF_ZIP64_DSN) {
+	            offset = readUInt64LE(data, Constants.EF_ZIP64_RHO);
+	            if (_centralHeader.offset === Constants.EF_ZIP64_OR_32) {
+	                _centralHeader.offset = offset;
+	            }
+	        }
+	        if (data.length >= Constants.EF_ZIP64_DSN + 4) {
+	            diskNumStart = data.readUInt32LE(Constants.EF_ZIP64_DSN);
+	            if (_centralHeader.diskNumStart === Constants.EF_ZIP64_OR_16) {
+	                _centralHeader.diskNumStart = diskNumStart;
+	            }
+	        }
+	    }
+
+	    return {
+	        get entryName() {
+	            return decoder.decode(_entryName);
+	        },
+	        get rawEntryName() {
+	            return _entryName;
+	        },
+	        set entryName(val) {
+	            _entryName = Utils.toBuffer(val, decoder.encode);
+	            var lastChar = _entryName[_entryName.length - 1];
+	            _isDirectory = lastChar === 47 || lastChar === 92;
+	            _centralHeader.fileNameLength = _entryName.length;
+	        },
+
+	        get efs() {
+	            if (typeof _efs === "function") {
+	                return _efs(this.entryName);
+	            } else {
+	                return _efs;
+	            }
+	        },
+
+	        get extra() {
+	            return _extra;
+	        },
+	        set extra(val) {
+	            _extra = val;
+	            _centralHeader.extraLength = val.length;
+	            parseExtra(val);
+	        },
+
+	        get comment() {
+	            return decoder.decode(_comment);
+	        },
+	        set comment(val) {
+	            _comment = Utils.toBuffer(val, decoder.encode);
+	            _centralHeader.commentLength = _comment.length;
+	            if (_comment.length > 0xffff) throw Utils.Errors.COMMENT_TOO_LONG();
+	        },
+
+	        get name() {
+	            var n = decoder.decode(_entryName);
+	            return _isDirectory
+	                ? n
+	                      .substr(n.length - 1)
+	                      .split("/")
+	                      .pop()
+	                : n.split("/").pop();
+	        },
+	        get isDirectory() {
+	            return _isDirectory;
+	        },
+
+	        getCompressedData: function () {
+	            return compress(false, null);
+	        },
+
+	        getCompressedDataAsync: function (/*Function*/ callback) {
+	            compress(true, callback);
+	        },
+
+	        setData: function (value) {
+	            uncompressedData = Utils.toBuffer(value, Utils.decoder.encode);
+	            if (!_isDirectory && uncompressedData.length) {
+	                _centralHeader.size = uncompressedData.length;
+	                _centralHeader.method = Utils.Constants.DEFLATED;
+	                _centralHeader.crc = Utils.crc32(value);
+	                _centralHeader.changed = true;
+	            } else {
+	                // folders and blank files should be stored
+	                _centralHeader.method = Utils.Constants.STORED;
+	            }
+	        },
+
+	        getData: function (pass) {
+	            if (_centralHeader.changed) {
+	                return uncompressedData;
+	            } else {
+	                return decompress(false, null, pass);
+	            }
+	        },
+
+	        getDataAsync: function (/*Function*/ callback, pass) {
+	            if (_centralHeader.changed) {
+	                callback(uncompressedData);
+	            } else {
+	                decompress(true, callback, pass);
+	            }
+	        },
+
+	        set attr(attr) {
+	            _centralHeader.attr = attr;
+	        },
+	        get attr() {
+	            return _centralHeader.attr;
+	        },
+
+	        set header(/*Buffer*/ data) {
+	            _centralHeader.loadFromBinary(data);
+	        },
+
+	        get header() {
+	            return _centralHeader;
+	        },
+
+	        packCentralHeader: function () {
+	            _centralHeader.flags_efs = this.efs;
+	            _centralHeader.extraLength = _extra.length;
+	            // 1. create header (buffer)
+	            var header = _centralHeader.centralHeaderToBinary();
+	            var addpos = Utils.Constants.CENHDR;
+	            // 2. add file name
+	            _entryName.copy(header, addpos);
+	            addpos += _entryName.length;
+	            // 3. add extra data
+	            _extra.copy(header, addpos);
+	            addpos += _centralHeader.extraLength;
+	            // 4. add file comment
+	            _comment.copy(header, addpos);
+	            return header;
+	        },
+
+	        packLocalHeader: function () {
+	            let addpos = 0;
+	            _centralHeader.flags_efs = this.efs;
+	            _centralHeader.extraLocalLength = _extralocal.length;
+	            // 1. construct local header Buffer
+	            const localHeaderBuf = _centralHeader.localHeaderToBinary();
+	            // 2. localHeader - crate header buffer
+	            const localHeader = Buffer.alloc(localHeaderBuf.length + _entryName.length + _centralHeader.extraLocalLength);
+	            // 2.1 add localheader
+	            localHeaderBuf.copy(localHeader, addpos);
+	            addpos += localHeaderBuf.length;
+	            // 2.2 add file name
+	            _entryName.copy(localHeader, addpos);
+	            addpos += _entryName.length;
+	            // 2.3 add extra field
+	            _extralocal.copy(localHeader, addpos);
+	            addpos += _extralocal.length;
+
+	            return localHeader;
+	        },
+
+	        toJSON: function () {
+	            const bytes = function (nr) {
+	                return "<" + ((nr && nr.length + " bytes buffer") || "null") + ">";
+	            };
+
+	            return {
+	                entryName: this.entryName,
+	                name: this.name,
+	                comment: this.comment,
+	                isDirectory: this.isDirectory,
+	                header: _centralHeader.toJSON(),
+	                compressedData: bytes(input),
+	                data: bytes(uncompressedData)
+	            };
+	        },
+
+	        toString: function () {
+	            return JSON.stringify(this.toJSON(), null, "\t");
+	        }
+	    };
+	};
+	return zipEntry;
+}
+
+var zipFile;
+var hasRequiredZipFile;
+
+function requireZipFile () {
+	if (hasRequiredZipFile) return zipFile;
+	hasRequiredZipFile = 1;
+	const ZipEntry = requireZipEntry();
+	const Headers = requireHeaders();
+	const Utils = requireUtil();
+
+	zipFile = function (/*Buffer|null*/ inBuffer, /** object */ options) {
+	    var entryList = [],
+	        entryTable = {},
+	        _comment = Buffer.alloc(0),
+	        mainHeader = new Headers.MainHeader(),
+	        loadedEntries = false;
+	    const temporary = new Set();
+
+	    // assign options
+	    const opts = options;
+
+	    const { noSort, decoder } = opts;
+
+	    if (inBuffer) {
+	        // is a memory buffer
+	        readMainHeader(opts.readEntries);
+	    } else {
+	        // none. is a new file
+	        loadedEntries = true;
+	    }
+
+	    function makeTemporaryFolders() {
+	        const foldersList = new Set();
+
+	        // Make list of all folders in file
+	        for (const elem of Object.keys(entryTable)) {
+	            const elements = elem.split("/");
+	            elements.pop(); // filename
+	            if (!elements.length) continue; // no folders
+	            for (let i = 0; i < elements.length; i++) {
+	                const sub = elements.slice(0, i + 1).join("/") + "/";
+	                foldersList.add(sub);
+	            }
+	        }
+
+	        // create missing folders as temporary
+	        for (const elem of foldersList) {
+	            if (!(elem in entryTable)) {
+	                const tempfolder = new ZipEntry(opts);
+	                tempfolder.entryName = elem;
+	                tempfolder.attr = 0x10;
+	                tempfolder.temporary = true;
+	                entryList.push(tempfolder);
+	                entryTable[tempfolder.entryName] = tempfolder;
+	                temporary.add(tempfolder);
+	            }
+	        }
+	    }
+
+	    function readEntries() {
+	        loadedEntries = true;
+	        entryTable = {};
+	        if (mainHeader.diskEntries > (inBuffer.length - mainHeader.offset) / Utils.Constants.CENHDR) {
+	            throw Utils.Errors.DISK_ENTRY_TOO_LARGE();
+	        }
+	        entryList = new Array(mainHeader.diskEntries); // total number of entries
+	        var index = mainHeader.offset; // offset of first CEN header
+	        for (var i = 0; i < entryList.length; i++) {
+	            var tmp = index,
+	                entry = new ZipEntry(opts, inBuffer);
+	            entry.header = inBuffer.slice(tmp, (tmp += Utils.Constants.CENHDR));
+
+	            entry.entryName = inBuffer.slice(tmp, (tmp += entry.header.fileNameLength));
+
+	            if (entry.header.extraLength) {
+	                entry.extra = inBuffer.slice(tmp, (tmp += entry.header.extraLength));
+	            }
+
+	            if (entry.header.commentLength) entry.comment = inBuffer.slice(tmp, tmp + entry.header.commentLength);
+
+	            index += entry.header.centralHeaderSize;
+
+	            entryList[i] = entry;
+	            entryTable[entry.entryName] = entry;
+	        }
+	        temporary.clear();
+	        makeTemporaryFolders();
+	    }
+
+	    function readMainHeader(/*Boolean*/ readNow) {
+	        var i = inBuffer.length - Utils.Constants.ENDHDR, // END header size
+	            max = Math.max(0, i - 0xffff), // 0xFFFF is the max zip file comment length
+	            n = max,
+	            endStart = inBuffer.length,
+	            endOffset = -1, // Start offset of the END header
+	            commentEnd = 0;
+
+	        // option to search header form entire file
+	        const trailingSpace = typeof opts.trailingSpace === "boolean" ? opts.trailingSpace : false;
+	        if (trailingSpace) max = 0;
+
+	        for (i; i >= n; i--) {
+	            if (inBuffer[i] !== 0x50) continue; // quick check that the byte is 'P'
+	            if (inBuffer.readUInt32LE(i) === Utils.Constants.ENDSIG) {
+	                // "PK\005\006"
+	                endOffset = i;
+	                commentEnd = i;
+	                endStart = i + Utils.Constants.ENDHDR;
+	                // We already found a regular signature, let's look just a bit further to check if there's any zip64 signature
+	                n = i - Utils.Constants.END64HDR;
+	                continue;
+	            }
+
+	            if (inBuffer.readUInt32LE(i) === Utils.Constants.END64SIG) {
+	                // Found a zip64 signature, let's continue reading the whole zip64 record
+	                n = max;
+	                continue;
+	            }
+
+	            if (inBuffer.readUInt32LE(i) === Utils.Constants.ZIP64SIG) {
+	                // Found the zip64 record, let's determine it's size
+	                endOffset = i;
+	                endStart = i + Utils.readBigUInt64LE(inBuffer, i + Utils.Constants.ZIP64SIZE) + Utils.Constants.ZIP64LEAD;
+	                break;
+	            }
+	        }
+
+	        if (endOffset == -1) throw Utils.Errors.INVALID_FORMAT();
+
+	        mainHeader.loadFromBinary(inBuffer.slice(endOffset, endStart));
+	        if (mainHeader.commentLength) {
+	            _comment = inBuffer.slice(commentEnd + Utils.Constants.ENDHDR);
+	        }
+	        if (readNow) readEntries();
+	    }
+
+	    function sortEntries() {
+	        if (entryList.length > 1 && !noSort) {
+	            entryList.sort((a, b) => a.entryName.toLowerCase().localeCompare(b.entryName.toLowerCase()));
+	        }
+	    }
+
+	    return {
+	        /**
+	         * Returns an array of ZipEntry objects existent in the current opened archive
+	         * @return Array
+	         */
+	        get entries() {
+	            if (!loadedEntries) {
+	                readEntries();
+	            }
+	            return entryList.filter((e) => !temporary.has(e));
+	        },
+
+	        /**
+	         * Archive comment
+	         * @return {String}
+	         */
+	        get comment() {
+	            return decoder.decode(_comment);
+	        },
+	        set comment(val) {
+	            _comment = Utils.toBuffer(val, decoder.encode);
+	            mainHeader.commentLength = _comment.length;
+	        },
+
+	        getEntryCount: function () {
+	            if (!loadedEntries) {
+	                return mainHeader.diskEntries;
+	            }
+
+	            return entryList.length;
+	        },
+
+	        forEach: function (callback) {
+	            this.entries.forEach(callback);
+	        },
+
+	        /**
+	         * Returns a reference to the entry with the given name or null if entry is inexistent
+	         *
+	         * @param entryName
+	         * @return ZipEntry
+	         */
+	        getEntry: function (/*String*/ entryName) {
+	            if (!loadedEntries) {
+	                readEntries();
+	            }
+	            return entryTable[entryName] || null;
+	        },
+
+	        /**
+	         * Adds the given entry to the entry list
+	         *
+	         * @param entry
+	         */
+	        setEntry: function (/*ZipEntry*/ entry) {
+	            if (!loadedEntries) {
+	                readEntries();
+	            }
+	            entryList.push(entry);
+	            entryTable[entry.entryName] = entry;
+	            mainHeader.totalEntries = entryList.length;
+	        },
+
+	        /**
+	         * Removes the file with the given name from the entry list.
+	         *
+	         * If the entry is a directory, then all nested files and directories will be removed
+	         * @param entryName
+	         * @returns {void}
+	         */
+	        deleteFile: function (/*String*/ entryName, withsubfolders = true) {
+	            if (!loadedEntries) {
+	                readEntries();
+	            }
+	            const entry = entryTable[entryName];
+	            const list = this.getEntryChildren(entry, withsubfolders).map((child) => child.entryName);
+
+	            list.forEach(this.deleteEntry);
+	        },
+
+	        /**
+	         * Removes the entry with the given name from the entry list.
+	         *
+	         * @param {string} entryName
+	         * @returns {void}
+	         */
+	        deleteEntry: function (/*String*/ entryName) {
+	            if (!loadedEntries) {
+	                readEntries();
+	            }
+	            const entry = entryTable[entryName];
+	            const index = entryList.indexOf(entry);
+	            if (index >= 0) {
+	                entryList.splice(index, 1);
+	                delete entryTable[entryName];
+	                mainHeader.totalEntries = entryList.length;
+	            }
+	        },
+
+	        /**
+	         *  Iterates and returns all nested files and directories of the given entry
+	         *
+	         * @param entry
+	         * @return Array
+	         */
+	        getEntryChildren: function (/*ZipEntry*/ entry, subfolders = true) {
+	            if (!loadedEntries) {
+	                readEntries();
+	            }
+	            if (typeof entry === "object") {
+	                if (entry.isDirectory && subfolders) {
+	                    const list = [];
+	                    const name = entry.entryName;
+
+	                    for (const zipEntry of entryList) {
+	                        if (zipEntry.entryName.startsWith(name)) {
+	                            list.push(zipEntry);
+	                        }
+	                    }
+	                    return list;
+	                } else {
+	                    return [entry];
+	                }
+	            }
+	            return [];
+	        },
+
+	        /**
+	         *  How many child elements entry has
+	         *
+	         * @param {ZipEntry} entry
+	         * @return {integer}
+	         */
+	        getChildCount: function (entry) {
+	            if (entry && entry.isDirectory) {
+	                const list = this.getEntryChildren(entry);
+	                return list.includes(entry) ? list.length - 1 : list.length;
+	            }
+	            return 0;
+	        },
+
+	        /**
+	         * Returns the zip file
+	         *
+	         * @return Buffer
+	         */
+	        compressToBuffer: function () {
+	            if (!loadedEntries) {
+	                readEntries();
+	            }
+	            sortEntries();
+
+	            const dataBlock = [];
+	            const headerBlocks = [];
+	            let totalSize = 0;
+	            let dindex = 0;
+
+	            mainHeader.size = 0;
+	            mainHeader.offset = 0;
+	            let totalEntries = 0;
+
+	            for (const entry of this.entries) {
+	                // compress data and set local and entry header accordingly. Reason why is called first
+	                const compressedData = entry.getCompressedData();
+	                entry.header.offset = dindex;
+
+	                // 1. construct local header
+	                const localHeader = entry.packLocalHeader();
+
+	                // 2. offsets
+	                const dataLength = localHeader.length + compressedData.length;
+	                dindex += dataLength;
+
+	                // 3. store values in sequence
+	                dataBlock.push(localHeader);
+	                dataBlock.push(compressedData);
+
+	                // 4. construct central header
+	                const centralHeader = entry.packCentralHeader();
+	                headerBlocks.push(centralHeader);
+	                // 5. update main header
+	                mainHeader.size += centralHeader.length;
+	                totalSize += dataLength + centralHeader.length;
+	                totalEntries++;
+	            }
+
+	            totalSize += mainHeader.mainHeaderSize; // also includes zip file comment length
+	            // point to end of data and beginning of central directory first record
+	            mainHeader.offset = dindex;
+	            mainHeader.totalEntries = totalEntries;
+
+	            dindex = 0;
+	            const outBuffer = Buffer.alloc(totalSize);
+	            // write data blocks
+	            for (const content of dataBlock) {
+	                content.copy(outBuffer, dindex);
+	                dindex += content.length;
+	            }
+
+	            // write central directory entries
+	            for (const content of headerBlocks) {
+	                content.copy(outBuffer, dindex);
+	                dindex += content.length;
+	            }
+
+	            // write main header
+	            const mh = mainHeader.toBinary();
+	            if (_comment) {
+	                _comment.copy(mh, Utils.Constants.ENDHDR); // add zip file comment
+	            }
+	            mh.copy(outBuffer, dindex);
+
+	            // Since we update entry and main header offsets,
+	            // they are no longer valid and we have to reset content
+	            // (Issue 64)
+
+	            inBuffer = outBuffer;
+	            loadedEntries = false;
+
+	            return outBuffer;
+	        },
+
+	        toAsyncBuffer: function (/*Function*/ onSuccess, /*Function*/ onFail, /*Function*/ onItemStart, /*Function*/ onItemEnd) {
+	            try {
+	                if (!loadedEntries) {
+	                    readEntries();
+	                }
+	                sortEntries();
+
+	                const dataBlock = [];
+	                const centralHeaders = [];
+	                let totalSize = 0;
+	                let dindex = 0;
+	                let totalEntries = 0;
+
+	                mainHeader.size = 0;
+	                mainHeader.offset = 0;
+
+	                const compress2Buffer = function (entryLists) {
+	                    if (entryLists.length > 0) {
+	                        const entry = entryLists.shift();
+	                        const name = entry.entryName + entry.extra.toString();
+	                        if (onItemStart) onItemStart(name);
+	                        entry.getCompressedDataAsync(function (compressedData) {
+	                            if (onItemEnd) onItemEnd(name);
+	                            entry.header.offset = dindex;
+
+	                            // 1. construct local header
+	                            const localHeader = entry.packLocalHeader();
+
+	                            // 2. offsets
+	                            const dataLength = localHeader.length + compressedData.length;
+	                            dindex += dataLength;
+
+	                            // 3. store values in sequence
+	                            dataBlock.push(localHeader);
+	                            dataBlock.push(compressedData);
+
+	                            // central header
+	                            const centalHeader = entry.packCentralHeader();
+	                            centralHeaders.push(centalHeader);
+	                            mainHeader.size += centalHeader.length;
+	                            totalSize += dataLength + centalHeader.length;
+	                            totalEntries++;
+
+	                            compress2Buffer(entryLists);
+	                        });
+	                    } else {
+	                        totalSize += mainHeader.mainHeaderSize; // also includes zip file comment length
+	                        // point to end of data and beginning of central directory first record
+	                        mainHeader.offset = dindex;
+	                        mainHeader.totalEntries = totalEntries;
+
+	                        dindex = 0;
+	                        const outBuffer = Buffer.alloc(totalSize);
+	                        dataBlock.forEach(function (content) {
+	                            content.copy(outBuffer, dindex); // write data blocks
+	                            dindex += content.length;
+	                        });
+	                        centralHeaders.forEach(function (content) {
+	                            content.copy(outBuffer, dindex); // write central directory entries
+	                            dindex += content.length;
+	                        });
+
+	                        const mh = mainHeader.toBinary();
+	                        if (_comment) {
+	                            _comment.copy(mh, Utils.Constants.ENDHDR); // add zip file comment
+	                        }
+
+	                        mh.copy(outBuffer, dindex); // write main header
+
+	                        // Since we update entry and main header offsets, they are no
+	                        // longer valid and we have to reset content using our new buffer
+	                        // (Issue 64)
+
+	                        inBuffer = outBuffer;
+	                        loadedEntries = false;
+
+	                        onSuccess(outBuffer);
+	                    }
+	                };
+
+	                compress2Buffer(Array.from(this.entries));
+	            } catch (e) {
+	                onFail(e);
+	            }
+	        }
+	    };
+	};
+	return zipFile;
+}
+
+var admZip;
+var hasRequiredAdmZip;
+
+function requireAdmZip () {
+	if (hasRequiredAdmZip) return admZip;
+	hasRequiredAdmZip = 1;
+	const Utils = requireUtil();
+	const pth = require$$1$5;
+	const ZipEntry = requireZipEntry();
+	const ZipFile = requireZipFile();
+
+	const get_Bool = (...val) => Utils.findLast(val, (c) => typeof c === "boolean");
+	const get_Str = (...val) => Utils.findLast(val, (c) => typeof c === "string");
+	const get_Fun = (...val) => Utils.findLast(val, (c) => typeof c === "function");
+
+	const defaultOptions = {
+	    // option "noSort" : if true it disables files sorting
+	    noSort: false,
+	    // read entries during load (initial loading may be slower)
+	    readEntries: false,
+	    // default method is none
+	    method: Utils.Constants.NONE,
+	    // file system
+	    fs: null
+	};
+
+	admZip = function (/**String*/ input, /** object */ options) {
+	    let inBuffer = null;
+
+	    // create object based default options, allowing them to be overwritten
+	    const opts = Object.assign(Object.create(null), defaultOptions);
+
+	    // test input variable
+	    if (input && "object" === typeof input) {
+	        // if value is not buffer we accept it to be object with options
+	        if (!(input instanceof Uint8Array)) {
+	            Object.assign(opts, input);
+	            input = opts.input ? opts.input : undefined;
+	            if (opts.input) delete opts.input;
+	        }
+
+	        // if input is buffer
+	        if (Buffer.isBuffer(input)) {
+	            inBuffer = input;
+	            opts.method = Utils.Constants.BUFFER;
+	            input = undefined;
+	        }
+	    }
+
+	    // assign options
+	    Object.assign(opts, options);
+
+	    // instanciate utils filesystem
+	    const filetools = new Utils(opts);
+
+	    if (typeof opts.decoder !== "object" || typeof opts.decoder.encode !== "function" || typeof opts.decoder.decode !== "function") {
+	        opts.decoder = Utils.decoder;
+	    }
+
+	    // if input is file name we retrieve its content
+	    if (input && "string" === typeof input) {
+	        // load zip file
+	        if (filetools.fs.existsSync(input)) {
+	            opts.method = Utils.Constants.FILE;
+	            opts.filename = input;
+	            inBuffer = filetools.fs.readFileSync(input);
+	        } else {
+	            throw Utils.Errors.INVALID_FILENAME();
+	        }
+	    }
+
+	    // create variable
+	    const _zip = new ZipFile(inBuffer, opts);
+
+	    const { canonical, sanitize, zipnamefix } = Utils;
+
+	    function getEntry(/**Object*/ entry) {
+	        if (entry && _zip) {
+	            var item;
+	            // If entry was given as a file name
+	            if (typeof entry === "string") item = _zip.getEntry(pth.posix.normalize(entry));
+	            // if entry was given as a ZipEntry object
+	            if (typeof entry === "object" && typeof entry.entryName !== "undefined" && typeof entry.header !== "undefined") item = _zip.getEntry(entry.entryName);
+
+	            if (item) {
+	                return item;
+	            }
+	        }
+	        return null;
+	    }
+
+	    function fixPath(zipPath) {
+	        const { join, normalize, sep } = pth.posix;
+	        // convert windows file separators and normalize
+	        return join(".", normalize(sep + zipPath.split("\\").join(sep) + sep));
+	    }
+
+	    function filenameFilter(filterfn) {
+	        if (filterfn instanceof RegExp) {
+	            // if filter is RegExp wrap it
+	            return (function (rx) {
+	                return function (filename) {
+	                    return rx.test(filename);
+	                };
+	            })(filterfn);
+	        } else if ("function" !== typeof filterfn) {
+	            // if filter is not function we will replace it
+	            return () => true;
+	        }
+	        return filterfn;
+	    }
+
+	    // keep last character on folders
+	    const relativePath = (local, entry) => {
+	        let lastChar = entry.slice(-1);
+	        lastChar = lastChar === filetools.sep ? filetools.sep : "";
+	        return pth.relative(local, entry) + lastChar;
+	    };
+
+	    return {
+	        /**
+	         * Extracts the given entry from the archive and returns the content as a Buffer object
+	         * @param {ZipEntry|string} entry ZipEntry object or String with the full path of the entry
+	         * @param {Buffer|string} [pass] - password
+	         * @return Buffer or Null in case of error
+	         */
+	        readFile: function (entry, pass) {
+	            var item = getEntry(entry);
+	            return (item && item.getData(pass)) || null;
+	        },
+
+	        /**
+	         * Returns how many child elements has on entry (directories) on files it is always 0
+	         * @param {ZipEntry|string} entry ZipEntry object or String with the full path of the entry
+	         * @returns {integer}
+	         */
+	        childCount: function (entry) {
+	            const item = getEntry(entry);
+	            if (item) {
+	                return _zip.getChildCount(item);
+	            }
+	        },
+
+	        /**
+	         * Asynchronous readFile
+	         * @param {ZipEntry|string} entry ZipEntry object or String with the full path of the entry
+	         * @param {callback} callback
+	         *
+	         * @return Buffer or Null in case of error
+	         */
+	        readFileAsync: function (entry, callback) {
+	            var item = getEntry(entry);
+	            if (item) {
+	                item.getDataAsync(callback);
+	            } else {
+	                callback(null, "getEntry failed for:" + entry);
+	            }
+	        },
+
+	        /**
+	         * Extracts the given entry from the archive and returns the content as plain text in the given encoding
+	         * @param {ZipEntry|string} entry - ZipEntry object or String with the full path of the entry
+	         * @param {string} encoding - Optional. If no encoding is specified utf8 is used
+	         *
+	         * @return String
+	         */
+	        readAsText: function (entry, encoding) {
+	            var item = getEntry(entry);
+	            if (item) {
+	                var data = item.getData();
+	                if (data && data.length) {
+	                    return data.toString(encoding || "utf8");
+	                }
+	            }
+	            return "";
+	        },
+
+	        /**
+	         * Asynchronous readAsText
+	         * @param {ZipEntry|string} entry ZipEntry object or String with the full path of the entry
+	         * @param {callback} callback
+	         * @param {string} [encoding] - Optional. If no encoding is specified utf8 is used
+	         *
+	         * @return String
+	         */
+	        readAsTextAsync: function (entry, callback, encoding) {
+	            var item = getEntry(entry);
+	            if (item) {
+	                item.getDataAsync(function (data, err) {
+	                    if (err) {
+	                        callback(data, err);
+	                        return;
+	                    }
+
+	                    if (data && data.length) {
+	                        callback(data.toString(encoding || "utf8"));
+	                    } else {
+	                        callback("");
+	                    }
+	                });
+	            } else {
+	                callback("");
+	            }
+	        },
+
+	        /**
+	         * Remove the entry from the file or the entry and all it's nested directories and files if the given entry is a directory
+	         *
+	         * @param {ZipEntry|string} entry
+	         * @returns {void}
+	         */
+	        deleteFile: function (entry, withsubfolders = true) {
+	            // @TODO: test deleteFile
+	            var item = getEntry(entry);
+	            if (item) {
+	                _zip.deleteFile(item.entryName, withsubfolders);
+	            }
+	        },
+
+	        /**
+	         * Remove the entry from the file or directory without affecting any nested entries
+	         *
+	         * @param {ZipEntry|string} entry
+	         * @returns {void}
+	         */
+	        deleteEntry: function (entry) {
+	            // @TODO: test deleteEntry
+	            var item = getEntry(entry);
+	            if (item) {
+	                _zip.deleteEntry(item.entryName);
+	            }
+	        },
+
+	        /**
+	         * Adds a comment to the zip. The zip must be rewritten after adding the comment.
+	         *
+	         * @param {string} comment
+	         */
+	        addZipComment: function (comment) {
+	            // @TODO: test addZipComment
+	            _zip.comment = comment;
+	        },
+
+	        /**
+	         * Returns the zip comment
+	         *
+	         * @return String
+	         */
+	        getZipComment: function () {
+	            return _zip.comment || "";
+	        },
+
+	        /**
+	         * Adds a comment to a specified zipEntry. The zip must be rewritten after adding the comment
+	         * The comment cannot exceed 65535 characters in length
+	         *
+	         * @param {ZipEntry} entry
+	         * @param {string} comment
+	         */
+	        addZipEntryComment: function (entry, comment) {
+	            var item = getEntry(entry);
+	            if (item) {
+	                item.comment = comment;
+	            }
+	        },
+
+	        /**
+	         * Returns the comment of the specified entry
+	         *
+	         * @param {ZipEntry} entry
+	         * @return String
+	         */
+	        getZipEntryComment: function (entry) {
+	            var item = getEntry(entry);
+	            if (item) {
+	                return item.comment || "";
+	            }
+	            return "";
+	        },
+
+	        /**
+	         * Updates the content of an existing entry inside the archive. The zip must be rewritten after updating the content
+	         *
+	         * @param {ZipEntry} entry
+	         * @param {Buffer} content
+	         */
+	        updateFile: function (entry, content) {
+	            var item = getEntry(entry);
+	            if (item) {
+	                item.setData(content);
+	            }
+	        },
+
+	        /**
+	         * Adds a file from the disk to the archive
+	         *
+	         * @param {string} localPath File to add to zip
+	         * @param {string} [zipPath] Optional path inside the zip
+	         * @param {string} [zipName] Optional name for the file
+	         * @param {string} [comment] Optional file comment
+	         */
+	        addLocalFile: function (localPath, zipPath, zipName, comment) {
+	            if (filetools.fs.existsSync(localPath)) {
+	                // fix ZipPath
+	                zipPath = zipPath ? fixPath(zipPath) : "";
+
+	                // p - local file name
+	                const p = pth.win32.basename(pth.win32.normalize(localPath));
+
+	                // add file name into zippath
+	                zipPath += zipName ? zipName : p;
+
+	                // read file attributes
+	                const _attr = filetools.fs.statSync(localPath);
+
+	                // get file content
+	                const data = _attr.isFile() ? filetools.fs.readFileSync(localPath) : Buffer.alloc(0);
+
+	                // if folder
+	                if (_attr.isDirectory()) zipPath += filetools.sep;
+
+	                // add file into zip file
+	                this.addFile(zipPath, data, comment, _attr);
+	            } else {
+	                throw Utils.Errors.FILE_NOT_FOUND(localPath);
+	            }
+	        },
+
+	        /**
+	         * Callback for showing if everything was done.
+	         *
+	         * @callback doneCallback
+	         * @param {Error} err - Error object
+	         * @param {boolean} done - was request fully completed
+	         */
+
+	        /**
+	         * Adds a file from the disk to the archive
+	         *
+	         * @param {(object|string)} options - options object, if it is string it us used as localPath.
+	         * @param {string} options.localPath - Local path to the file.
+	         * @param {string} [options.comment] - Optional file comment.
+	         * @param {string} [options.zipPath] - Optional path inside the zip
+	         * @param {string} [options.zipName] - Optional name for the file
+	         * @param {doneCallback} callback - The callback that handles the response.
+	         */
+	        addLocalFileAsync: function (options, callback) {
+	            options = typeof options === "object" ? options : { localPath: options };
+	            const localPath = pth.resolve(options.localPath);
+	            const { comment } = options;
+	            let { zipPath, zipName } = options;
+	            const self = this;
+
+	            filetools.fs.stat(localPath, function (err, stats) {
+	                if (err) return callback(err, false);
+	                // fix ZipPath
+	                zipPath = zipPath ? fixPath(zipPath) : "";
+	                // p - local file name
+	                const p = pth.win32.basename(pth.win32.normalize(localPath));
+	                // add file name into zippath
+	                zipPath += zipName ? zipName : p;
+
+	                if (stats.isFile()) {
+	                    filetools.fs.readFile(localPath, function (err, data) {
+	                        if (err) return callback(err, false);
+	                        self.addFile(zipPath, data, comment, stats);
+	                        return setImmediate(callback, undefined, true);
+	                    });
+	                } else if (stats.isDirectory()) {
+	                    zipPath += filetools.sep;
+	                    self.addFile(zipPath, Buffer.alloc(0), comment, stats);
+	                    return setImmediate(callback, undefined, true);
+	                }
+	            });
+	        },
+
+	        /**
+	         * Adds a local directory and all its nested files and directories to the archive
+	         *
+	         * @param {string} localPath - local path to the folder
+	         * @param {string} [zipPath] - optional path inside zip
+	         * @param {(RegExp|function)} [filter] - optional RegExp or Function if files match will be included.
+	         */
+	        addLocalFolder: function (localPath, zipPath, filter) {
+	            // Prepare filter
+	            filter = filenameFilter(filter);
+
+	            // fix ZipPath
+	            zipPath = zipPath ? fixPath(zipPath) : "";
+
+	            // normalize the path first
+	            localPath = pth.normalize(localPath);
+
+	            if (filetools.fs.existsSync(localPath)) {
+	                const items = filetools.findFiles(localPath);
+	                const self = this;
+
+	                if (items.length) {
+	                    for (const filepath of items) {
+	                        const p = pth.join(zipPath, relativePath(localPath, filepath));
+	                        if (filter(p)) {
+	                            self.addLocalFile(filepath, pth.dirname(p));
+	                        }
+	                    }
+	                }
+	            } else {
+	                throw Utils.Errors.FILE_NOT_FOUND(localPath);
+	            }
+	        },
+
+	        /**
+	         * Asynchronous addLocalFolder
+	         * @param {string} localPath
+	         * @param {callback} callback
+	         * @param {string} [zipPath] optional path inside zip
+	         * @param {RegExp|function} [filter] optional RegExp or Function if files match will
+	         *               be included.
+	         */
+	        addLocalFolderAsync: function (localPath, callback, zipPath, filter) {
+	            // Prepare filter
+	            filter = filenameFilter(filter);
+
+	            // fix ZipPath
+	            zipPath = zipPath ? fixPath(zipPath) : "";
+
+	            // normalize the path first
+	            localPath = pth.normalize(localPath);
+
+	            var self = this;
+	            filetools.fs.open(localPath, "r", function (err) {
+	                if (err && err.code === "ENOENT") {
+	                    callback(undefined, Utils.Errors.FILE_NOT_FOUND(localPath));
+	                } else if (err) {
+	                    callback(undefined, err);
+	                } else {
+	                    var items = filetools.findFiles(localPath);
+	                    var i = -1;
+
+	                    var next = function () {
+	                        i += 1;
+	                        if (i < items.length) {
+	                            var filepath = items[i];
+	                            var p = relativePath(localPath, filepath).split("\\").join("/"); //windows fix
+	                            p = p
+	                                .normalize("NFD")
+	                                .replace(/[\u0300-\u036f]/g, "")
+	                                .replace(/[^\x20-\x7E]/g, ""); // accent fix
+	                            if (filter(p)) {
+	                                filetools.fs.stat(filepath, function (er0, stats) {
+	                                    if (er0) callback(undefined, er0);
+	                                    if (stats.isFile()) {
+	                                        filetools.fs.readFile(filepath, function (er1, data) {
+	                                            if (er1) {
+	                                                callback(undefined, er1);
+	                                            } else {
+	                                                self.addFile(zipPath + p, data, "", stats);
+	                                                next();
+	                                            }
+	                                        });
+	                                    } else {
+	                                        self.addFile(zipPath + p + "/", Buffer.alloc(0), "", stats);
+	                                        next();
+	                                    }
+	                                });
+	                            } else {
+	                                process.nextTick(() => {
+	                                    next();
+	                                });
+	                            }
+	                        } else {
+	                            callback(true, undefined);
+	                        }
+	                    };
+
+	                    next();
+	                }
+	            });
+	        },
+
+	        /**
+	         * Adds a local directory and all its nested files and directories to the archive
+	         *
+	         * @param {object | string} options - options object, if it is string it us used as localPath.
+	         * @param {string} options.localPath - Local path to the folder.
+	         * @param {string} [options.zipPath] - optional path inside zip.
+	         * @param {RegExp|function} [options.filter] - optional RegExp or Function if files match will be included.
+	         * @param {function|string} [options.namefix] - optional function to help fix filename
+	         * @param {doneCallback} callback - The callback that handles the response.
+	         *
+	         */
+	        addLocalFolderAsync2: function (options, callback) {
+	            const self = this;
+	            options = typeof options === "object" ? options : { localPath: options };
+	            localPath = pth.resolve(fixPath(options.localPath));
+	            let { zipPath, filter, namefix } = options;
+
+	            if (filter instanceof RegExp) {
+	                filter = (function (rx) {
+	                    return function (filename) {
+	                        return rx.test(filename);
+	                    };
+	                })(filter);
+	            } else if ("function" !== typeof filter) {
+	                filter = function () {
+	                    return true;
+	                };
+	            }
+
+	            // fix ZipPath
+	            zipPath = zipPath ? fixPath(zipPath) : "";
+
+	            // Check Namefix function
+	            if (namefix == "latin1") {
+	                namefix = (str) =>
+	                    str
+	                        .normalize("NFD")
+	                        .replace(/[\u0300-\u036f]/g, "")
+	                        .replace(/[^\x20-\x7E]/g, ""); // accent fix (latin1 characers only)
+	            }
+
+	            if (typeof namefix !== "function") namefix = (str) => str;
+
+	            // internal, create relative path + fix the name
+	            const relPathFix = (entry) => pth.join(zipPath, namefix(relativePath(localPath, entry)));
+	            const fileNameFix = (entry) => pth.win32.basename(pth.win32.normalize(namefix(entry)));
+
+	            filetools.fs.open(localPath, "r", function (err) {
+	                if (err && err.code === "ENOENT") {
+	                    callback(undefined, Utils.Errors.FILE_NOT_FOUND(localPath));
+	                } else if (err) {
+	                    callback(undefined, err);
+	                } else {
+	                    filetools.findFilesAsync(localPath, function (err, fileEntries) {
+	                        if (err) return callback(err);
+	                        fileEntries = fileEntries.filter((dir) => filter(relPathFix(dir)));
+	                        if (!fileEntries.length) callback(undefined, false);
+
+	                        setImmediate(
+	                            fileEntries.reverse().reduce(function (next, entry) {
+	                                return function (err, done) {
+	                                    if (err || done === false) return setImmediate(next, err, false);
+
+	                                    self.addLocalFileAsync(
+	                                        {
+	                                            localPath: entry,
+	                                            zipPath: pth.dirname(relPathFix(entry)),
+	                                            zipName: fileNameFix(entry)
+	                                        },
+	                                        next
+	                                    );
+	                                };
+	                            }, callback)
+	                        );
+	                    });
+	                }
+	            });
+	        },
+
+	        /**
+	         * Adds a local directory and all its nested files and directories to the archive
+	         *
+	         * @param {string} localPath - path where files will be extracted
+	         * @param {object} props - optional properties
+	         * @param {string} [props.zipPath] - optional path inside zip
+	         * @param {RegExp|function} [props.filter] - optional RegExp or Function if files match will be included.
+	         * @param {function|string} [props.namefix] - optional function to help fix filename
+	         */
+	        addLocalFolderPromise: function (localPath, props) {
+	            return new Promise((resolve, reject) => {
+	                this.addLocalFolderAsync2(Object.assign({ localPath }, props), (err, done) => {
+	                    if (err) reject(err);
+	                    if (done) resolve(this);
+	                });
+	            });
+	        },
+
+	        /**
+	         * Allows you to create a entry (file or directory) in the zip file.
+	         * If you want to create a directory the entryName must end in / and a null buffer should be provided.
+	         * Comment and attributes are optional
+	         *
+	         * @param {string} entryName
+	         * @param {Buffer | string} content - file content as buffer or utf8 coded string
+	         * @param {string} [comment] - file comment
+	         * @param {number | object} [attr] - number as unix file permissions, object as filesystem Stats object
+	         */
+	        addFile: function (entryName, content, comment, attr) {
+	            entryName = zipnamefix(entryName);
+	            let entry = getEntry(entryName);
+	            const update = entry != null;
+
+	            // prepare new entry
+	            if (!update) {
+	                entry = new ZipEntry(opts);
+	                entry.entryName = entryName;
+	            }
+	            entry.comment = comment || "";
+
+	            const isStat = "object" === typeof attr && attr instanceof filetools.fs.Stats;
+
+	            // last modification time from file stats
+	            if (isStat) {
+	                entry.header.time = attr.mtime;
+	            }
+
+	            // Set file attribute
+	            var fileattr = entry.isDirectory ? 0x10 : 0; // (MS-DOS directory flag)
+
+	            // extended attributes field for Unix
+	            // set file type either S_IFDIR / S_IFREG
+	            let unix = entry.isDirectory ? 0x4000 : 0x8000;
+
+	            if (isStat) {
+	                // File attributes from file stats
+	                unix |= 0xfff & attr.mode;
+	            } else if ("number" === typeof attr) {
+	                // attr from given attr values
+	                unix |= 0xfff & attr;
+	            } else {
+	                // Default values:
+	                unix |= entry.isDirectory ? 0o755 : 0o644; // permissions (drwxr-xr-x) or (-r-wr--r--)
+	            }
+
+	            fileattr = (fileattr | (unix << 16)) >>> 0; // add attributes
+
+	            entry.attr = fileattr;
+
+	            entry.setData(content);
+	            if (!update) _zip.setEntry(entry);
+
+	            return entry;
+	        },
+
+	        /**
+	         * Returns an array of ZipEntry objects representing the files and folders inside the archive
+	         *
+	         * @param {string} [password]
+	         * @returns Array
+	         */
+	        getEntries: function (password) {
+	            _zip.password = password;
+	            return _zip ? _zip.entries : [];
+	        },
+
+	        /**
+	         * Returns a ZipEntry object representing the file or folder specified by ``name``.
+	         *
+	         * @param {string} name
+	         * @return ZipEntry
+	         */
+	        getEntry: function (/**String*/ name) {
+	            return getEntry(name);
+	        },
+
+	        getEntryCount: function () {
+	            return _zip.getEntryCount();
+	        },
+
+	        forEach: function (callback) {
+	            return _zip.forEach(callback);
+	        },
+
+	        /**
+	         * Extracts the given entry to the given targetPath
+	         * If the entry is a directory inside the archive, the entire directory and it's subdirectories will be extracted
+	         *
+	         * @param {string|ZipEntry} entry - ZipEntry object or String with the full path of the entry
+	         * @param {string} targetPath - Target folder where to write the file
+	         * @param {boolean} [maintainEntryPath=true] - If maintainEntryPath is true and the entry is inside a folder, the entry folder will be created in targetPath as well. Default is TRUE
+	         * @param {boolean} [overwrite=false] - If the file already exists at the target path, the file will be overwriten if this is true.
+	         * @param {boolean} [keepOriginalPermission=false] - The file will be set as the permission from the entry if this is true.
+	         * @param {string} [outFileName] - String If set will override the filename of the extracted file (Only works if the entry is a file)
+	         *
+	         * @return Boolean
+	         */
+	        extractEntryTo: function (entry, targetPath, maintainEntryPath, overwrite, keepOriginalPermission, outFileName) {
+	            overwrite = get_Bool(false, overwrite);
+	            keepOriginalPermission = get_Bool(false, keepOriginalPermission);
+	            maintainEntryPath = get_Bool(true, maintainEntryPath);
+	            outFileName = get_Str(keepOriginalPermission, outFileName);
+
+	            var item = getEntry(entry);
+	            if (!item) {
+	                throw Utils.Errors.NO_ENTRY();
+	            }
+
+	            var entryName = canonical(item.entryName);
+
+	            var target = sanitize(targetPath, outFileName && !item.isDirectory ? outFileName : maintainEntryPath ? entryName : pth.basename(entryName));
+
+	            if (item.isDirectory) {
+	                var children = _zip.getEntryChildren(item);
+	                children.forEach(function (child) {
+	                    if (child.isDirectory) return;
+	                    var content = child.getData();
+	                    if (!content) {
+	                        throw Utils.Errors.CANT_EXTRACT_FILE();
+	                    }
+	                    var name = canonical(child.entryName);
+	                    var childName = sanitize(targetPath, maintainEntryPath ? name : pth.basename(name));
+	                    // The reverse operation for attr depend on method addFile()
+	                    const fileAttr = keepOriginalPermission ? child.header.fileAttr : undefined;
+	                    filetools.writeFileTo(childName, content, overwrite, fileAttr);
+	                });
+	                return true;
+	            }
+
+	            var content = item.getData(_zip.password);
+	            if (!content) throw Utils.Errors.CANT_EXTRACT_FILE();
+
+	            if (filetools.fs.existsSync(target) && !overwrite) {
+	                throw Utils.Errors.CANT_OVERRIDE();
+	            }
+	            // The reverse operation for attr depend on method addFile()
+	            const fileAttr = keepOriginalPermission ? entry.header.fileAttr : undefined;
+	            filetools.writeFileTo(target, content, overwrite, fileAttr);
+
+	            return true;
+	        },
+
+	        /**
+	         * Test the archive
+	         * @param {string} [pass]
+	         */
+	        test: function (pass) {
+	            if (!_zip) {
+	                return false;
+	            }
+
+	            for (var entry in _zip.entries) {
+	                try {
+	                    if (entry.isDirectory) {
+	                        continue;
+	                    }
+	                    var content = _zip.entries[entry].getData(pass);
+	                    if (!content) {
+	                        return false;
+	                    }
+	                } catch (err) {
+	                    return false;
+	                }
+	            }
+	            return true;
+	        },
+
+	        /**
+	         * Extracts the entire archive to the given location
+	         *
+	         * @param {string} targetPath Target location
+	         * @param {boolean} [overwrite=false] If the file already exists at the target path, the file will be overwriten if this is true.
+	         *                  Default is FALSE
+	         * @param {boolean} [keepOriginalPermission=false] The file will be set as the permission from the entry if this is true.
+	         *                  Default is FALSE
+	         * @param {string|Buffer} [pass] password
+	         */
+	        extractAllTo: function (targetPath, overwrite, keepOriginalPermission, pass) {
+	            keepOriginalPermission = get_Bool(false, keepOriginalPermission);
+	            pass = get_Str(keepOriginalPermission, pass);
+	            overwrite = get_Bool(false, overwrite);
+	            if (!_zip) throw Utils.Errors.NO_ZIP();
+
+	            _zip.entries.forEach(function (entry) {
+	                var entryName = sanitize(targetPath, canonical(entry.entryName));
+	                if (entry.isDirectory) {
+	                    filetools.makeDir(entryName);
+	                    return;
+	                }
+	                var content = entry.getData(pass);
+	                if (!content) {
+	                    throw Utils.Errors.CANT_EXTRACT_FILE();
+	                }
+	                // The reverse operation for attr depend on method addFile()
+	                const fileAttr = keepOriginalPermission ? entry.header.fileAttr : undefined;
+	                filetools.writeFileTo(entryName, content, overwrite, fileAttr);
+	                try {
+	                    filetools.fs.utimesSync(entryName, entry.header.time, entry.header.time);
+	                } catch (err) {
+	                    throw Utils.Errors.CANT_EXTRACT_FILE();
+	                }
+	            });
+	        },
+
+	        /**
+	         * Asynchronous extractAllTo
+	         *
+	         * @param {string} targetPath Target location
+	         * @param {boolean} [overwrite=false] If the file already exists at the target path, the file will be overwriten if this is true.
+	         *                  Default is FALSE
+	         * @param {boolean} [keepOriginalPermission=false] The file will be set as the permission from the entry if this is true.
+	         *                  Default is FALSE
+	         * @param {function} callback The callback will be executed when all entries are extracted successfully or any error is thrown.
+	         */
+	        extractAllToAsync: function (targetPath, overwrite, keepOriginalPermission, callback) {
+	            callback = get_Fun(overwrite, keepOriginalPermission, callback);
+	            keepOriginalPermission = get_Bool(false, keepOriginalPermission);
+	            overwrite = get_Bool(false, overwrite);
+	            if (!callback) {
+	                return new Promise((resolve, reject) => {
+	                    this.extractAllToAsync(targetPath, overwrite, keepOriginalPermission, function (err) {
+	                        if (err) {
+	                            reject(err);
+	                        } else {
+	                            resolve(this);
+	                        }
+	                    });
+	                });
+	            }
+	            if (!_zip) {
+	                callback(Utils.Errors.NO_ZIP());
+	                return;
+	            }
+
+	            targetPath = pth.resolve(targetPath);
+	            // convert entryName to
+	            const getPath = (entry) => sanitize(targetPath, pth.normalize(canonical(entry.entryName)));
+	            const getError = (msg, file) => new Error(msg + ': "' + file + '"');
+
+	            // separate directories from files
+	            const dirEntries = [];
+	            const fileEntries = [];
+	            _zip.entries.forEach((e) => {
+	                if (e.isDirectory) {
+	                    dirEntries.push(e);
+	                } else {
+	                    fileEntries.push(e);
+	                }
+	            });
+
+	            // Create directory entries first synchronously
+	            // this prevents race condition and assures folders are there before writing files
+	            for (const entry of dirEntries) {
+	                const dirPath = getPath(entry);
+	                // The reverse operation for attr depend on method addFile()
+	                const dirAttr = keepOriginalPermission ? entry.header.fileAttr : undefined;
+	                try {
+	                    filetools.makeDir(dirPath);
+	                    if (dirAttr) filetools.fs.chmodSync(dirPath, dirAttr);
+	                    // in unix timestamp will change if files are later added to folder, but still
+	                    filetools.fs.utimesSync(dirPath, entry.header.time, entry.header.time);
+	                } catch (er) {
+	                    callback(getError("Unable to create folder", dirPath));
+	                }
+	            }
+
+	            fileEntries.reverse().reduce(function (next, entry) {
+	                return function (err) {
+	                    if (err) {
+	                        next(err);
+	                    } else {
+	                        const entryName = pth.normalize(canonical(entry.entryName));
+	                        const filePath = sanitize(targetPath, entryName);
+	                        entry.getDataAsync(function (content, err_1) {
+	                            if (err_1) {
+	                                next(err_1);
+	                            } else if (!content) {
+	                                next(Utils.Errors.CANT_EXTRACT_FILE());
+	                            } else {
+	                                // The reverse operation for attr depend on method addFile()
+	                                const fileAttr = keepOriginalPermission ? entry.header.fileAttr : undefined;
+	                                filetools.writeFileToAsync(filePath, content, overwrite, fileAttr, function (succ) {
+	                                    if (!succ) {
+	                                        next(getError("Unable to write file", filePath));
+	                                    }
+	                                    filetools.fs.utimes(filePath, entry.header.time, entry.header.time, function (err_2) {
+	                                        if (err_2) {
+	                                            next(getError("Unable to set times", filePath));
+	                                        } else {
+	                                            next();
+	                                        }
+	                                    });
+	                                });
+	                            }
+	                        });
+	                    }
+	                };
+	            }, callback)();
+	        },
+
+	        /**
+	         * Writes the newly created zip file to disk at the specified location or if a zip was opened and no ``targetFileName`` is provided, it will overwrite the opened zip
+	         *
+	         * @param {string} targetFileName
+	         * @param {function} callback
+	         */
+	        writeZip: function (targetFileName, callback) {
+	            if (arguments.length === 1) {
+	                if (typeof targetFileName === "function") {
+	                    callback = targetFileName;
+	                    targetFileName = "";
+	                }
+	            }
+
+	            if (!targetFileName && opts.filename) {
+	                targetFileName = opts.filename;
+	            }
+	            if (!targetFileName) return;
+
+	            var zipData = _zip.compressToBuffer();
+	            if (zipData) {
+	                var ok = filetools.writeFileTo(targetFileName, zipData, true);
+	                if (typeof callback === "function") callback(!ok ? new Error("failed") : null, "");
+	            }
+	        },
+
+	        /**
+	         *
+	         * @param {string} targetFileName
+	         * @param {object} [props]
+	         * @param {boolean} [props.overwrite=true] If the file already exists at the target path, the file will be overwriten if this is true.
+	         * @param {boolean} [props.perm] The file will be set as the permission from the entry if this is true.
+
+	         * @returns {Promise<void>}
+	         */
+	        writeZipPromise: function (/**String*/ targetFileName, /* object */ props) {
+	            const { overwrite, perm } = Object.assign({ overwrite: true }, props);
+
+	            return new Promise((resolve, reject) => {
+	                // find file name
+	                if (!targetFileName && opts.filename) targetFileName = opts.filename;
+	                if (!targetFileName) reject("ADM-ZIP: ZIP File Name Missing");
+
+	                this.toBufferPromise().then((zipData) => {
+	                    const ret = (done) => (done ? resolve(done) : reject("ADM-ZIP: Wasn't able to write zip file"));
+	                    filetools.writeFileToAsync(targetFileName, zipData, overwrite, perm, ret);
+	                }, reject);
+	            });
+	        },
+
+	        /**
+	         * @returns {Promise<Buffer>} A promise to the Buffer.
+	         */
+	        toBufferPromise: function () {
+	            return new Promise((resolve, reject) => {
+	                _zip.toAsyncBuffer(resolve, reject);
+	            });
+	        },
+
+	        /**
+	         * Returns the content of the entire zip file as a Buffer object
+	         *
+	         * @prop {function} [onSuccess]
+	         * @prop {function} [onFail]
+	         * @prop {function} [onItemStart]
+	         * @prop {function} [onItemEnd]
+	         * @returns {Buffer}
+	         */
+	        toBuffer: function (onSuccess, onFail, onItemStart, onItemEnd) {
+	            if (typeof onSuccess === "function") {
+	                _zip.toAsyncBuffer(onSuccess, onFail, onItemStart, onItemEnd);
+	                return null;
+	            }
+	            return _zip.compressToBuffer();
+	        }
+	    };
+	};
+	return admZip;
+}
+
+var admZipExports = requireAdmZip();
+var AdmZip = /*@__PURE__*/getDefaultExportFromCjs(admZipExports);
+
+const defaultMessages = 'End-Of-Stream';
 /**
- * Waits for a number of milliseconds.
- *
- * @param milliseconds The number of milliseconds to wait.
- * @returns Resolves with 'done!' after the wait is over.
+ * Thrown on read operation of the end of file or stream has been reached
  */
-async function wait(milliseconds) {
-    return new Promise((resolve) => {
-        if (isNaN(milliseconds))
-            throw new Error('milliseconds is not a number');
-        setTimeout(() => resolve('done!'), milliseconds);
-    });
+class EndOfStreamError extends Error {
+    constructor() {
+        super(defaultMessages);
+        this.name = "EndOfStreamError";
+    }
+}
+class AbortError extends Error {
+    constructor(message = "The operation was aborted") {
+        super(message);
+        this.name = "AbortError";
+    }
+}
+
+class Deferred {
+    constructor() {
+        this.resolve = () => null;
+        this.reject = () => null;
+        this.promise = new Promise((resolve, reject) => {
+            this.reject = reject;
+            this.resolve = resolve;
+        });
+    }
+}
+
+class AbstractStreamReader {
+    constructor() {
+        this.endOfStream = false;
+        this.interrupted = false;
+        /**
+         * Store peeked data
+         * @type {Array}
+         */
+        this.peekQueue = [];
+    }
+    async peek(uint8Array, mayBeLess = false) {
+        const bytesRead = await this.read(uint8Array, mayBeLess);
+        this.peekQueue.push(uint8Array.subarray(0, bytesRead)); // Put read data back to peek buffer
+        return bytesRead;
+    }
+    async read(buffer, mayBeLess = false) {
+        if (buffer.length === 0) {
+            return 0;
+        }
+        let bytesRead = this.readFromPeekBuffer(buffer);
+        if (!this.endOfStream) {
+            bytesRead += await this.readRemainderFromStream(buffer.subarray(bytesRead), mayBeLess);
+        }
+        if (bytesRead === 0 && !mayBeLess) {
+            throw new EndOfStreamError();
+        }
+        return bytesRead;
+    }
+    /**
+     * Read chunk from stream
+     * @param buffer - Target Uint8Array (or Buffer) to store data read from stream in
+     * @returns Number of bytes read
+     */
+    readFromPeekBuffer(buffer) {
+        let remaining = buffer.length;
+        let bytesRead = 0;
+        // consume peeked data first
+        while (this.peekQueue.length > 0 && remaining > 0) {
+            const peekData = this.peekQueue.pop(); // Front of queue
+            if (!peekData)
+                throw new Error('peekData should be defined');
+            const lenCopy = Math.min(peekData.length, remaining);
+            buffer.set(peekData.subarray(0, lenCopy), bytesRead);
+            bytesRead += lenCopy;
+            remaining -= lenCopy;
+            if (lenCopy < peekData.length) {
+                // remainder back to queue
+                this.peekQueue.push(peekData.subarray(lenCopy));
+            }
+        }
+        return bytesRead;
+    }
+    async readRemainderFromStream(buffer, mayBeLess) {
+        let bytesRead = 0;
+        // Continue reading from stream if required
+        while (bytesRead < buffer.length && !this.endOfStream) {
+            if (this.interrupted) {
+                throw new AbortError();
+            }
+            const chunkLen = await this.readFromStream(buffer.subarray(bytesRead), mayBeLess);
+            if (chunkLen === 0)
+                break;
+            bytesRead += chunkLen;
+        }
+        if (!mayBeLess && bytesRead < buffer.length) {
+            throw new EndOfStreamError();
+        }
+        return bytesRead;
+    }
+}
+
+/**
+ * Node.js Readable Stream Reader
+ * Ref: https://nodejs.org/api/stream.html#readable-streams
+ */
+class StreamReader extends AbstractStreamReader {
+    constructor(s) {
+        super();
+        this.s = s;
+        /**
+         * Deferred used for postponed read request (as not data is yet available to read)
+         */
+        this.deferred = null;
+        if (!s.read || !s.once) {
+            throw new Error('Expected an instance of stream.Readable');
+        }
+        this.s.once('end', () => {
+            this.endOfStream = true;
+            if (this.deferred) {
+                this.deferred.resolve(0);
+            }
+        });
+        this.s.once('error', err => this.reject(err));
+        this.s.once('close', () => this.abort());
+    }
+    /**
+     * Read chunk from stream
+     * @param buffer Target Uint8Array (or Buffer) to store data read from stream in
+     * @param mayBeLess - If true, may fill the buffer partially
+     * @returns Number of bytes read
+     */
+    async readFromStream(buffer, mayBeLess) {
+        if (buffer.length === 0)
+            return 0;
+        const readBuffer = this.s.read(buffer.length);
+        if (readBuffer) {
+            buffer.set(readBuffer);
+            return readBuffer.length;
+        }
+        const request = {
+            buffer,
+            mayBeLess,
+            deferred: new Deferred()
+        };
+        this.deferred = request.deferred;
+        this.s.once('readable', () => {
+            this.readDeferred(request);
+        });
+        return request.deferred.promise;
+    }
+    /**
+     * Process deferred read request
+     * @param request Deferred read request
+     */
+    readDeferred(request) {
+        const readBuffer = this.s.read(request.buffer.length);
+        if (readBuffer) {
+            request.buffer.set(readBuffer);
+            request.deferred.resolve(readBuffer.length);
+            this.deferred = null;
+        }
+        else {
+            this.s.once('readable', () => {
+                this.readDeferred(request);
+            });
+        }
+    }
+    reject(err) {
+        this.interrupted = true;
+        if (this.deferred) {
+            this.deferred.reject(err);
+            this.deferred = null;
+        }
+    }
+    async abort() {
+        this.reject(new AbortError());
+    }
+    async close() {
+        return this.abort();
+    }
+}
+
+class WebStreamReader extends AbstractStreamReader {
+    constructor(reader) {
+        super();
+        this.reader = reader;
+    }
+    async abort() {
+        return this.close();
+    }
+    async close() {
+        this.reader.releaseLock();
+    }
+}
+
+/**
+ * Read from a WebStream using a BYOB reader
+ * Reference: https://nodejs.org/api/webstreams.html#class-readablestreambyobreader
+ */
+class WebStreamByobReader extends WebStreamReader {
+    /**
+     * Read from stream
+     * @param buffer - Target Uint8Array (or Buffer) to store data read from stream in
+     * @param mayBeLess - If true, may fill the buffer partially
+     * @protected Bytes read
+     */
+    async readFromStream(buffer, mayBeLess) {
+        if (buffer.length === 0)
+            return 0;
+        // @ts-ignore
+        const result = await this.reader.read(new Uint8Array(buffer.length), { min: mayBeLess ? undefined : buffer.length });
+        if (result.done) {
+            this.endOfStream = result.done;
+        }
+        if (result.value) {
+            buffer.set(result.value);
+            return result.value.length;
+        }
+        return 0;
+    }
+}
+
+class WebStreamDefaultReader extends AbstractStreamReader {
+    constructor(reader) {
+        super();
+        this.reader = reader;
+        this.buffer = null; // Internal buffer to store excess data
+    }
+    /**
+     * Copy chunk to target, and store the remainder in this.buffer
+     */
+    writeChunk(target, chunk) {
+        const written = Math.min(chunk.length, target.length);
+        target.set(chunk.subarray(0, written));
+        // Adjust the remainder of the buffer
+        if (written < chunk.length) {
+            this.buffer = chunk.subarray(written);
+        }
+        else {
+            this.buffer = null;
+        }
+        return written;
+    }
+    /**
+     * Read from stream
+     * @param buffer - Target Uint8Array (or Buffer) to store data read from stream in
+     * @param mayBeLess - If true, may fill the buffer partially
+     * @protected Bytes read
+     */
+    async readFromStream(buffer, mayBeLess) {
+        if (buffer.length === 0)
+            return 0;
+        let totalBytesRead = 0;
+        // Serve from the internal buffer first
+        if (this.buffer) {
+            totalBytesRead += this.writeChunk(buffer, this.buffer);
+        }
+        // Continue reading from the stream if more data is needed
+        while (totalBytesRead < buffer.length && !this.endOfStream) {
+            const result = await this.reader.read();
+            if (result.done) {
+                this.endOfStream = true;
+                break;
+            }
+            if (result.value) {
+                totalBytesRead += this.writeChunk(buffer.subarray(totalBytesRead), result.value);
+            }
+        }
+        if (!mayBeLess && totalBytesRead === 0 && this.endOfStream) {
+            throw new EndOfStreamError();
+        }
+        return totalBytesRead;
+    }
+    abort() {
+        this.interrupted = true;
+        return this.reader.cancel();
+    }
+    async close() {
+        await this.abort();
+        this.reader.releaseLock();
+    }
+}
+
+function makeWebStreamReader(stream) {
+    try {
+        const reader = stream.getReader({ mode: "byob" });
+        if (reader instanceof ReadableStreamDefaultReader) {
+            // Fallback to default reader in case `mode: byob` is ignored
+            return new WebStreamDefaultReader(reader);
+        }
+        return new WebStreamByobReader(reader);
+    }
+    catch (error) {
+        if (error instanceof TypeError) {
+            // Fallback to default reader in case `mode: byob` rejected by a `TypeError`
+            return new WebStreamDefaultReader(stream.getReader());
+        }
+        throw error;
+    }
+}
+
+/**
+ * Core tokenizer
+ */
+class AbstractTokenizer {
+    /**
+     * Constructor
+     * @param options Tokenizer options
+     * @protected
+     */
+    constructor(options) {
+        this.numBuffer = new Uint8Array(8);
+        /**
+         * Tokenizer-stream position
+         */
+        this.position = 0;
+        this.onClose = options?.onClose;
+        if (options?.abortSignal) {
+            options.abortSignal.addEventListener('abort', () => {
+                this.abort();
+            });
+        }
+    }
+    /**
+     * Read a token from the tokenizer-stream
+     * @param token - The token to read
+     * @param position - If provided, the desired position in the tokenizer-stream
+     * @returns Promise with token data
+     */
+    async readToken(token, position = this.position) {
+        const uint8Array = new Uint8Array(token.len);
+        const len = await this.readBuffer(uint8Array, { position });
+        if (len < token.len)
+            throw new EndOfStreamError();
+        return token.get(uint8Array, 0);
+    }
+    /**
+     * Peek a token from the tokenizer-stream.
+     * @param token - Token to peek from the tokenizer-stream.
+     * @param position - Offset where to begin reading within the file. If position is null, data will be read from the current file position.
+     * @returns Promise with token data
+     */
+    async peekToken(token, position = this.position) {
+        const uint8Array = new Uint8Array(token.len);
+        const len = await this.peekBuffer(uint8Array, { position });
+        if (len < token.len)
+            throw new EndOfStreamError();
+        return token.get(uint8Array, 0);
+    }
+    /**
+     * Read a numeric token from the stream
+     * @param token - Numeric token
+     * @returns Promise with number
+     */
+    async readNumber(token) {
+        const len = await this.readBuffer(this.numBuffer, { length: token.len });
+        if (len < token.len)
+            throw new EndOfStreamError();
+        return token.get(this.numBuffer, 0);
+    }
+    /**
+     * Read a numeric token from the stream
+     * @param token - Numeric token
+     * @returns Promise with number
+     */
+    async peekNumber(token) {
+        const len = await this.peekBuffer(this.numBuffer, { length: token.len });
+        if (len < token.len)
+            throw new EndOfStreamError();
+        return token.get(this.numBuffer, 0);
+    }
+    /**
+     * Ignore number of bytes, advances the pointer in under tokenizer-stream.
+     * @param length - Number of bytes to ignore
+     * @return resolves the number of bytes ignored, equals length if this available, otherwise the number of bytes available
+     */
+    async ignore(length) {
+        if (this.fileInfo.size !== undefined) {
+            const bytesLeft = this.fileInfo.size - this.position;
+            if (length > bytesLeft) {
+                this.position += bytesLeft;
+                return bytesLeft;
+            }
+        }
+        this.position += length;
+        return length;
+    }
+    async close() {
+        await this.abort();
+        await this.onClose?.();
+    }
+    normalizeOptions(uint8Array, options) {
+        if (!this.supportsRandomAccess() && options && options.position !== undefined && options.position < this.position) {
+            throw new Error('`options.position` must be equal or greater than `tokenizer.position`');
+        }
+        return {
+            ...{
+                mayBeLess: false,
+                offset: 0,
+                length: uint8Array.length,
+                position: this.position
+            }, ...options
+        };
+    }
+    abort() {
+        return Promise.resolve(); // Ignore abort signal
+    }
+}
+
+const maxBufferSize = 256000;
+class ReadStreamTokenizer extends AbstractTokenizer {
+    /**
+     * Constructor
+     * @param streamReader stream-reader to read from
+     * @param options Tokenizer options
+     */
+    constructor(streamReader, options) {
+        super(options);
+        this.streamReader = streamReader;
+        this.fileInfo = options?.fileInfo ?? {};
+    }
+    /**
+     * Read buffer from tokenizer
+     * @param uint8Array - Target Uint8Array to fill with data read from the tokenizer-stream
+     * @param options - Read behaviour options
+     * @returns Promise with number of bytes read
+     */
+    async readBuffer(uint8Array, options) {
+        const normOptions = this.normalizeOptions(uint8Array, options);
+        const skipBytes = normOptions.position - this.position;
+        if (skipBytes > 0) {
+            await this.ignore(skipBytes);
+            return this.readBuffer(uint8Array, options);
+        }
+        if (skipBytes < 0) {
+            throw new Error('`options.position` must be equal or greater than `tokenizer.position`');
+        }
+        if (normOptions.length === 0) {
+            return 0;
+        }
+        const bytesRead = await this.streamReader.read(uint8Array.subarray(0, normOptions.length), normOptions.mayBeLess);
+        this.position += bytesRead;
+        if ((!options || !options.mayBeLess) && bytesRead < normOptions.length) {
+            throw new EndOfStreamError();
+        }
+        return bytesRead;
+    }
+    /**
+     * Peek (read ahead) buffer from tokenizer
+     * @param uint8Array - Uint8Array (or Buffer) to write data to
+     * @param options - Read behaviour options
+     * @returns Promise with number of bytes peeked
+     */
+    async peekBuffer(uint8Array, options) {
+        const normOptions = this.normalizeOptions(uint8Array, options);
+        let bytesRead = 0;
+        if (normOptions.position) {
+            const skipBytes = normOptions.position - this.position;
+            if (skipBytes > 0) {
+                const skipBuffer = new Uint8Array(normOptions.length + skipBytes);
+                bytesRead = await this.peekBuffer(skipBuffer, { mayBeLess: normOptions.mayBeLess });
+                uint8Array.set(skipBuffer.subarray(skipBytes));
+                return bytesRead - skipBytes;
+            }
+            if (skipBytes < 0) {
+                throw new Error('Cannot peek from a negative offset in a stream');
+            }
+        }
+        if (normOptions.length > 0) {
+            try {
+                bytesRead = await this.streamReader.peek(uint8Array.subarray(0, normOptions.length), normOptions.mayBeLess);
+            }
+            catch (err) {
+                if (options?.mayBeLess && err instanceof EndOfStreamError) {
+                    return 0;
+                }
+                throw err;
+            }
+            if ((!normOptions.mayBeLess) && bytesRead < normOptions.length) {
+                throw new EndOfStreamError();
+            }
+        }
+        return bytesRead;
+    }
+    async ignore(length) {
+        // debug(`ignore ${this.position}...${this.position + length - 1}`);
+        const bufSize = Math.min(maxBufferSize, length);
+        const buf = new Uint8Array(bufSize);
+        let totBytesRead = 0;
+        while (totBytesRead < length) {
+            const remaining = length - totBytesRead;
+            const bytesRead = await this.readBuffer(buf, { length: Math.min(bufSize, remaining) });
+            if (bytesRead < 0) {
+                return bytesRead;
+            }
+            totBytesRead += bytesRead;
+        }
+        return totBytesRead;
+    }
+    abort() {
+        return this.streamReader.abort();
+    }
+    async close() {
+        return this.streamReader.close();
+    }
+    supportsRandomAccess() {
+        return false;
+    }
+}
+
+class BufferTokenizer extends AbstractTokenizer {
+    /**
+     * Construct BufferTokenizer
+     * @param uint8Array - Uint8Array to tokenize
+     * @param options Tokenizer options
+     */
+    constructor(uint8Array, options) {
+        super(options);
+        this.uint8Array = uint8Array;
+        this.fileInfo = { ...options?.fileInfo ?? {}, ...{ size: uint8Array.length } };
+    }
+    /**
+     * Read buffer from tokenizer
+     * @param uint8Array - Uint8Array to tokenize
+     * @param options - Read behaviour options
+     * @returns {Promise<number>}
+     */
+    async readBuffer(uint8Array, options) {
+        if (options?.position) {
+            this.position = options.position;
+        }
+        const bytesRead = await this.peekBuffer(uint8Array, options);
+        this.position += bytesRead;
+        return bytesRead;
+    }
+    /**
+     * Peek (read ahead) buffer from tokenizer
+     * @param uint8Array
+     * @param options - Read behaviour options
+     * @returns {Promise<number>}
+     */
+    async peekBuffer(uint8Array, options) {
+        const normOptions = this.normalizeOptions(uint8Array, options);
+        const bytes2read = Math.min(this.uint8Array.length - normOptions.position, normOptions.length);
+        if ((!normOptions.mayBeLess) && bytes2read < normOptions.length) {
+            throw new EndOfStreamError();
+        }
+        uint8Array.set(this.uint8Array.subarray(normOptions.position, normOptions.position + bytes2read));
+        return bytes2read;
+    }
+    close() {
+        return super.close();
+    }
+    supportsRandomAccess() {
+        return true;
+    }
+    setPosition(position) {
+        this.position = position;
+    }
+}
+
+/**
+ * Construct ReadStreamTokenizer from given Stream.
+ * Will set fileSize, if provided given Stream has set the .path property/
+ * @param stream - Read from Node.js Stream.Readable
+ * @param options - Tokenizer options
+ * @returns ReadStreamTokenizer
+ */
+function fromStream$1(stream, options) {
+    const streamReader = new StreamReader(stream);
+    const _options = options ?? {};
+    const chainedClose = _options.onClose;
+    _options.onClose = async () => {
+        await streamReader.close();
+        if (chainedClose) {
+            return chainedClose();
+        }
+    };
+    return new ReadStreamTokenizer(streamReader, _options);
+}
+/**
+ * Construct ReadStreamTokenizer from given ReadableStream (WebStream API).
+ * Will set fileSize, if provided given Stream has set the .path property/
+ * @param webStream - Read from Node.js Stream.Readable (must be a byte stream)
+ * @param options - Tokenizer options
+ * @returns ReadStreamTokenizer
+ */
+function fromWebStream(webStream, options) {
+    const webStreamReader = makeWebStreamReader(webStream);
+    const _options = options ?? {};
+    const chainedClose = _options.onClose;
+    _options.onClose = async () => {
+        await webStreamReader.close();
+        if (chainedClose) {
+            return chainedClose();
+        }
+    };
+    return new ReadStreamTokenizer(webStreamReader, _options);
+}
+/**
+ * Construct ReadStreamTokenizer from given Buffer.
+ * @param uint8Array - Uint8Array to tokenize
+ * @param options - Tokenizer options
+ * @returns BufferTokenizer
+ */
+function fromBuffer(uint8Array, options) {
+    return new BufferTokenizer(uint8Array, options);
+}
+
+class FileTokenizer extends AbstractTokenizer {
+    /**
+     * Create tokenizer from provided file path
+     * @param sourceFilePath File path
+     */
+    static async fromFile(sourceFilePath) {
+        const fileHandle = await open(sourceFilePath, 'r');
+        const stat = await fileHandle.stat();
+        return new FileTokenizer(fileHandle, { fileInfo: { path: sourceFilePath, size: stat.size } });
+    }
+    constructor(fileHandle, options) {
+        super(options);
+        this.fileHandle = fileHandle;
+        this.fileInfo = options.fileInfo;
+    }
+    /**
+     * Read buffer from file
+     * @param uint8Array - Uint8Array to write result to
+     * @param options - Read behaviour options
+     * @returns Promise number of bytes read
+     */
+    async readBuffer(uint8Array, options) {
+        const normOptions = this.normalizeOptions(uint8Array, options);
+        this.position = normOptions.position;
+        if (normOptions.length === 0)
+            return 0;
+        const res = await this.fileHandle.read(uint8Array, 0, normOptions.length, normOptions.position);
+        this.position += res.bytesRead;
+        if (res.bytesRead < normOptions.length && (!options || !options.mayBeLess)) {
+            throw new EndOfStreamError();
+        }
+        return res.bytesRead;
+    }
+    /**
+     * Peek buffer from file
+     * @param uint8Array - Uint8Array (or Buffer) to write data to
+     * @param options - Read behaviour options
+     * @returns Promise number of bytes read
+     */
+    async peekBuffer(uint8Array, options) {
+        const normOptions = this.normalizeOptions(uint8Array, options);
+        const res = await this.fileHandle.read(uint8Array, 0, normOptions.length, normOptions.position);
+        if ((!normOptions.mayBeLess) && res.bytesRead < normOptions.length) {
+            throw new EndOfStreamError();
+        }
+        return res.bytesRead;
+    }
+    async close() {
+        await this.fileHandle.close();
+        return super.close();
+    }
+    setPosition(position) {
+        this.position = position;
+    }
+    supportsRandomAccess() {
+        return true;
+    }
+}
+
+/**
+ * Construct ReadStreamTokenizer from given Stream.
+ * Will set fileSize, if provided given Stream has set the .path property.
+ * @param stream - Node.js Stream.Readable
+ * @param options - Pass additional file information to the tokenizer
+ * @returns Tokenizer
+ */
+async function fromStream(stream, options) {
+    const rst = fromStream$1(stream, options);
+    if (stream.path) {
+        const stat$1 = await stat(stream.path);
+        rst.fileInfo.path = stream.path;
+        rst.fileInfo.size = stat$1.size;
+    }
+    return rst;
+}
+const fromFile = FileTokenizer.fromFile;
+
+var ieee754 = {};
+
+/*! ieee754. BSD-3-Clause License. Feross Aboukhadijeh <https://feross.org/opensource> */
+
+var hasRequiredIeee754;
+
+function requireIeee754 () {
+	if (hasRequiredIeee754) return ieee754;
+	hasRequiredIeee754 = 1;
+	ieee754.read = function (buffer, offset, isLE, mLen, nBytes) {
+	  var e, m;
+	  var eLen = (nBytes * 8) - mLen - 1;
+	  var eMax = (1 << eLen) - 1;
+	  var eBias = eMax >> 1;
+	  var nBits = -7;
+	  var i = isLE ? (nBytes - 1) : 0;
+	  var d = isLE ? -1 : 1;
+	  var s = buffer[offset + i];
+
+	  i += d;
+
+	  e = s & ((1 << (-nBits)) - 1);
+	  s >>= (-nBits);
+	  nBits += eLen;
+	  for (; nBits > 0; e = (e * 256) + buffer[offset + i], i += d, nBits -= 8) {}
+
+	  m = e & ((1 << (-nBits)) - 1);
+	  e >>= (-nBits);
+	  nBits += mLen;
+	  for (; nBits > 0; m = (m * 256) + buffer[offset + i], i += d, nBits -= 8) {}
+
+	  if (e === 0) {
+	    e = 1 - eBias;
+	  } else if (e === eMax) {
+	    return m ? NaN : ((s ? -1 : 1) * Infinity)
+	  } else {
+	    m = m + Math.pow(2, mLen);
+	    e = e - eBias;
+	  }
+	  return (s ? -1 : 1) * m * Math.pow(2, e - mLen)
+	};
+
+	ieee754.write = function (buffer, value, offset, isLE, mLen, nBytes) {
+	  var e, m, c;
+	  var eLen = (nBytes * 8) - mLen - 1;
+	  var eMax = (1 << eLen) - 1;
+	  var eBias = eMax >> 1;
+	  var rt = (mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0);
+	  var i = isLE ? 0 : (nBytes - 1);
+	  var d = isLE ? 1 : -1;
+	  var s = value < 0 || (value === 0 && 1 / value < 0) ? 1 : 0;
+
+	  value = Math.abs(value);
+
+	  if (isNaN(value) || value === Infinity) {
+	    m = isNaN(value) ? 1 : 0;
+	    e = eMax;
+	  } else {
+	    e = Math.floor(Math.log(value) / Math.LN2);
+	    if (value * (c = Math.pow(2, -e)) < 1) {
+	      e--;
+	      c *= 2;
+	    }
+	    if (e + eBias >= 1) {
+	      value += rt / c;
+	    } else {
+	      value += rt * Math.pow(2, 1 - eBias);
+	    }
+	    if (value * c >= 2) {
+	      e++;
+	      c /= 2;
+	    }
+
+	    if (e + eBias >= eMax) {
+	      m = 0;
+	      e = eMax;
+	    } else if (e + eBias >= 1) {
+	      m = ((value * c) - 1) * Math.pow(2, mLen);
+	      e = e + eBias;
+	    } else {
+	      m = value * Math.pow(2, eBias - 1) * Math.pow(2, mLen);
+	      e = 0;
+	    }
+	  }
+
+	  for (; mLen >= 8; buffer[offset + i] = m & 0xff, i += d, m /= 256, mLen -= 8) {}
+
+	  e = (e << mLen) | m;
+	  eLen += mLen;
+	  for (; eLen > 0; buffer[offset + i] = e & 0xff, i += d, e /= 256, eLen -= 8) {}
+
+	  buffer[offset + i - d] |= s * 128;
+	};
+	return ieee754;
+}
+
+requireIeee754();
+
+// text-polyfill.ts
+// Minimal encode/decode for utf-8, utf-16le, ascii, latin1, windows-1252
+const WINDOWS_1252_EXTRA = {
+    0x80: "€", 0x82: "‚", 0x83: "ƒ", 0x84: "„", 0x85: "…", 0x86: "†",
+    0x87: "‡", 0x88: "ˆ", 0x89: "‰", 0x8a: "Š", 0x8b: "‹", 0x8c: "Œ",
+    0x8e: "Ž", 0x91: "‘", 0x92: "’", 0x93: "“", 0x94: "”", 0x95: "•",
+    0x96: "–", 0x97: "—", 0x98: "˜", 0x99: "™", 0x9a: "š", 0x9b: "›",
+    0x9c: "œ", 0x9e: "ž", 0x9f: "Ÿ",
+};
+for (const [code, char] of Object.entries(WINDOWS_1252_EXTRA)) {
+}
+/**
+ * Decode text from binary data
+ * @param bytes Binary data
+ * @param encoding Encoding
+ */
+function textDecode(bytes, encoding = "utf-8") {
+    switch (encoding.toLowerCase()) {
+        case "utf-8":
+        case "utf8":
+            if (typeof globalThis.TextDecoder !== "undefined") {
+                return new globalThis.TextDecoder("utf-8").decode(bytes);
+            }
+            return decodeUTF8(bytes);
+        case "utf-16le":
+            return decodeUTF16LE(bytes);
+        case "ascii":
+            return decodeASCII(bytes);
+        case "latin1":
+        case "iso-8859-1":
+            return decodeLatin1(bytes);
+        case "windows-1252":
+            return decodeWindows1252(bytes);
+        default:
+            throw new RangeError(`Encoding '${encoding}' not supported`);
+    }
+}
+// --- Internal helpers ---
+function decodeUTF8(bytes) {
+    let out = "";
+    let i = 0;
+    while (i < bytes.length) {
+        const b1 = bytes[i++];
+        if (b1 < 0x80) {
+            out += String.fromCharCode(b1);
+        }
+        else if (b1 < 0xe0) {
+            const b2 = bytes[i++] & 0x3f;
+            out += String.fromCharCode(((b1 & 0x1f) << 6) | b2);
+        }
+        else if (b1 < 0xf0) {
+            const b2 = bytes[i++] & 0x3f;
+            const b3 = bytes[i++] & 0x3f;
+            out += String.fromCharCode(((b1 & 0x0f) << 12) | (b2 << 6) | b3);
+        }
+        else {
+            const b2 = bytes[i++] & 0x3f;
+            const b3 = bytes[i++] & 0x3f;
+            const b4 = bytes[i++] & 0x3f;
+            let cp = ((b1 & 0x07) << 18) |
+                (b2 << 12) |
+                (b3 << 6) |
+                b4;
+            cp -= 0x10000;
+            out += String.fromCharCode(0xd800 + ((cp >> 10) & 0x3ff), 0xdc00 + (cp & 0x3ff));
+        }
+    }
+    return out;
+}
+function decodeUTF16LE(bytes) {
+    let out = "";
+    for (let i = 0; i < bytes.length; i += 2) {
+        out += String.fromCharCode(bytes[i] | (bytes[i + 1] << 8));
+    }
+    return out;
+}
+function decodeASCII(bytes) {
+    return String.fromCharCode(...bytes.map((b) => b & 0x7f));
+}
+function decodeLatin1(bytes) {
+    return String.fromCharCode(...bytes);
+}
+function decodeWindows1252(bytes) {
+    let out = "";
+    for (const b of bytes) {
+        if (b >= 0x80 && b <= 0x9f && WINDOWS_1252_EXTRA[b]) {
+            out += WINDOWS_1252_EXTRA[b];
+        }
+        else {
+            out += String.fromCharCode(b);
+        }
+    }
+    return out;
+}
+
+// Primitive types
+function dv(array) {
+    return new DataView(array.buffer, array.byteOffset);
+}
+/*
+ * 8-bit unsigned integer
+ */
+const UINT8 = {
+    len: 1,
+    get(array, offset) {
+        return dv(array).getUint8(offset);
+    },
+    put(array, offset, value) {
+        dv(array).setUint8(offset, value);
+        return offset + 1;
+    }
+};
+/**
+ * 16-bit unsigned integer, Little Endian byte order
+ */
+const UINT16_LE = {
+    len: 2,
+    get(array, offset) {
+        return dv(array).getUint16(offset, true);
+    },
+    put(array, offset, value) {
+        dv(array).setUint16(offset, value, true);
+        return offset + 2;
+    }
+};
+/**
+ * 16-bit unsigned integer, Big Endian byte order
+ */
+const UINT16_BE = {
+    len: 2,
+    get(array, offset) {
+        return dv(array).getUint16(offset);
+    },
+    put(array, offset, value) {
+        dv(array).setUint16(offset, value);
+        return offset + 2;
+    }
+};
+/**
+ * 32-bit unsigned integer, Little Endian byte order
+ */
+const UINT32_LE = {
+    len: 4,
+    get(array, offset) {
+        return dv(array).getUint32(offset, true);
+    },
+    put(array, offset, value) {
+        dv(array).setUint32(offset, value, true);
+        return offset + 4;
+    }
+};
+/**
+ * 32-bit unsigned integer, Big Endian byte order
+ */
+const UINT32_BE = {
+    len: 4,
+    get(array, offset) {
+        return dv(array).getUint32(offset);
+    },
+    put(array, offset, value) {
+        dv(array).setUint32(offset, value);
+        return offset + 4;
+    }
+};
+/**
+ * 32-bit signed integer, Big Endian byte order
+ */
+const INT32_BE = {
+    len: 4,
+    get(array, offset) {
+        return dv(array).getInt32(offset);
+    },
+    put(array, offset, value) {
+        dv(array).setInt32(offset, value);
+        return offset + 4;
+    }
+};
+/**
+ * 64-bit unsigned integer, Little Endian byte order
+ */
+const UINT64_LE = {
+    len: 8,
+    get(array, offset) {
+        return dv(array).getBigUint64(offset, true);
+    },
+    put(array, offset, value) {
+        dv(array).setBigUint64(offset, value, true);
+        return offset + 8;
+    }
+};
+/**
+ * Consume a fixed number of bytes from the stream and return a string with a specified encoding.
+ * Supports all encodings supported by TextDecoder, plus 'windows-1252'.
+ */
+class StringType {
+    constructor(len, encoding) {
+        this.len = len;
+        this.encoding = encoding;
+    }
+    get(data, offset = 0) {
+        const bytes = data.subarray(offset, offset + this.len);
+        return textDecode(bytes, this.encoding);
+    }
+}
+
+var require$1 = createRequire('/');
+// DEFLATE is a complex format; to read this code, you should probably check the RFC first:
+// https://tools.ietf.org/html/rfc1951
+// You may also wish to take a look at the guide I made about this program:
+// https://gist.github.com/101arrowz/253f31eb5abc3d9275ab943003ffecad
+// Some of the following code is similar to that of UZIP.js:
+// https://github.com/photopea/UZIP.js
+// However, the vast majority of the codebase has diverged from UZIP.js to increase performance and reduce bundle size.
+// Sometimes 0 will appear where -1 would be more appropriate. This is because using a uint
+// is better for memory in most engines (I *think*).
+// Mediocre shim
+var Worker;
+try {
+    Worker = require$1('worker_threads').Worker;
+}
+catch (e) {
+}
+
+// aliases for shorter compressed code (most minifers don't do this)
+var u8 = Uint8Array, u16 = Uint16Array, i32 = Int32Array;
+// fixed length extra bits
+var fleb = new u8([0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 0, /* unused */ 0, 0, /* impossible */ 0]);
+// fixed distance extra bits
+var fdeb = new u8([0, 0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12, 12, 13, 13, /* unused */ 0, 0]);
+// code length index map
+var clim = new u8([16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15]);
+// get base, reverse index map from extra bits
+var freb = function (eb, start) {
+    var b = new u16(31);
+    for (var i = 0; i < 31; ++i) {
+        b[i] = start += 1 << eb[i - 1];
+    }
+    // numbers here are at max 18 bits
+    var r = new i32(b[30]);
+    for (var i = 1; i < 30; ++i) {
+        for (var j = b[i]; j < b[i + 1]; ++j) {
+            r[j] = ((j - b[i]) << 5) | i;
+        }
+    }
+    return { b: b, r: r };
+};
+var _a = freb(fleb, 2), fl = _a.b, revfl = _a.r;
+// we can ignore the fact that the other numbers are wrong; they never happen anyway
+fl[28] = 258, revfl[258] = 28;
+var _b = freb(fdeb, 0), fd = _b.b;
+// map of value to reverse (assuming 16 bits)
+var rev = new u16(32768);
+for (var i = 0; i < 32768; ++i) {
+    // reverse table algorithm from SO
+    var x = ((i & 0xAAAA) >> 1) | ((i & 0x5555) << 1);
+    x = ((x & 0xCCCC) >> 2) | ((x & 0x3333) << 2);
+    x = ((x & 0xF0F0) >> 4) | ((x & 0x0F0F) << 4);
+    rev[i] = (((x & 0xFF00) >> 8) | ((x & 0x00FF) << 8)) >> 1;
+}
+// create huffman tree from u8 "map": index -> code length for code index
+// mb (max bits) must be at most 15
+// TODO: optimize/split up?
+var hMap = (function (cd, mb, r) {
+    var s = cd.length;
+    // index
+    var i = 0;
+    // u16 "map": index -> # of codes with bit length = index
+    var l = new u16(mb);
+    // length of cd must be 288 (total # of codes)
+    for (; i < s; ++i) {
+        if (cd[i])
+            ++l[cd[i] - 1];
+    }
+    // u16 "map": index -> minimum code for bit length = index
+    var le = new u16(mb);
+    for (i = 1; i < mb; ++i) {
+        le[i] = (le[i - 1] + l[i - 1]) << 1;
+    }
+    var co;
+    if (r) {
+        // u16 "map": index -> number of actual bits, symbol for code
+        co = new u16(1 << mb);
+        // bits to remove for reverser
+        var rvb = 15 - mb;
+        for (i = 0; i < s; ++i) {
+            // ignore 0 lengths
+            if (cd[i]) {
+                // num encoding both symbol and bits read
+                var sv = (i << 4) | cd[i];
+                // free bits
+                var r_1 = mb - cd[i];
+                // start value
+                var v = le[cd[i] - 1]++ << r_1;
+                // m is end value
+                for (var m = v | ((1 << r_1) - 1); v <= m; ++v) {
+                    // every 16 bit value starting with the code yields the same result
+                    co[rev[v] >> rvb] = sv;
+                }
+            }
+        }
+    }
+    else {
+        co = new u16(s);
+        for (i = 0; i < s; ++i) {
+            if (cd[i]) {
+                co[i] = rev[le[cd[i] - 1]++] >> (15 - cd[i]);
+            }
+        }
+    }
+    return co;
+});
+// fixed length tree
+var flt = new u8(288);
+for (var i = 0; i < 144; ++i)
+    flt[i] = 8;
+for (var i = 144; i < 256; ++i)
+    flt[i] = 9;
+for (var i = 256; i < 280; ++i)
+    flt[i] = 7;
+for (var i = 280; i < 288; ++i)
+    flt[i] = 8;
+// fixed distance tree
+var fdt = new u8(32);
+for (var i = 0; i < 32; ++i)
+    fdt[i] = 5;
+// fixed length map
+var flrm = /*#__PURE__*/ hMap(flt, 9, 1);
+// fixed distance map
+var fdrm = /*#__PURE__*/ hMap(fdt, 5, 1);
+// find max of array
+var max = function (a) {
+    var m = a[0];
+    for (var i = 1; i < a.length; ++i) {
+        if (a[i] > m)
+            m = a[i];
+    }
+    return m;
+};
+// read d, starting at bit p and mask with m
+var bits = function (d, p, m) {
+    var o = (p / 8) | 0;
+    return ((d[o] | (d[o + 1] << 8)) >> (p & 7)) & m;
+};
+// read d, starting at bit p continuing for at least 16 bits
+var bits16 = function (d, p) {
+    var o = (p / 8) | 0;
+    return ((d[o] | (d[o + 1] << 8) | (d[o + 2] << 16)) >> (p & 7));
+};
+// get end of byte
+var shft = function (p) { return ((p + 7) / 8) | 0; };
+// typed array slice - allows garbage collector to free original reference,
+// while being more compatible than .slice
+var slc = function (v, s, e) {
+    if (e == null || e > v.length)
+        e = v.length;
+    // can't use .constructor in case user-supplied
+    return new u8(v.subarray(s, e));
+};
+// error codes
+var ec = [
+    'unexpected EOF',
+    'invalid block type',
+    'invalid length/literal',
+    'invalid distance',
+    'stream finished',
+    'no stream handler',
+    ,
+    'no callback',
+    'invalid UTF-8 data',
+    'extra field too long',
+    'date not in range 1980-2099',
+    'filename too long',
+    'stream finishing',
+    'invalid zip data'
+    // determined by unknown compression method
+];
+var err = function (ind, msg, nt) {
+    var e = new Error(msg || ec[ind]);
+    e.code = ind;
+    if (Error.captureStackTrace)
+        Error.captureStackTrace(e, err);
+    if (!nt)
+        throw e;
+    return e;
+};
+// expands raw DEFLATE data
+var inflt = function (dat, st, buf, dict) {
+    // source length       dict length
+    var sl = dat.length, dl = 0;
+    if (!sl || st.f && !st.l)
+        return buf || new u8(0);
+    var noBuf = !buf;
+    // have to estimate size
+    var resize = noBuf || st.i != 2;
+    // no state
+    var noSt = st.i;
+    // Assumes roughly 33% compression ratio average
+    if (noBuf)
+        buf = new u8(sl * 3);
+    // ensure buffer can fit at least l elements
+    var cbuf = function (l) {
+        var bl = buf.length;
+        // need to increase size to fit
+        if (l > bl) {
+            // Double or set to necessary, whichever is greater
+            var nbuf = new u8(Math.max(bl * 2, l));
+            nbuf.set(buf);
+            buf = nbuf;
+        }
+    };
+    //  last chunk         bitpos           bytes
+    var final = st.f || 0, pos = st.p || 0, bt = st.b || 0, lm = st.l, dm = st.d, lbt = st.m, dbt = st.n;
+    // total bits
+    var tbts = sl * 8;
+    do {
+        if (!lm) {
+            // BFINAL - this is only 1 when last chunk is next
+            final = bits(dat, pos, 1);
+            // type: 0 = no compression, 1 = fixed huffman, 2 = dynamic huffman
+            var type = bits(dat, pos + 1, 3);
+            pos += 3;
+            if (!type) {
+                // go to end of byte boundary
+                var s = shft(pos) + 4, l = dat[s - 4] | (dat[s - 3] << 8), t = s + l;
+                if (t > sl) {
+                    if (noSt)
+                        err(0);
+                    break;
+                }
+                // ensure size
+                if (resize)
+                    cbuf(bt + l);
+                // Copy over uncompressed data
+                buf.set(dat.subarray(s, t), bt);
+                // Get new bitpos, update byte count
+                st.b = bt += l, st.p = pos = t * 8, st.f = final;
+                continue;
+            }
+            else if (type == 1)
+                lm = flrm, dm = fdrm, lbt = 9, dbt = 5;
+            else if (type == 2) {
+                //  literal                            lengths
+                var hLit = bits(dat, pos, 31) + 257, hcLen = bits(dat, pos + 10, 15) + 4;
+                var tl = hLit + bits(dat, pos + 5, 31) + 1;
+                pos += 14;
+                // length+distance tree
+                var ldt = new u8(tl);
+                // code length tree
+                var clt = new u8(19);
+                for (var i = 0; i < hcLen; ++i) {
+                    // use index map to get real code
+                    clt[clim[i]] = bits(dat, pos + i * 3, 7);
+                }
+                pos += hcLen * 3;
+                // code lengths bits
+                var clb = max(clt), clbmsk = (1 << clb) - 1;
+                // code lengths map
+                var clm = hMap(clt, clb, 1);
+                for (var i = 0; i < tl;) {
+                    var r = clm[bits(dat, pos, clbmsk)];
+                    // bits read
+                    pos += r & 15;
+                    // symbol
+                    var s = r >> 4;
+                    // code length to copy
+                    if (s < 16) {
+                        ldt[i++] = s;
+                    }
+                    else {
+                        //  copy   count
+                        var c = 0, n = 0;
+                        if (s == 16)
+                            n = 3 + bits(dat, pos, 3), pos += 2, c = ldt[i - 1];
+                        else if (s == 17)
+                            n = 3 + bits(dat, pos, 7), pos += 3;
+                        else if (s == 18)
+                            n = 11 + bits(dat, pos, 127), pos += 7;
+                        while (n--)
+                            ldt[i++] = c;
+                    }
+                }
+                //    length tree                 distance tree
+                var lt = ldt.subarray(0, hLit), dt = ldt.subarray(hLit);
+                // max length bits
+                lbt = max(lt);
+                // max dist bits
+                dbt = max(dt);
+                lm = hMap(lt, lbt, 1);
+                dm = hMap(dt, dbt, 1);
+            }
+            else
+                err(1);
+            if (pos > tbts) {
+                if (noSt)
+                    err(0);
+                break;
+            }
+        }
+        // Make sure the buffer can hold this + the largest possible addition
+        // Maximum chunk size (practically, theoretically infinite) is 2^17
+        if (resize)
+            cbuf(bt + 131072);
+        var lms = (1 << lbt) - 1, dms = (1 << dbt) - 1;
+        var lpos = pos;
+        for (;; lpos = pos) {
+            // bits read, code
+            var c = lm[bits16(dat, pos) & lms], sym = c >> 4;
+            pos += c & 15;
+            if (pos > tbts) {
+                if (noSt)
+                    err(0);
+                break;
+            }
+            if (!c)
+                err(2);
+            if (sym < 256)
+                buf[bt++] = sym;
+            else if (sym == 256) {
+                lpos = pos, lm = null;
+                break;
+            }
+            else {
+                var add = sym - 254;
+                // no extra bits needed if less
+                if (sym > 264) {
+                    // index
+                    var i = sym - 257, b = fleb[i];
+                    add = bits(dat, pos, (1 << b) - 1) + fl[i];
+                    pos += b;
+                }
+                // dist
+                var d = dm[bits16(dat, pos) & dms], dsym = d >> 4;
+                if (!d)
+                    err(3);
+                pos += d & 15;
+                var dt = fd[dsym];
+                if (dsym > 3) {
+                    var b = fdeb[dsym];
+                    dt += bits16(dat, pos) & (1 << b) - 1, pos += b;
+                }
+                if (pos > tbts) {
+                    if (noSt)
+                        err(0);
+                    break;
+                }
+                if (resize)
+                    cbuf(bt + 131072);
+                var end = bt + add;
+                if (bt < dt) {
+                    var shift = dl - dt, dend = Math.min(dt, end);
+                    if (shift + bt < 0)
+                        err(3);
+                    for (; bt < dend; ++bt)
+                        buf[bt] = dict[shift + bt];
+                }
+                for (; bt < end; ++bt)
+                    buf[bt] = buf[bt - dt];
+            }
+        }
+        st.l = lm, st.p = lpos, st.b = bt, st.f = final;
+        if (lm)
+            final = 1, st.m = lbt, st.d = dm, st.n = dbt;
+    } while (!final);
+    // don't reallocate for streams or user buffers
+    return bt != buf.length && noBuf ? slc(buf, 0, bt) : buf.subarray(0, bt);
+};
+// empty
+var et = /*#__PURE__*/ new u8(0);
+// gzip footer: -8 to -4 = CRC, -4 to -0 is length
+// gzip start
+var gzs = function (d) {
+    if (d[0] != 31 || d[1] != 139 || d[2] != 8)
+        err(6, 'invalid gzip data');
+    var flg = d[3];
+    var st = 10;
+    if (flg & 4)
+        st += (d[10] | d[11] << 8) + 2;
+    for (var zs = (flg >> 3 & 1) + (flg >> 4 & 1); zs > 0; zs -= !d[st++])
+        ;
+    return st + (flg & 2);
+};
+// gzip length
+var gzl = function (d) {
+    var l = d.length;
+    return (d[l - 4] | d[l - 3] << 8 | d[l - 2] << 16 | d[l - 1] << 24) >>> 0;
+};
+// zlib start
+var zls = function (d, dict) {
+    if ((d[0] & 15) != 8 || (d[0] >> 4) > 7 || ((d[0] << 8 | d[1]) % 31))
+        err(6, 'invalid zlib data');
+    if ((d[1] >> 5 & 1) == 1)
+        err(6, 'invalid zlib data: ' + (d[1] & 32 ? 'need' : 'unexpected') + ' dictionary');
+    return (d[1] >> 3 & 4) + 2;
+};
+/**
+ * Expands DEFLATE data with no wrapper
+ * @param data The data to decompress
+ * @param opts The decompression options
+ * @returns The decompressed version of the data
+ */
+function inflateSync(data, opts) {
+    return inflt(data, { i: 2 }, opts, opts);
+}
+/**
+ * Expands GZIP data
+ * @param data The data to decompress
+ * @param opts The decompression options
+ * @returns The decompressed version of the data
+ */
+function gunzipSync(data, opts) {
+    var st = gzs(data);
+    if (st + 8 > data.length)
+        err(6, 'invalid gzip data');
+    return inflt(data.subarray(st, -8), { i: 2 }, new u8(gzl(data)), opts);
+}
+/**
+ * Expands Zlib data
+ * @param data The data to decompress
+ * @param opts The decompression options
+ * @returns The decompressed version of the data
+ */
+function unzlibSync(data, opts) {
+    return inflt(data.subarray(zls(data), -4), { i: 2 }, opts, opts);
+}
+/**
+ * Expands compressed GZIP, Zlib, or raw DEFLATE data, automatically detecting the format
+ * @param data The data to decompress
+ * @param opts The decompression options
+ * @returns The decompressed version of the data
+ */
+function decompressSync(data, opts) {
+    return (data[0] == 31 && data[1] == 139 && data[2] == 8)
+        ? gunzipSync(data, opts)
+        : ((data[0] & 15) != 8 || (data[0] >> 4) > 7 || ((data[0] << 8 | data[1]) % 31))
+            ? inflateSync(data, opts)
+            : unzlibSync(data, opts);
+}
+// text decoder
+var td = typeof TextDecoder != 'undefined' && /*#__PURE__*/ new TextDecoder();
+// text decoder stream
+var tds = 0;
+try {
+    td.decode(et, { stream: true });
+    tds = 1;
+}
+catch (e) { }
+
+var src = {exports: {}};
+
+var browser = {exports: {}};
+
+/**
+ * Helpers.
+ */
+
+var ms;
+var hasRequiredMs;
+
+function requireMs () {
+	if (hasRequiredMs) return ms;
+	hasRequiredMs = 1;
+	var s = 1000;
+	var m = s * 60;
+	var h = m * 60;
+	var d = h * 24;
+	var w = d * 7;
+	var y = d * 365.25;
+
+	/**
+	 * Parse or format the given `val`.
+	 *
+	 * Options:
+	 *
+	 *  - `long` verbose formatting [false]
+	 *
+	 * @param {String|Number} val
+	 * @param {Object} [options]
+	 * @throws {Error} throw an error if val is not a non-empty string or a number
+	 * @return {String|Number}
+	 * @api public
+	 */
+
+	ms = function (val, options) {
+	  options = options || {};
+	  var type = typeof val;
+	  if (type === 'string' && val.length > 0) {
+	    return parse(val);
+	  } else if (type === 'number' && isFinite(val)) {
+	    return options.long ? fmtLong(val) : fmtShort(val);
+	  }
+	  throw new Error(
+	    'val is not a non-empty string or a valid number. val=' +
+	      JSON.stringify(val)
+	  );
+	};
+
+	/**
+	 * Parse the given `str` and return milliseconds.
+	 *
+	 * @param {String} str
+	 * @return {Number}
+	 * @api private
+	 */
+
+	function parse(str) {
+	  str = String(str);
+	  if (str.length > 100) {
+	    return;
+	  }
+	  var match = /^(-?(?:\d+)?\.?\d+) *(milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|weeks?|w|years?|yrs?|y)?$/i.exec(
+	    str
+	  );
+	  if (!match) {
+	    return;
+	  }
+	  var n = parseFloat(match[1]);
+	  var type = (match[2] || 'ms').toLowerCase();
+	  switch (type) {
+	    case 'years':
+	    case 'year':
+	    case 'yrs':
+	    case 'yr':
+	    case 'y':
+	      return n * y;
+	    case 'weeks':
+	    case 'week':
+	    case 'w':
+	      return n * w;
+	    case 'days':
+	    case 'day':
+	    case 'd':
+	      return n * d;
+	    case 'hours':
+	    case 'hour':
+	    case 'hrs':
+	    case 'hr':
+	    case 'h':
+	      return n * h;
+	    case 'minutes':
+	    case 'minute':
+	    case 'mins':
+	    case 'min':
+	    case 'm':
+	      return n * m;
+	    case 'seconds':
+	    case 'second':
+	    case 'secs':
+	    case 'sec':
+	    case 's':
+	      return n * s;
+	    case 'milliseconds':
+	    case 'millisecond':
+	    case 'msecs':
+	    case 'msec':
+	    case 'ms':
+	      return n;
+	    default:
+	      return undefined;
+	  }
+	}
+
+	/**
+	 * Short format for `ms`.
+	 *
+	 * @param {Number} ms
+	 * @return {String}
+	 * @api private
+	 */
+
+	function fmtShort(ms) {
+	  var msAbs = Math.abs(ms);
+	  if (msAbs >= d) {
+	    return Math.round(ms / d) + 'd';
+	  }
+	  if (msAbs >= h) {
+	    return Math.round(ms / h) + 'h';
+	  }
+	  if (msAbs >= m) {
+	    return Math.round(ms / m) + 'm';
+	  }
+	  if (msAbs >= s) {
+	    return Math.round(ms / s) + 's';
+	  }
+	  return ms + 'ms';
+	}
+
+	/**
+	 * Long format for `ms`.
+	 *
+	 * @param {Number} ms
+	 * @return {String}
+	 * @api private
+	 */
+
+	function fmtLong(ms) {
+	  var msAbs = Math.abs(ms);
+	  if (msAbs >= d) {
+	    return plural(ms, msAbs, d, 'day');
+	  }
+	  if (msAbs >= h) {
+	    return plural(ms, msAbs, h, 'hour');
+	  }
+	  if (msAbs >= m) {
+	    return plural(ms, msAbs, m, 'minute');
+	  }
+	  if (msAbs >= s) {
+	    return plural(ms, msAbs, s, 'second');
+	  }
+	  return ms + ' ms';
+	}
+
+	/**
+	 * Pluralization helper.
+	 */
+
+	function plural(ms, msAbs, n, name) {
+	  var isPlural = msAbs >= n * 1.5;
+	  return Math.round(ms / n) + ' ' + name + (isPlural ? 's' : '');
+	}
+	return ms;
+}
+
+var common;
+var hasRequiredCommon;
+
+function requireCommon () {
+	if (hasRequiredCommon) return common;
+	hasRequiredCommon = 1;
+	/**
+	 * This is the common logic for both the Node.js and web browser
+	 * implementations of `debug()`.
+	 */
+
+	function setup(env) {
+		createDebug.debug = createDebug;
+		createDebug.default = createDebug;
+		createDebug.coerce = coerce;
+		createDebug.disable = disable;
+		createDebug.enable = enable;
+		createDebug.enabled = enabled;
+		createDebug.humanize = requireMs();
+		createDebug.destroy = destroy;
+
+		Object.keys(env).forEach(key => {
+			createDebug[key] = env[key];
+		});
+
+		/**
+		* The currently active debug mode names, and names to skip.
+		*/
+
+		createDebug.names = [];
+		createDebug.skips = [];
+
+		/**
+		* Map of special "%n" handling functions, for the debug "format" argument.
+		*
+		* Valid key names are a single, lower or upper-case letter, i.e. "n" and "N".
+		*/
+		createDebug.formatters = {};
+
+		/**
+		* Selects a color for a debug namespace
+		* @param {String} namespace The namespace string for the debug instance to be colored
+		* @return {Number|String} An ANSI color code for the given namespace
+		* @api private
+		*/
+		function selectColor(namespace) {
+			let hash = 0;
+
+			for (let i = 0; i < namespace.length; i++) {
+				hash = ((hash << 5) - hash) + namespace.charCodeAt(i);
+				hash |= 0; // Convert to 32bit integer
+			}
+
+			return createDebug.colors[Math.abs(hash) % createDebug.colors.length];
+		}
+		createDebug.selectColor = selectColor;
+
+		/**
+		* Create a debugger with the given `namespace`.
+		*
+		* @param {String} namespace
+		* @return {Function}
+		* @api public
+		*/
+		function createDebug(namespace) {
+			let prevTime;
+			let enableOverride = null;
+			let namespacesCache;
+			let enabledCache;
+
+			function debug(...args) {
+				// Disabled?
+				if (!debug.enabled) {
+					return;
+				}
+
+				const self = debug;
+
+				// Set `diff` timestamp
+				const curr = Number(new Date());
+				const ms = curr - (prevTime || curr);
+				self.diff = ms;
+				self.prev = prevTime;
+				self.curr = curr;
+				prevTime = curr;
+
+				args[0] = createDebug.coerce(args[0]);
+
+				if (typeof args[0] !== 'string') {
+					// Anything else let's inspect with %O
+					args.unshift('%O');
+				}
+
+				// Apply any `formatters` transformations
+				let index = 0;
+				args[0] = args[0].replace(/%([a-zA-Z%])/g, (match, format) => {
+					// If we encounter an escaped % then don't increase the array index
+					if (match === '%%') {
+						return '%';
+					}
+					index++;
+					const formatter = createDebug.formatters[format];
+					if (typeof formatter === 'function') {
+						const val = args[index];
+						match = formatter.call(self, val);
+
+						// Now we need to remove `args[index]` since it's inlined in the `format`
+						args.splice(index, 1);
+						index--;
+					}
+					return match;
+				});
+
+				// Apply env-specific formatting (colors, etc.)
+				createDebug.formatArgs.call(self, args);
+
+				const logFn = self.log || createDebug.log;
+				logFn.apply(self, args);
+			}
+
+			debug.namespace = namespace;
+			debug.useColors = createDebug.useColors();
+			debug.color = createDebug.selectColor(namespace);
+			debug.extend = extend;
+			debug.destroy = createDebug.destroy; // XXX Temporary. Will be removed in the next major release.
+
+			Object.defineProperty(debug, 'enabled', {
+				enumerable: true,
+				configurable: false,
+				get: () => {
+					if (enableOverride !== null) {
+						return enableOverride;
+					}
+					if (namespacesCache !== createDebug.namespaces) {
+						namespacesCache = createDebug.namespaces;
+						enabledCache = createDebug.enabled(namespace);
+					}
+
+					return enabledCache;
+				},
+				set: v => {
+					enableOverride = v;
+				}
+			});
+
+			// Env-specific initialization logic for debug instances
+			if (typeof createDebug.init === 'function') {
+				createDebug.init(debug);
+			}
+
+			return debug;
+		}
+
+		function extend(namespace, delimiter) {
+			const newDebug = createDebug(this.namespace + (typeof delimiter === 'undefined' ? ':' : delimiter) + namespace);
+			newDebug.log = this.log;
+			return newDebug;
+		}
+
+		/**
+		* Enables a debug mode by namespaces. This can include modes
+		* separated by a colon and wildcards.
+		*
+		* @param {String} namespaces
+		* @api public
+		*/
+		function enable(namespaces) {
+			createDebug.save(namespaces);
+			createDebug.namespaces = namespaces;
+
+			createDebug.names = [];
+			createDebug.skips = [];
+
+			const split = (typeof namespaces === 'string' ? namespaces : '')
+				.trim()
+				.replace(/\s+/g, ',')
+				.split(',')
+				.filter(Boolean);
+
+			for (const ns of split) {
+				if (ns[0] === '-') {
+					createDebug.skips.push(ns.slice(1));
+				} else {
+					createDebug.names.push(ns);
+				}
+			}
+		}
+
+		/**
+		 * Checks if the given string matches a namespace template, honoring
+		 * asterisks as wildcards.
+		 *
+		 * @param {String} search
+		 * @param {String} template
+		 * @return {Boolean}
+		 */
+		function matchesTemplate(search, template) {
+			let searchIndex = 0;
+			let templateIndex = 0;
+			let starIndex = -1;
+			let matchIndex = 0;
+
+			while (searchIndex < search.length) {
+				if (templateIndex < template.length && (template[templateIndex] === search[searchIndex] || template[templateIndex] === '*')) {
+					// Match character or proceed with wildcard
+					if (template[templateIndex] === '*') {
+						starIndex = templateIndex;
+						matchIndex = searchIndex;
+						templateIndex++; // Skip the '*'
+					} else {
+						searchIndex++;
+						templateIndex++;
+					}
+				} else if (starIndex !== -1) { // eslint-disable-line no-negated-condition
+					// Backtrack to the last '*' and try to match more characters
+					templateIndex = starIndex + 1;
+					matchIndex++;
+					searchIndex = matchIndex;
+				} else {
+					return false; // No match
+				}
+			}
+
+			// Handle trailing '*' in template
+			while (templateIndex < template.length && template[templateIndex] === '*') {
+				templateIndex++;
+			}
+
+			return templateIndex === template.length;
+		}
+
+		/**
+		* Disable debug output.
+		*
+		* @return {String} namespaces
+		* @api public
+		*/
+		function disable() {
+			const namespaces = [
+				...createDebug.names,
+				...createDebug.skips.map(namespace => '-' + namespace)
+			].join(',');
+			createDebug.enable('');
+			return namespaces;
+		}
+
+		/**
+		* Returns true if the given mode name is enabled, false otherwise.
+		*
+		* @param {String} name
+		* @return {Boolean}
+		* @api public
+		*/
+		function enabled(name) {
+			for (const skip of createDebug.skips) {
+				if (matchesTemplate(name, skip)) {
+					return false;
+				}
+			}
+
+			for (const ns of createDebug.names) {
+				if (matchesTemplate(name, ns)) {
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		/**
+		* Coerce `val`.
+		*
+		* @param {Mixed} val
+		* @return {Mixed}
+		* @api private
+		*/
+		function coerce(val) {
+			if (val instanceof Error) {
+				return val.stack || val.message;
+			}
+			return val;
+		}
+
+		/**
+		* XXX DO NOT USE. This is a temporary stub function.
+		* XXX It WILL be removed in the next major release.
+		*/
+		function destroy() {
+			console.warn('Instance method `debug.destroy()` is deprecated and no longer does anything. It will be removed in the next major version of `debug`.');
+		}
+
+		createDebug.enable(createDebug.load());
+
+		return createDebug;
+	}
+
+	common = setup;
+	return common;
+}
+
+/* eslint-env browser */
+
+var hasRequiredBrowser;
+
+function requireBrowser () {
+	if (hasRequiredBrowser) return browser.exports;
+	hasRequiredBrowser = 1;
+	(function (module, exports) {
+		/**
+		 * This is the web browser implementation of `debug()`.
+		 */
+
+		exports.formatArgs = formatArgs;
+		exports.save = save;
+		exports.load = load;
+		exports.useColors = useColors;
+		exports.storage = localstorage();
+		exports.destroy = (() => {
+			let warned = false;
+
+			return () => {
+				if (!warned) {
+					warned = true;
+					console.warn('Instance method `debug.destroy()` is deprecated and no longer does anything. It will be removed in the next major version of `debug`.');
+				}
+			};
+		})();
+
+		/**
+		 * Colors.
+		 */
+
+		exports.colors = [
+			'#0000CC',
+			'#0000FF',
+			'#0033CC',
+			'#0033FF',
+			'#0066CC',
+			'#0066FF',
+			'#0099CC',
+			'#0099FF',
+			'#00CC00',
+			'#00CC33',
+			'#00CC66',
+			'#00CC99',
+			'#00CCCC',
+			'#00CCFF',
+			'#3300CC',
+			'#3300FF',
+			'#3333CC',
+			'#3333FF',
+			'#3366CC',
+			'#3366FF',
+			'#3399CC',
+			'#3399FF',
+			'#33CC00',
+			'#33CC33',
+			'#33CC66',
+			'#33CC99',
+			'#33CCCC',
+			'#33CCFF',
+			'#6600CC',
+			'#6600FF',
+			'#6633CC',
+			'#6633FF',
+			'#66CC00',
+			'#66CC33',
+			'#9900CC',
+			'#9900FF',
+			'#9933CC',
+			'#9933FF',
+			'#99CC00',
+			'#99CC33',
+			'#CC0000',
+			'#CC0033',
+			'#CC0066',
+			'#CC0099',
+			'#CC00CC',
+			'#CC00FF',
+			'#CC3300',
+			'#CC3333',
+			'#CC3366',
+			'#CC3399',
+			'#CC33CC',
+			'#CC33FF',
+			'#CC6600',
+			'#CC6633',
+			'#CC9900',
+			'#CC9933',
+			'#CCCC00',
+			'#CCCC33',
+			'#FF0000',
+			'#FF0033',
+			'#FF0066',
+			'#FF0099',
+			'#FF00CC',
+			'#FF00FF',
+			'#FF3300',
+			'#FF3333',
+			'#FF3366',
+			'#FF3399',
+			'#FF33CC',
+			'#FF33FF',
+			'#FF6600',
+			'#FF6633',
+			'#FF9900',
+			'#FF9933',
+			'#FFCC00',
+			'#FFCC33'
+		];
+
+		/**
+		 * Currently only WebKit-based Web Inspectors, Firefox >= v31,
+		 * and the Firebug extension (any Firefox version) are known
+		 * to support "%c" CSS customizations.
+		 *
+		 * TODO: add a `localStorage` variable to explicitly enable/disable colors
+		 */
+
+		// eslint-disable-next-line complexity
+		function useColors() {
+			// NB: In an Electron preload script, document will be defined but not fully
+			// initialized. Since we know we're in Chrome, we'll just detect this case
+			// explicitly
+			if (typeof window !== 'undefined' && window.process && (window.process.type === 'renderer' || window.process.__nwjs)) {
+				return true;
+			}
+
+			// Internet Explorer and Edge do not support colors.
+			if (typeof navigator !== 'undefined' && navigator.userAgent && navigator.userAgent.toLowerCase().match(/(edge|trident)\/(\d+)/)) {
+				return false;
+			}
+
+			let m;
+
+			// Is webkit? http://stackoverflow.com/a/16459606/376773
+			// document is undefined in react-native: https://github.com/facebook/react-native/pull/1632
+			// eslint-disable-next-line no-return-assign
+			return (typeof document !== 'undefined' && document.documentElement && document.documentElement.style && document.documentElement.style.WebkitAppearance) ||
+				// Is firebug? http://stackoverflow.com/a/398120/376773
+				(typeof window !== 'undefined' && window.console && (window.console.firebug || (window.console.exception && window.console.table))) ||
+				// Is firefox >= v31?
+				// https://developer.mozilla.org/en-US/docs/Tools/Web_Console#Styling_messages
+				(typeof navigator !== 'undefined' && navigator.userAgent && (m = navigator.userAgent.toLowerCase().match(/firefox\/(\d+)/)) && parseInt(m[1], 10) >= 31) ||
+				// Double check webkit in userAgent just in case we are in a worker
+				(typeof navigator !== 'undefined' && navigator.userAgent && navigator.userAgent.toLowerCase().match(/applewebkit\/(\d+)/));
+		}
+
+		/**
+		 * Colorize log arguments if enabled.
+		 *
+		 * @api public
+		 */
+
+		function formatArgs(args) {
+			args[0] = (this.useColors ? '%c' : '') +
+				this.namespace +
+				(this.useColors ? ' %c' : ' ') +
+				args[0] +
+				(this.useColors ? '%c ' : ' ') +
+				'+' + module.exports.humanize(this.diff);
+
+			if (!this.useColors) {
+				return;
+			}
+
+			const c = 'color: ' + this.color;
+			args.splice(1, 0, c, 'color: inherit');
+
+			// The final "%c" is somewhat tricky, because there could be other
+			// arguments passed either before or after the %c, so we need to
+			// figure out the correct index to insert the CSS into
+			let index = 0;
+			let lastC = 0;
+			args[0].replace(/%[a-zA-Z%]/g, match => {
+				if (match === '%%') {
+					return;
+				}
+				index++;
+				if (match === '%c') {
+					// We only are interested in the *last* %c
+					// (the user may have provided their own)
+					lastC = index;
+				}
+			});
+
+			args.splice(lastC, 0, c);
+		}
+
+		/**
+		 * Invokes `console.debug()` when available.
+		 * No-op when `console.debug` is not a "function".
+		 * If `console.debug` is not available, falls back
+		 * to `console.log`.
+		 *
+		 * @api public
+		 */
+		exports.log = console.debug || console.log || (() => {});
+
+		/**
+		 * Save `namespaces`.
+		 *
+		 * @param {String} namespaces
+		 * @api private
+		 */
+		function save(namespaces) {
+			try {
+				if (namespaces) {
+					exports.storage.setItem('debug', namespaces);
+				} else {
+					exports.storage.removeItem('debug');
+				}
+			} catch (error) {
+				// Swallow
+				// XXX (@Qix-) should we be logging these?
+			}
+		}
+
+		/**
+		 * Load `namespaces`.
+		 *
+		 * @return {String} returns the previously persisted debug modes
+		 * @api private
+		 */
+		function load() {
+			let r;
+			try {
+				r = exports.storage.getItem('debug') || exports.storage.getItem('DEBUG') ;
+			} catch (error) {
+				// Swallow
+				// XXX (@Qix-) should we be logging these?
+			}
+
+			// If debug isn't set in LS, and we're in Electron, try to load $DEBUG
+			if (!r && typeof process !== 'undefined' && 'env' in process) {
+				r = process.env.DEBUG;
+			}
+
+			return r;
+		}
+
+		/**
+		 * Localstorage attempts to return the localstorage.
+		 *
+		 * This is necessary because safari throws
+		 * when a user disables cookies/localstorage
+		 * and you attempt to access it.
+		 *
+		 * @return {LocalStorage}
+		 * @api private
+		 */
+
+		function localstorage() {
+			try {
+				// TVMLKit (Apple TV JS Runtime) does not have a window object, just localStorage in the global context
+				// The Browser also has localStorage in the global context.
+				return localStorage;
+			} catch (error) {
+				// Swallow
+				// XXX (@Qix-) should we be logging these?
+			}
+		}
+
+		module.exports = requireCommon()(exports);
+
+		const {formatters} = module.exports;
+
+		/**
+		 * Map %j to `JSON.stringify()`, since no Web Inspectors do that by default.
+		 */
+
+		formatters.j = function (v) {
+			try {
+				return JSON.stringify(v);
+			} catch (error) {
+				return '[UnexpectedJSONParseError]: ' + error.message;
+			}
+		}; 
+	} (browser, browser.exports));
+	return browser.exports;
+}
+
+var node = {exports: {}};
+
+var hasFlag;
+var hasRequiredHasFlag;
+
+function requireHasFlag () {
+	if (hasRequiredHasFlag) return hasFlag;
+	hasRequiredHasFlag = 1;
+
+	hasFlag = (flag, argv = process.argv) => {
+		const prefix = flag.startsWith('-') ? '' : (flag.length === 1 ? '-' : '--');
+		const position = argv.indexOf(prefix + flag);
+		const terminatorPosition = argv.indexOf('--');
+		return position !== -1 && (terminatorPosition === -1 || position < terminatorPosition);
+	};
+	return hasFlag;
+}
+
+var supportsColor_1;
+var hasRequiredSupportsColor;
+
+function requireSupportsColor () {
+	if (hasRequiredSupportsColor) return supportsColor_1;
+	hasRequiredSupportsColor = 1;
+	const os = require$$0;
+	const tty = require$$1$6;
+	const hasFlag = requireHasFlag();
+
+	const {env} = process;
+
+	let forceColor;
+	if (hasFlag('no-color') ||
+		hasFlag('no-colors') ||
+		hasFlag('color=false') ||
+		hasFlag('color=never')) {
+		forceColor = 0;
+	} else if (hasFlag('color') ||
+		hasFlag('colors') ||
+		hasFlag('color=true') ||
+		hasFlag('color=always')) {
+		forceColor = 1;
+	}
+
+	if ('FORCE_COLOR' in env) {
+		if (env.FORCE_COLOR === 'true') {
+			forceColor = 1;
+		} else if (env.FORCE_COLOR === 'false') {
+			forceColor = 0;
+		} else {
+			forceColor = env.FORCE_COLOR.length === 0 ? 1 : Math.min(parseInt(env.FORCE_COLOR, 10), 3);
+		}
+	}
+
+	function translateLevel(level) {
+		if (level === 0) {
+			return false;
+		}
+
+		return {
+			level,
+			hasBasic: true,
+			has256: level >= 2,
+			has16m: level >= 3
+		};
+	}
+
+	function supportsColor(haveStream, streamIsTTY) {
+		if (forceColor === 0) {
+			return 0;
+		}
+
+		if (hasFlag('color=16m') ||
+			hasFlag('color=full') ||
+			hasFlag('color=truecolor')) {
+			return 3;
+		}
+
+		if (hasFlag('color=256')) {
+			return 2;
+		}
+
+		if (haveStream && !streamIsTTY && forceColor === undefined) {
+			return 0;
+		}
+
+		const min = forceColor || 0;
+
+		if (env.TERM === 'dumb') {
+			return min;
+		}
+
+		if (process.platform === 'win32') {
+			// Windows 10 build 10586 is the first Windows release that supports 256 colors.
+			// Windows 10 build 14931 is the first release that supports 16m/TrueColor.
+			const osRelease = os.release().split('.');
+			if (
+				Number(osRelease[0]) >= 10 &&
+				Number(osRelease[2]) >= 10586
+			) {
+				return Number(osRelease[2]) >= 14931 ? 3 : 2;
+			}
+
+			return 1;
+		}
+
+		if ('CI' in env) {
+			if (['TRAVIS', 'CIRCLECI', 'APPVEYOR', 'GITLAB_CI', 'GITHUB_ACTIONS', 'BUILDKITE'].some(sign => sign in env) || env.CI_NAME === 'codeship') {
+				return 1;
+			}
+
+			return min;
+		}
+
+		if ('TEAMCITY_VERSION' in env) {
+			return /^(9\.(0*[1-9]\d*)\.|\d{2,}\.)/.test(env.TEAMCITY_VERSION) ? 1 : 0;
+		}
+
+		if (env.COLORTERM === 'truecolor') {
+			return 3;
+		}
+
+		if ('TERM_PROGRAM' in env) {
+			const version = parseInt((env.TERM_PROGRAM_VERSION || '').split('.')[0], 10);
+
+			switch (env.TERM_PROGRAM) {
+				case 'iTerm.app':
+					return version >= 3 ? 3 : 2;
+				case 'Apple_Terminal':
+					return 2;
+				// No default
+			}
+		}
+
+		if (/-256(color)?$/i.test(env.TERM)) {
+			return 2;
+		}
+
+		if (/^screen|^xterm|^vt100|^vt220|^rxvt|color|ansi|cygwin|linux/i.test(env.TERM)) {
+			return 1;
+		}
+
+		if ('COLORTERM' in env) {
+			return 1;
+		}
+
+		return min;
+	}
+
+	function getSupportLevel(stream) {
+		const level = supportsColor(stream, stream && stream.isTTY);
+		return translateLevel(level);
+	}
+
+	supportsColor_1 = {
+		supportsColor: getSupportLevel,
+		stdout: translateLevel(supportsColor(true, tty.isatty(1))),
+		stderr: translateLevel(supportsColor(true, tty.isatty(2)))
+	};
+	return supportsColor_1;
+}
+
+/**
+ * Module dependencies.
+ */
+
+var hasRequiredNode;
+
+function requireNode () {
+	if (hasRequiredNode) return node.exports;
+	hasRequiredNode = 1;
+	(function (module, exports) {
+		const tty = require$$1$6;
+		const util = require$$0$2;
+
+		/**
+		 * This is the Node.js implementation of `debug()`.
+		 */
+
+		exports.init = init;
+		exports.log = log;
+		exports.formatArgs = formatArgs;
+		exports.save = save;
+		exports.load = load;
+		exports.useColors = useColors;
+		exports.destroy = util.deprecate(
+			() => {},
+			'Instance method `debug.destroy()` is deprecated and no longer does anything. It will be removed in the next major version of `debug`.'
+		);
+
+		/**
+		 * Colors.
+		 */
+
+		exports.colors = [6, 2, 3, 4, 5, 1];
+
+		try {
+			// Optional dependency (as in, doesn't need to be installed, NOT like optionalDependencies in package.json)
+			// eslint-disable-next-line import/no-extraneous-dependencies
+			const supportsColor = requireSupportsColor();
+
+			if (supportsColor && (supportsColor.stderr || supportsColor).level >= 2) {
+				exports.colors = [
+					20,
+					21,
+					26,
+					27,
+					32,
+					33,
+					38,
+					39,
+					40,
+					41,
+					42,
+					43,
+					44,
+					45,
+					56,
+					57,
+					62,
+					63,
+					68,
+					69,
+					74,
+					75,
+					76,
+					77,
+					78,
+					79,
+					80,
+					81,
+					92,
+					93,
+					98,
+					99,
+					112,
+					113,
+					128,
+					129,
+					134,
+					135,
+					148,
+					149,
+					160,
+					161,
+					162,
+					163,
+					164,
+					165,
+					166,
+					167,
+					168,
+					169,
+					170,
+					171,
+					172,
+					173,
+					178,
+					179,
+					184,
+					185,
+					196,
+					197,
+					198,
+					199,
+					200,
+					201,
+					202,
+					203,
+					204,
+					205,
+					206,
+					207,
+					208,
+					209,
+					214,
+					215,
+					220,
+					221
+				];
+			}
+		} catch (error) {
+			// Swallow - we only care if `supports-color` is available; it doesn't have to be.
+		}
+
+		/**
+		 * Build up the default `inspectOpts` object from the environment variables.
+		 *
+		 *   $ DEBUG_COLORS=no DEBUG_DEPTH=10 DEBUG_SHOW_HIDDEN=enabled node script.js
+		 */
+
+		exports.inspectOpts = Object.keys(process.env).filter(key => {
+			return /^debug_/i.test(key);
+		}).reduce((obj, key) => {
+			// Camel-case
+			const prop = key
+				.substring(6)
+				.toLowerCase()
+				.replace(/_([a-z])/g, (_, k) => {
+					return k.toUpperCase();
+				});
+
+			// Coerce string value into JS value
+			let val = process.env[key];
+			if (/^(yes|on|true|enabled)$/i.test(val)) {
+				val = true;
+			} else if (/^(no|off|false|disabled)$/i.test(val)) {
+				val = false;
+			} else if (val === 'null') {
+				val = null;
+			} else {
+				val = Number(val);
+			}
+
+			obj[prop] = val;
+			return obj;
+		}, {});
+
+		/**
+		 * Is stdout a TTY? Colored output is enabled when `true`.
+		 */
+
+		function useColors() {
+			return 'colors' in exports.inspectOpts ?
+				Boolean(exports.inspectOpts.colors) :
+				tty.isatty(process.stderr.fd);
+		}
+
+		/**
+		 * Adds ANSI color escape codes if enabled.
+		 *
+		 * @api public
+		 */
+
+		function formatArgs(args) {
+			const {namespace: name, useColors} = this;
+
+			if (useColors) {
+				const c = this.color;
+				const colorCode = '\u001B[3' + (c < 8 ? c : '8;5;' + c);
+				const prefix = `  ${colorCode};1m${name} \u001B[0m`;
+
+				args[0] = prefix + args[0].split('\n').join('\n' + prefix);
+				args.push(colorCode + 'm+' + module.exports.humanize(this.diff) + '\u001B[0m');
+			} else {
+				args[0] = getDate() + name + ' ' + args[0];
+			}
+		}
+
+		function getDate() {
+			if (exports.inspectOpts.hideDate) {
+				return '';
+			}
+			return new Date().toISOString() + ' ';
+		}
+
+		/**
+		 * Invokes `util.formatWithOptions()` with the specified arguments and writes to stderr.
+		 */
+
+		function log(...args) {
+			return process.stderr.write(util.formatWithOptions(exports.inspectOpts, ...args) + '\n');
+		}
+
+		/**
+		 * Save `namespaces`.
+		 *
+		 * @param {String} namespaces
+		 * @api private
+		 */
+		function save(namespaces) {
+			if (namespaces) {
+				process.env.DEBUG = namespaces;
+			} else {
+				// If you set a process.env field to null or undefined, it gets cast to the
+				// string 'null' or 'undefined'. Just delete instead.
+				delete process.env.DEBUG;
+			}
+		}
+
+		/**
+		 * Load `namespaces`.
+		 *
+		 * @return {String} returns the previously persisted debug modes
+		 * @api private
+		 */
+
+		function load() {
+			return process.env.DEBUG;
+		}
+
+		/**
+		 * Init logic for `debug` instances.
+		 *
+		 * Create a new `inspectOpts` object in case `useColors` is set
+		 * differently for a particular `debug` instance.
+		 */
+
+		function init(debug) {
+			debug.inspectOpts = {};
+
+			const keys = Object.keys(exports.inspectOpts);
+			for (let i = 0; i < keys.length; i++) {
+				debug.inspectOpts[keys[i]] = exports.inspectOpts[keys[i]];
+			}
+		}
+
+		module.exports = requireCommon()(exports);
+
+		const {formatters} = module.exports;
+
+		/**
+		 * Map %o to `util.inspect()`, all on a single line.
+		 */
+
+		formatters.o = function (v) {
+			this.inspectOpts.colors = this.useColors;
+			return util.inspect(v, this.inspectOpts)
+				.split('\n')
+				.map(str => str.trim())
+				.join(' ');
+		};
+
+		/**
+		 * Map %O to `util.inspect()`, allowing multiple lines if needed.
+		 */
+
+		formatters.O = function (v) {
+			this.inspectOpts.colors = this.useColors;
+			return util.inspect(v, this.inspectOpts);
+		}; 
+	} (node, node.exports));
+	return node.exports;
+}
+
+/**
+ * Detect Electron renderer / nwjs process, which is node, but we should
+ * treat as a browser.
+ */
+
+var hasRequiredSrc;
+
+function requireSrc () {
+	if (hasRequiredSrc) return src.exports;
+	hasRequiredSrc = 1;
+	if (typeof process === 'undefined' || process.type === 'renderer' || process.browser === true || process.__nwjs) {
+		src.exports = requireBrowser();
+	} else {
+		src.exports = requireNode();
+	}
+	return src.exports;
+}
+
+var srcExports = requireSrc();
+var initDebug = /*@__PURE__*/getDefaultExportFromCjs(srcExports);
+
+/**
+ * Ref https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT
+ */
+const Signature = {
+    LocalFileHeader: 0x04034b50,
+    DataDescriptor: 0x08074b50,
+    CentralFileHeader: 0x02014b50,
+    EndOfCentralDirectory: 0x06054b50
+};
+const DataDescriptor = {
+    get(array) {
+        UINT16_LE.get(array, 6);
+        return {
+            signature: UINT32_LE.get(array, 0),
+            compressedSize: UINT32_LE.get(array, 8),
+            uncompressedSize: UINT32_LE.get(array, 12),
+        };
+    }, len: 16
+};
+/**
+ * First part of the ZIP Local File Header
+ * Offset | Bytes| Description
+ * -------|------+-------------------------------------------------------------------
+ *      0 |    4 | Signature (0x04034b50)
+ *      4 |    2 | Minimum version needed to extract
+ *      6 |    2 | Bit flag
+ *      8 |    2 | Compression method
+ *     10 |    2 | File last modification time (MS-DOS format)
+ *     12 |    2 | File last modification date (MS-DOS format)
+ *     14 |    4 | CRC-32 of uncompressed data
+ *     18 |    4 | Compressed size
+ *     22 |    4 | Uncompressed size
+ *     26 |    2 | File name length (n)
+ *     28 |    2 | Extra field length (m)
+ *     30 |    n | File name
+ * 30 + n |    m | Extra field
+ */
+const LocalFileHeaderToken = {
+    get(array) {
+        const flags = UINT16_LE.get(array, 6);
+        return {
+            signature: UINT32_LE.get(array, 0),
+            minVersion: UINT16_LE.get(array, 4),
+            dataDescriptor: !!(flags & 0x0008),
+            compressedMethod: UINT16_LE.get(array, 8),
+            compressedSize: UINT32_LE.get(array, 18),
+            uncompressedSize: UINT32_LE.get(array, 22),
+            filenameLength: UINT16_LE.get(array, 26),
+            extraFieldLength: UINT16_LE.get(array, 28),
+            filename: null
+        };
+    }, len: 30
+};
+/**
+ * 4.3.16  End of central directory record:
+ *  end of central dir signature (0x06064b50)                                      4 bytes
+ *  number of this disk                                                            2 bytes
+ *  number of the disk with the start of the central directory                     2 bytes
+ *  total number of entries in the central directory on this disk                  2 bytes
+ *  total number of entries in the size of the central directory                   2 bytes
+ *  sizeOfTheCentralDirectory                                                      4 bytes
+ *  offset of start of central directory with respect to the starting disk number  4 bytes
+ *  .ZIP file comment length                                                       2 bytes
+ *  .ZIP file comment       (variable size)
+ */
+const EndOfCentralDirectoryRecordToken = {
+    get(array) {
+        return {
+            signature: UINT32_LE.get(array, 0),
+            nrOfThisDisk: UINT16_LE.get(array, 4),
+            nrOfThisDiskWithTheStart: UINT16_LE.get(array, 6),
+            nrOfEntriesOnThisDisk: UINT16_LE.get(array, 8),
+            nrOfEntriesOfSize: UINT16_LE.get(array, 10),
+            sizeOfCd: UINT32_LE.get(array, 12),
+            offsetOfStartOfCd: UINT32_LE.get(array, 16),
+            zipFileCommentLength: UINT16_LE.get(array, 20),
+        };
+    }, len: 22
+};
+/**
+ * File header:
+ *    central file header signature   4 bytes   0 (0x02014b50)
+ *    version made by                 2 bytes   4
+ *    version needed to extract       2 bytes   6
+ *    general purpose bit flag        2 bytes   8
+ *    compression method              2 bytes  10
+ *    last mod file time              2 bytes  12
+ *    last mod file date              2 bytes  14
+ *    crc-32                          4 bytes  16
+ *    compressed size                 4 bytes  20
+ *    uncompressed size               4 bytes  24
+ *    file name length                2 bytes  28
+ *    extra field length              2 bytes  30
+ *    file comment length             2 bytes  32
+ *    disk number start               2 bytes  34
+ *    internal file attributes        2 bytes  36
+ *    external file attributes        4 bytes  38
+ *    relative offset of local header 4 bytes  42
+ */
+const FileHeader = {
+    get(array) {
+        const flags = UINT16_LE.get(array, 8);
+        return {
+            signature: UINT32_LE.get(array, 0),
+            minVersion: UINT16_LE.get(array, 6),
+            dataDescriptor: !!(flags & 0x0008),
+            compressedMethod: UINT16_LE.get(array, 10),
+            compressedSize: UINT32_LE.get(array, 20),
+            uncompressedSize: UINT32_LE.get(array, 24),
+            filenameLength: UINT16_LE.get(array, 28),
+            extraFieldLength: UINT16_LE.get(array, 30),
+            fileCommentLength: UINT16_LE.get(array, 32),
+            relativeOffsetOfLocalHeader: UINT32_LE.get(array, 42),
+            filename: null
+        };
+    }, len: 46
+};
+
+function signatureToArray(signature) {
+    const signatureBytes = new Uint8Array(UINT32_LE.len);
+    UINT32_LE.put(signatureBytes, 0, signature);
+    return signatureBytes;
+}
+const debug = initDebug('tokenizer:inflate');
+const syncBufferSize = 256 * 1024;
+const ddSignatureArray = signatureToArray(Signature.DataDescriptor);
+const eocdSignatureBytes = signatureToArray(Signature.EndOfCentralDirectory);
+class ZipHandler {
+    constructor(tokenizer) {
+        this.tokenizer = tokenizer;
+        this.syncBuffer = new Uint8Array(syncBufferSize);
+    }
+    async isZip() {
+        return await this.peekSignature() === Signature.LocalFileHeader;
+    }
+    peekSignature() {
+        return this.tokenizer.peekToken(UINT32_LE);
+    }
+    async findEndOfCentralDirectoryLocator() {
+        const randomReadTokenizer = this.tokenizer;
+        const chunkLength = Math.min(16 * 1024, randomReadTokenizer.fileInfo.size);
+        const buffer = this.syncBuffer.subarray(0, chunkLength);
+        await this.tokenizer.readBuffer(buffer, { position: randomReadTokenizer.fileInfo.size - chunkLength });
+        // Search the buffer from end to beginning for EOCD signature
+        // const signature = 0x06054b50;
+        for (let i = buffer.length - 4; i >= 0; i--) {
+            // Compare 4 bytes directly without calling readUInt32LE
+            if (buffer[i] === eocdSignatureBytes[0] &&
+                buffer[i + 1] === eocdSignatureBytes[1] &&
+                buffer[i + 2] === eocdSignatureBytes[2] &&
+                buffer[i + 3] === eocdSignatureBytes[3]) {
+                return randomReadTokenizer.fileInfo.size - chunkLength + i;
+            }
+        }
+        return -1;
+    }
+    async readCentralDirectory() {
+        if (!this.tokenizer.supportsRandomAccess()) {
+            debug('Cannot reading central-directory without random-read support');
+            return;
+        }
+        debug('Reading central-directory...');
+        const pos = this.tokenizer.position;
+        const offset = await this.findEndOfCentralDirectoryLocator();
+        if (offset > 0) {
+            debug('Central-directory 32-bit signature found');
+            const eocdHeader = await this.tokenizer.readToken(EndOfCentralDirectoryRecordToken, offset);
+            const files = [];
+            this.tokenizer.setPosition(eocdHeader.offsetOfStartOfCd);
+            for (let n = 0; n < eocdHeader.nrOfEntriesOfSize; ++n) {
+                const entry = await this.tokenizer.readToken(FileHeader);
+                if (entry.signature !== Signature.CentralFileHeader) {
+                    throw new Error('Expected Central-File-Header signature');
+                }
+                entry.filename = await this.tokenizer.readToken(new StringType(entry.filenameLength, 'utf-8'));
+                await this.tokenizer.ignore(entry.extraFieldLength);
+                await this.tokenizer.ignore(entry.fileCommentLength);
+                files.push(entry);
+                debug(`Add central-directory file-entry: n=${n + 1}/${files.length}: filename=${files[n].filename}`);
+            }
+            this.tokenizer.setPosition(pos);
+            return files;
+        }
+        this.tokenizer.setPosition(pos);
+    }
+    async unzip(fileCb) {
+        const entries = await this.readCentralDirectory();
+        if (entries) {
+            // Use Central Directory to iterate over files
+            return this.iterateOverCentralDirectory(entries, fileCb);
+        }
+        // Scan Zip files for local-file-header
+        let stop = false;
+        do {
+            const zipHeader = await this.readLocalFileHeader();
+            if (!zipHeader)
+                break;
+            const next = fileCb(zipHeader);
+            stop = !!next.stop;
+            let fileData = undefined;
+            await this.tokenizer.ignore(zipHeader.extraFieldLength);
+            if (zipHeader.dataDescriptor && zipHeader.compressedSize === 0) {
+                const chunks = [];
+                let len = syncBufferSize;
+                debug('Compressed-file-size unknown, scanning for next data-descriptor-signature....');
+                let nextHeaderIndex = -1;
+                while (nextHeaderIndex < 0 && len === syncBufferSize) {
+                    len = await this.tokenizer.peekBuffer(this.syncBuffer, { mayBeLess: true });
+                    nextHeaderIndex = indexOf(this.syncBuffer.subarray(0, len), ddSignatureArray);
+                    const size = nextHeaderIndex >= 0 ? nextHeaderIndex : len;
+                    if (next.handler) {
+                        const data = new Uint8Array(size);
+                        await this.tokenizer.readBuffer(data);
+                        chunks.push(data);
+                    }
+                    else {
+                        // Move position to the next header if found, skip the whole buffer otherwise
+                        await this.tokenizer.ignore(size);
+                    }
+                }
+                debug(`Found data-descriptor-signature at pos=${this.tokenizer.position}`);
+                if (next.handler) {
+                    await this.inflate(zipHeader, mergeArrays(chunks), next.handler);
+                }
+            }
+            else {
+                if (next.handler) {
+                    debug(`Reading compressed-file-data: ${zipHeader.compressedSize} bytes`);
+                    fileData = new Uint8Array(zipHeader.compressedSize);
+                    await this.tokenizer.readBuffer(fileData);
+                    await this.inflate(zipHeader, fileData, next.handler);
+                }
+                else {
+                    debug(`Ignoring compressed-file-data: ${zipHeader.compressedSize} bytes`);
+                    await this.tokenizer.ignore(zipHeader.compressedSize);
+                }
+            }
+            debug(`Reading data-descriptor at pos=${this.tokenizer.position}`);
+            if (zipHeader.dataDescriptor) {
+                // await this.tokenizer.ignore(DataDescriptor.len);
+                const dataDescriptor = await this.tokenizer.readToken(DataDescriptor);
+                if (dataDescriptor.signature !== 0x08074b50) {
+                    throw new Error(`Expected data-descriptor-signature at position ${this.tokenizer.position - DataDescriptor.len}`);
+                }
+            }
+        } while (!stop);
+    }
+    async iterateOverCentralDirectory(entries, fileCb) {
+        for (const fileHeader of entries) {
+            const next = fileCb(fileHeader);
+            if (next.handler) {
+                this.tokenizer.setPosition(fileHeader.relativeOffsetOfLocalHeader);
+                const zipHeader = await this.readLocalFileHeader();
+                if (zipHeader) {
+                    await this.tokenizer.ignore(zipHeader.extraFieldLength);
+                    const fileData = new Uint8Array(fileHeader.compressedSize);
+                    await this.tokenizer.readBuffer(fileData);
+                    await this.inflate(zipHeader, fileData, next.handler);
+                }
+            }
+            if (next.stop)
+                break;
+        }
+    }
+    inflate(zipHeader, fileData, cb) {
+        if (zipHeader.compressedMethod === 0) {
+            return cb(fileData);
+        }
+        debug(`Decompress filename=${zipHeader.filename}, compressed-size=${fileData.length}`);
+        const uncompressedData = decompressSync(fileData);
+        return cb(uncompressedData);
+    }
+    async readLocalFileHeader() {
+        const signature = await this.tokenizer.peekToken(UINT32_LE);
+        if (signature === Signature.LocalFileHeader) {
+            const header = await this.tokenizer.readToken(LocalFileHeaderToken);
+            header.filename = await this.tokenizer.readToken(new StringType(header.filenameLength, 'utf-8'));
+            return header;
+        }
+        if (signature === Signature.CentralFileHeader) {
+            return false;
+        }
+        if (signature === 0xE011CFD0) {
+            throw new Error('Encrypted ZIP');
+        }
+        throw new Error('Unexpected signature');
+    }
+}
+function indexOf(buffer, portion) {
+    const bufferLength = buffer.length;
+    const portionLength = portion.length;
+    // Return -1 if the portion is longer than the buffer
+    if (portionLength > bufferLength)
+        return -1;
+    // Search for the portion in the buffer
+    for (let i = 0; i <= bufferLength - portionLength; i++) {
+        let found = true;
+        for (let j = 0; j < portionLength; j++) {
+            if (buffer[i + j] !== portion[j]) {
+                found = false;
+                break;
+            }
+        }
+        if (found) {
+            return i; // Return the starting offset
+        }
+    }
+    return -1; // Not found
+}
+function mergeArrays(chunks) {
+    // Concatenate chunks into a single Uint8Array
+    const totalLength = chunks.reduce((acc, curr) => acc + curr.length, 0);
+    const mergedArray = new Uint8Array(totalLength);
+    let offset = 0;
+    for (const chunk of chunks) {
+        mergedArray.set(chunk, offset);
+        offset += chunk.length;
+    }
+    return mergedArray;
+}
+
+({
+	utf8: new globalThis.TextDecoder('utf8'),
+});
+
+new globalThis.TextEncoder();
+
+Array.from({length: 256}, (_, index) => index.toString(16).padStart(2, '0'));
+
+/**
+@param {DataView} view
+@returns {number}
+*/
+function getUintBE(view) {
+	const {byteLength} = view;
+
+	if (byteLength === 6) {
+		return (view.getUint16(0) * (2 ** 32)) + view.getUint32(2);
+	}
+
+	if (byteLength === 5) {
+		return (view.getUint8(0) * (2 ** 32)) + view.getUint32(1);
+	}
+
+	if (byteLength === 4) {
+		return view.getUint32(0);
+	}
+
+	if (byteLength === 3) {
+		return (view.getUint8(0) * (2 ** 16)) + view.getUint16(1);
+	}
+
+	if (byteLength === 2) {
+		return view.getUint16(0);
+	}
+
+	if (byteLength === 1) {
+		return view.getUint8(0);
+	}
+}
+
+function stringToBytes(string) {
+	return [...string].map(character => character.charCodeAt(0)); // eslint-disable-line unicorn/prefer-code-point
+}
+
+/**
+Checks whether the TAR checksum is valid.
+
+@param {Uint8Array} arrayBuffer - The TAR header `[offset ... offset + 512]`.
+@param {number} offset - TAR header offset.
+@returns {boolean} `true` if the TAR checksum is valid, otherwise `false`.
+*/
+function tarHeaderChecksumMatches(arrayBuffer, offset = 0) {
+	const readSum = Number.parseInt(new StringType(6).get(arrayBuffer, 148).replace(/\0.*$/, '').trim(), 8); // Read sum in header
+	if (Number.isNaN(readSum)) {
+		return false;
+	}
+
+	let sum = 8 * 0x20; // Initialize signed bit sum
+
+	for (let index = offset; index < offset + 148; index++) {
+		sum += arrayBuffer[index];
+	}
+
+	for (let index = offset + 156; index < offset + 512; index++) {
+		sum += arrayBuffer[index];
+	}
+
+	return readSum === sum;
+}
+
+/**
+ID3 UINT32 sync-safe tokenizer token.
+28 bits (representing up to 256MB) integer, the msb is 0 to avoid "false syncsignals".
+*/
+const uint32SyncSafeToken = {
+	get: (buffer, offset) => (buffer[offset + 3] & 0x7F) | ((buffer[offset + 2]) << 7) | ((buffer[offset + 1]) << 14) | ((buffer[offset]) << 21),
+	len: 4,
+};
+
+const extensions = [
+	'jpg',
+	'png',
+	'apng',
+	'gif',
+	'webp',
+	'flif',
+	'xcf',
+	'cr2',
+	'cr3',
+	'orf',
+	'arw',
+	'dng',
+	'nef',
+	'rw2',
+	'raf',
+	'tif',
+	'bmp',
+	'icns',
+	'jxr',
+	'psd',
+	'indd',
+	'zip',
+	'tar',
+	'rar',
+	'gz',
+	'bz2',
+	'7z',
+	'dmg',
+	'mp4',
+	'mid',
+	'mkv',
+	'webm',
+	'mov',
+	'avi',
+	'mpg',
+	'mp2',
+	'mp3',
+	'm4a',
+	'oga',
+	'ogg',
+	'ogv',
+	'opus',
+	'flac',
+	'wav',
+	'spx',
+	'amr',
+	'pdf',
+	'epub',
+	'elf',
+	'macho',
+	'exe',
+	'swf',
+	'rtf',
+	'wasm',
+	'woff',
+	'woff2',
+	'eot',
+	'ttf',
+	'otf',
+	'ttc',
+	'ico',
+	'flv',
+	'ps',
+	'xz',
+	'sqlite',
+	'nes',
+	'crx',
+	'xpi',
+	'cab',
+	'deb',
+	'ar',
+	'rpm',
+	'Z',
+	'lz',
+	'cfb',
+	'mxf',
+	'mts',
+	'blend',
+	'bpg',
+	'docx',
+	'pptx',
+	'xlsx',
+	'3gp',
+	'3g2',
+	'j2c',
+	'jp2',
+	'jpm',
+	'jpx',
+	'mj2',
+	'aif',
+	'qcp',
+	'odt',
+	'ods',
+	'odp',
+	'xml',
+	'mobi',
+	'heic',
+	'cur',
+	'ktx',
+	'ape',
+	'wv',
+	'dcm',
+	'ics',
+	'glb',
+	'pcap',
+	'dsf',
+	'lnk',
+	'alias',
+	'voc',
+	'ac3',
+	'm4v',
+	'm4p',
+	'm4b',
+	'f4v',
+	'f4p',
+	'f4b',
+	'f4a',
+	'mie',
+	'asf',
+	'ogm',
+	'ogx',
+	'mpc',
+	'arrow',
+	'shp',
+	'aac',
+	'mp1',
+	'it',
+	's3m',
+	'xm',
+	'skp',
+	'avif',
+	'eps',
+	'lzh',
+	'pgp',
+	'asar',
+	'stl',
+	'chm',
+	'3mf',
+	'zst',
+	'jxl',
+	'vcf',
+	'jls',
+	'pst',
+	'dwg',
+	'parquet',
+	'class',
+	'arj',
+	'cpio',
+	'ace',
+	'avro',
+	'icc',
+	'fbx',
+	'vsdx',
+	'vtt',
+	'apk',
+	'drc',
+	'lz4',
+	'potx',
+	'xltx',
+	'dotx',
+	'xltm',
+	'ott',
+	'ots',
+	'otp',
+	'odg',
+	'otg',
+	'xlsm',
+	'docm',
+	'dotm',
+	'potm',
+	'pptm',
+	'jar',
+	'rm',
+	'ppsm',
+	'ppsx',
+];
+
+const mimeTypes = [
+	'image/jpeg',
+	'image/png',
+	'image/gif',
+	'image/webp',
+	'image/flif',
+	'image/x-xcf',
+	'image/x-canon-cr2',
+	'image/x-canon-cr3',
+	'image/tiff',
+	'image/bmp',
+	'image/vnd.ms-photo',
+	'image/vnd.adobe.photoshop',
+	'application/x-indesign',
+	'application/epub+zip',
+	'application/x-xpinstall',
+	'application/vnd.ms-powerpoint.slideshow.macroenabled.12',
+	'application/vnd.oasis.opendocument.text',
+	'application/vnd.oasis.opendocument.spreadsheet',
+	'application/vnd.oasis.opendocument.presentation',
+	'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+	'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+	'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+	'application/vnd.openxmlformats-officedocument.presentationml.slideshow',
+	'application/zip',
+	'application/x-tar',
+	'application/x-rar-compressed',
+	'application/gzip',
+	'application/x-bzip2',
+	'application/x-7z-compressed',
+	'application/x-apple-diskimage',
+	'application/vnd.apache.arrow.file',
+	'video/mp4',
+	'audio/midi',
+	'video/matroska',
+	'video/webm',
+	'video/quicktime',
+	'video/vnd.avi',
+	'audio/wav',
+	'audio/qcelp',
+	'audio/x-ms-asf',
+	'video/x-ms-asf',
+	'application/vnd.ms-asf',
+	'video/mpeg',
+	'video/3gpp',
+	'audio/mpeg',
+	'audio/mp4', // RFC 4337
+	'video/ogg',
+	'audio/ogg',
+	'audio/ogg; codecs=opus',
+	'application/ogg',
+	'audio/flac',
+	'audio/ape',
+	'audio/wavpack',
+	'audio/amr',
+	'application/pdf',
+	'application/x-elf',
+	'application/x-mach-binary',
+	'application/x-msdownload',
+	'application/x-shockwave-flash',
+	'application/rtf',
+	'application/wasm',
+	'font/woff',
+	'font/woff2',
+	'application/vnd.ms-fontobject',
+	'font/ttf',
+	'font/otf',
+	'font/collection',
+	'image/x-icon',
+	'video/x-flv',
+	'application/postscript',
+	'application/eps',
+	'application/x-xz',
+	'application/x-sqlite3',
+	'application/x-nintendo-nes-rom',
+	'application/x-google-chrome-extension',
+	'application/vnd.ms-cab-compressed',
+	'application/x-deb',
+	'application/x-unix-archive',
+	'application/x-rpm',
+	'application/x-compress',
+	'application/x-lzip',
+	'application/x-cfb',
+	'application/x-mie',
+	'application/mxf',
+	'video/mp2t',
+	'application/x-blender',
+	'image/bpg',
+	'image/j2c',
+	'image/jp2',
+	'image/jpx',
+	'image/jpm',
+	'image/mj2',
+	'audio/aiff',
+	'application/xml',
+	'application/x-mobipocket-ebook',
+	'image/heif',
+	'image/heif-sequence',
+	'image/heic',
+	'image/heic-sequence',
+	'image/icns',
+	'image/ktx',
+	'application/dicom',
+	'audio/x-musepack',
+	'text/calendar',
+	'text/vcard',
+	'text/vtt',
+	'model/gltf-binary',
+	'application/vnd.tcpdump.pcap',
+	'audio/x-dsf', // Non-standard
+	'application/x.ms.shortcut', // Invented by us
+	'application/x.apple.alias', // Invented by us
+	'audio/x-voc',
+	'audio/vnd.dolby.dd-raw',
+	'audio/x-m4a',
+	'image/apng',
+	'image/x-olympus-orf',
+	'image/x-sony-arw',
+	'image/x-adobe-dng',
+	'image/x-nikon-nef',
+	'image/x-panasonic-rw2',
+	'image/x-fujifilm-raf',
+	'video/x-m4v',
+	'video/3gpp2',
+	'application/x-esri-shape',
+	'audio/aac',
+	'audio/x-it',
+	'audio/x-s3m',
+	'audio/x-xm',
+	'video/MP1S',
+	'video/MP2P',
+	'application/vnd.sketchup.skp',
+	'image/avif',
+	'application/x-lzh-compressed',
+	'application/pgp-encrypted',
+	'application/x-asar',
+	'model/stl',
+	'application/vnd.ms-htmlhelp',
+	'model/3mf',
+	'image/jxl',
+	'application/zstd',
+	'image/jls',
+	'application/vnd.ms-outlook',
+	'image/vnd.dwg',
+	'application/vnd.apache.parquet',
+	'application/java-vm',
+	'application/x-arj',
+	'application/x-cpio',
+	'application/x-ace-compressed',
+	'application/avro',
+	'application/vnd.iccprofile',
+	'application/x.autodesk.fbx', // Invented by us
+	'application/vnd.visio',
+	'application/vnd.android.package-archive',
+	'application/vnd.google.draco', // Invented by us
+	'application/x-lz4', // Invented by us
+	'application/vnd.openxmlformats-officedocument.presentationml.template',
+	'application/vnd.openxmlformats-officedocument.spreadsheetml.template',
+	'application/vnd.openxmlformats-officedocument.wordprocessingml.template',
+	'application/vnd.ms-excel.template.macroenabled.12',
+	'application/vnd.oasis.opendocument.text-template',
+	'application/vnd.oasis.opendocument.spreadsheet-template',
+	'application/vnd.oasis.opendocument.presentation-template',
+	'application/vnd.oasis.opendocument.graphics',
+	'application/vnd.oasis.opendocument.graphics-template',
+	'application/vnd.ms-excel.sheet.macroenabled.12',
+	'application/vnd.ms-word.document.macroenabled.12',
+	'application/vnd.ms-word.template.macroenabled.12',
+	'application/vnd.ms-powerpoint.template.macroenabled.12',
+	'application/vnd.ms-powerpoint.presentation.macroenabled.12',
+	'application/java-archive',
+	'application/vnd.rn-realmedia',
+];
+
+/**
+Primary entry point, Node.js specific entry point is index.js
+*/
+
+
+const reasonableDetectionSizeInBytes = 4100; // A fair amount of file-types are detectable within this range.
+
+function getFileTypeFromMimeType(mimeType) {
+	mimeType = mimeType.toLowerCase();
+	switch (mimeType) {
+		case 'application/epub+zip':
+			return {
+				ext: 'epub',
+				mime: mimeType,
+			};
+		case 'application/vnd.oasis.opendocument.text':
+			return {
+				ext: 'odt',
+				mime: mimeType,
+			};
+		case 'application/vnd.oasis.opendocument.text-template':
+			return {
+				ext: 'ott',
+				mime: mimeType,
+			};
+		case 'application/vnd.oasis.opendocument.spreadsheet':
+			return {
+				ext: 'ods',
+				mime: mimeType,
+			};
+		case 'application/vnd.oasis.opendocument.spreadsheet-template':
+			return {
+				ext: 'ots',
+				mime: mimeType,
+			};
+		case 'application/vnd.oasis.opendocument.presentation':
+			return {
+				ext: 'odp',
+				mime: mimeType,
+			};
+		case 'application/vnd.oasis.opendocument.presentation-template':
+			return {
+				ext: 'otp',
+				mime: mimeType,
+			};
+		case 'application/vnd.oasis.opendocument.graphics':
+			return {
+				ext: 'odg',
+				mime: mimeType,
+			};
+		case 'application/vnd.oasis.opendocument.graphics-template':
+			return {
+				ext: 'otg',
+				mime: mimeType,
+			};
+		case 'application/vnd.openxmlformats-officedocument.presentationml.slideshow':
+			return {
+				ext: 'ppsx',
+				mime: mimeType,
+			};
+		case 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
+			return {
+				ext: 'xlsx',
+				mime: mimeType,
+			};
+		case 'application/vnd.ms-excel.sheet.macroenabled':
+			return {
+				ext: 'xlsm',
+				mime: 'application/vnd.ms-excel.sheet.macroenabled.12',
+			};
+		case 'application/vnd.openxmlformats-officedocument.spreadsheetml.template':
+			return {
+				ext: 'xltx',
+				mime: mimeType,
+			};
+		case 'application/vnd.ms-excel.template.macroenabled':
+			return {
+				ext: 'xltm',
+				mime: 'application/vnd.ms-excel.template.macroenabled.12',
+			};
+		case 'application/vnd.ms-powerpoint.slideshow.macroenabled':
+			return {
+				ext: 'ppsm',
+				mime: 'application/vnd.ms-powerpoint.slideshow.macroenabled.12',
+			};
+		case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+			return {
+				ext: 'docx',
+				mime: mimeType,
+			};
+		case 'application/vnd.ms-word.document.macroenabled':
+			return {
+				ext: 'docm',
+				mime: 'application/vnd.ms-word.document.macroenabled.12',
+			};
+		case 'application/vnd.openxmlformats-officedocument.wordprocessingml.template':
+			return {
+				ext: 'dotx',
+				mime: mimeType,
+			};
+		case 'application/vnd.ms-word.template.macroenabledtemplate':
+			return {
+				ext: 'dotm',
+				mime: 'application/vnd.ms-word.template.macroenabled.12',
+			};
+		case 'application/vnd.openxmlformats-officedocument.presentationml.template':
+			return {
+				ext: 'potx',
+				mime: mimeType,
+			};
+		case 'application/vnd.ms-powerpoint.template.macroenabled':
+			return {
+				ext: 'potm',
+				mime: 'application/vnd.ms-powerpoint.template.macroenabled.12',
+			};
+		case 'application/vnd.openxmlformats-officedocument.presentationml.presentation':
+			return {
+				ext: 'pptx',
+				mime: mimeType,
+			};
+		case 'application/vnd.ms-powerpoint.presentation.macroenabled':
+			return {
+				ext: 'pptm',
+				mime: 'application/vnd.ms-powerpoint.presentation.macroenabled.12',
+			};
+		case 'application/vnd.ms-visio.drawing':
+			return {
+				ext: 'vsdx',
+				mime: 'application/vnd.visio',
+			};
+		case 'application/vnd.ms-package.3dmanufacturing-3dmodel+xml':
+			return {
+				ext: '3mf',
+				mime: 'model/3mf',
+			};
+	}
+}
+
+function _check(buffer, headers, options) {
+	options = {
+		offset: 0,
+		...options,
+	};
+
+	for (const [index, header] of headers.entries()) {
+		// If a bitmask is set
+		if (options.mask) {
+			// If header doesn't equal `buf` with bits masked off
+			if (header !== (options.mask[index] & buffer[index + options.offset])) {
+				return false;
+			}
+		} else if (header !== buffer[index + options.offset]) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
+let FileTypeParser$1 = class FileTypeParser {
+	constructor(options) {
+		this.options = {
+			mpegOffsetTolerance: 0,
+			...options,
+		};
+
+		this.detectors = [...(options?.customDetectors ?? []),
+			{id: 'core', detect: this.detectConfident},
+			{id: 'core.imprecise', detect: this.detectImprecise}];
+		this.tokenizerOptions = {
+			abortSignal: options?.signal,
+		};
+	}
+
+	async fromTokenizer(tokenizer) {
+		const initialPosition = tokenizer.position;
+
+		// Iterate through all file-type detectors
+		for (const detector of this.detectors) {
+			const fileType = await detector.detect(tokenizer);
+			if (fileType) {
+				return fileType;
+			}
+
+			if (initialPosition !== tokenizer.position) {
+				return undefined; // Cannot proceed scanning of the tokenizer is at an arbitrary position
+			}
+		}
+	}
+
+	async fromBuffer(input) {
+		if (!(input instanceof Uint8Array || input instanceof ArrayBuffer)) {
+			throw new TypeError(`Expected the \`input\` argument to be of type \`Uint8Array\` or \`ArrayBuffer\`, got \`${typeof input}\``);
+		}
+
+		const buffer = input instanceof Uint8Array ? input : new Uint8Array(input);
+
+		if (!(buffer?.length > 1)) {
+			return;
+		}
+
+		return this.fromTokenizer(fromBuffer(buffer, this.tokenizerOptions));
+	}
+
+	async fromBlob(blob) {
+		return this.fromStream(blob.stream());
+	}
+
+	async fromStream(stream) {
+		const tokenizer = await fromWebStream(stream, this.tokenizerOptions);
+		try {
+			return await this.fromTokenizer(tokenizer);
+		} finally {
+			await tokenizer.close();
+		}
+	}
+
+	async toDetectionStream(stream, options) {
+		const {sampleSize = reasonableDetectionSizeInBytes} = options;
+		let detectedFileType;
+		let firstChunk;
+
+		const reader = stream.getReader({mode: 'byob'});
+		try {
+			// Read the first chunk from the stream
+			const {value: chunk, done} = await reader.read(new Uint8Array(sampleSize));
+			firstChunk = chunk;
+			if (!done && chunk) {
+				try {
+					// Attempt to detect the file type from the chunk
+					detectedFileType = await this.fromBuffer(chunk.subarray(0, sampleSize));
+				} catch (error) {
+					if (!(error instanceof EndOfStreamError)) {
+						throw error; // Re-throw non-EndOfStreamError
+					}
+
+					detectedFileType = undefined;
+				}
+			}
+
+			firstChunk = chunk;
+		} finally {
+			reader.releaseLock(); // Ensure the reader is released
+		}
+
+		// Create a new ReadableStream to manage locking issues
+		const transformStream = new TransformStream({
+			async start(controller) {
+				controller.enqueue(firstChunk); // Enqueue the initial chunk
+			},
+			transform(chunk, controller) {
+				// Pass through the chunks without modification
+				controller.enqueue(chunk);
+			},
+		});
+
+		const newStream = stream.pipeThrough(transformStream);
+		newStream.fileType = detectedFileType;
+
+		return newStream;
+	}
+
+	check(header, options) {
+		return _check(this.buffer, header, options);
+	}
+
+	checkString(header, options) {
+		return this.check(stringToBytes(header), options);
+	}
+
+	// Detections with a high degree of certainty in identifying the correct file type
+	detectConfident = async tokenizer => {
+		this.buffer = new Uint8Array(reasonableDetectionSizeInBytes);
+
+		// Keep reading until EOF if the file size is unknown.
+		if (tokenizer.fileInfo.size === undefined) {
+			tokenizer.fileInfo.size = Number.MAX_SAFE_INTEGER;
+		}
+
+		this.tokenizer = tokenizer;
+
+		await tokenizer.peekBuffer(this.buffer, {length: 12, mayBeLess: true});
+
+		// -- 2-byte signatures --
+
+		if (this.check([0x42, 0x4D])) {
+			return {
+				ext: 'bmp',
+				mime: 'image/bmp',
+			};
+		}
+
+		if (this.check([0x0B, 0x77])) {
+			return {
+				ext: 'ac3',
+				mime: 'audio/vnd.dolby.dd-raw',
+			};
+		}
+
+		if (this.check([0x78, 0x01])) {
+			return {
+				ext: 'dmg',
+				mime: 'application/x-apple-diskimage',
+			};
+		}
+
+		if (this.check([0x4D, 0x5A])) {
+			return {
+				ext: 'exe',
+				mime: 'application/x-msdownload',
+			};
+		}
+
+		if (this.check([0x25, 0x21])) {
+			await tokenizer.peekBuffer(this.buffer, {length: 24, mayBeLess: true});
+
+			if (
+				this.checkString('PS-Adobe-', {offset: 2})
+				&& this.checkString(' EPSF-', {offset: 14})
+			) {
+				return {
+					ext: 'eps',
+					mime: 'application/eps',
+				};
+			}
+
+			return {
+				ext: 'ps',
+				mime: 'application/postscript',
+			};
+		}
+
+		if (
+			this.check([0x1F, 0xA0])
+			|| this.check([0x1F, 0x9D])
+		) {
+			return {
+				ext: 'Z',
+				mime: 'application/x-compress',
+			};
+		}
+
+		if (this.check([0xC7, 0x71])) {
+			return {
+				ext: 'cpio',
+				mime: 'application/x-cpio',
+			};
+		}
+
+		if (this.check([0x60, 0xEA])) {
+			return {
+				ext: 'arj',
+				mime: 'application/x-arj',
+			};
+		}
+
+		// -- 3-byte signatures --
+
+		if (this.check([0xEF, 0xBB, 0xBF])) { // UTF-8-BOM
+			// Strip off UTF-8-BOM
+			this.tokenizer.ignore(3);
+			return this.detectConfident(tokenizer);
+		}
+
+		if (this.check([0x47, 0x49, 0x46])) {
+			return {
+				ext: 'gif',
+				mime: 'image/gif',
+			};
+		}
+
+		if (this.check([0x49, 0x49, 0xBC])) {
+			return {
+				ext: 'jxr',
+				mime: 'image/vnd.ms-photo',
+			};
+		}
+
+		if (this.check([0x1F, 0x8B, 0x8])) {
+			return {
+				ext: 'gz',
+				mime: 'application/gzip',
+			};
+		}
+
+		if (this.check([0x42, 0x5A, 0x68])) {
+			return {
+				ext: 'bz2',
+				mime: 'application/x-bzip2',
+			};
+		}
+
+		if (this.checkString('ID3')) {
+			await tokenizer.ignore(6); // Skip ID3 header until the header size
+			const id3HeaderLength = await tokenizer.readToken(uint32SyncSafeToken);
+			if (tokenizer.position + id3HeaderLength > tokenizer.fileInfo.size) {
+				// Guess file type based on ID3 header for backward compatibility
+				return {
+					ext: 'mp3',
+					mime: 'audio/mpeg',
+				};
+			}
+
+			await tokenizer.ignore(id3HeaderLength);
+			return this.fromTokenizer(tokenizer); // Skip ID3 header, recursion
+		}
+
+		// Musepack, SV7
+		if (this.checkString('MP+')) {
+			return {
+				ext: 'mpc',
+				mime: 'audio/x-musepack',
+			};
+		}
+
+		if (
+			(this.buffer[0] === 0x43 || this.buffer[0] === 0x46)
+			&& this.check([0x57, 0x53], {offset: 1})
+		) {
+			return {
+				ext: 'swf',
+				mime: 'application/x-shockwave-flash',
+			};
+		}
+
+		// -- 4-byte signatures --
+
+		// Requires a sample size of 4 bytes
+		if (this.check([0xFF, 0xD8, 0xFF])) {
+			if (this.check([0xF7], {offset: 3})) { // JPG7/SOF55, indicating a ISO/IEC 14495 / JPEG-LS file
+				return {
+					ext: 'jls',
+					mime: 'image/jls',
+				};
+			}
+
+			return {
+				ext: 'jpg',
+				mime: 'image/jpeg',
+			};
+		}
+
+		if (this.check([0x4F, 0x62, 0x6A, 0x01])) {
+			return {
+				ext: 'avro',
+				mime: 'application/avro',
+			};
+		}
+
+		if (this.checkString('FLIF')) {
+			return {
+				ext: 'flif',
+				mime: 'image/flif',
+			};
+		}
+
+		if (this.checkString('8BPS')) {
+			return {
+				ext: 'psd',
+				mime: 'image/vnd.adobe.photoshop',
+			};
+		}
+
+		// Musepack, SV8
+		if (this.checkString('MPCK')) {
+			return {
+				ext: 'mpc',
+				mime: 'audio/x-musepack',
+			};
+		}
+
+		if (this.checkString('FORM')) {
+			return {
+				ext: 'aif',
+				mime: 'audio/aiff',
+			};
+		}
+
+		if (this.checkString('icns', {offset: 0})) {
+			return {
+				ext: 'icns',
+				mime: 'image/icns',
+			};
+		}
+
+		// Zip-based file formats
+		// Need to be before the `zip` check
+		if (this.check([0x50, 0x4B, 0x3, 0x4])) { // Local file header signature
+			let fileType;
+			await new ZipHandler(tokenizer).unzip(zipHeader => {
+				switch (zipHeader.filename) {
+					case 'META-INF/mozilla.rsa':
+						fileType = {
+							ext: 'xpi',
+							mime: 'application/x-xpinstall',
+						};
+						return {
+							stop: true,
+						};
+					case 'META-INF/MANIFEST.MF':
+						fileType = {
+							ext: 'jar',
+							mime: 'application/java-archive',
+						};
+						return {
+							stop: true,
+						};
+					case 'mimetype':
+						return {
+							async handler(fileData) {
+								// Use TextDecoder to decode the UTF-8 encoded data
+								const mimeType = new TextDecoder('utf-8').decode(fileData).trim();
+								fileType = getFileTypeFromMimeType(mimeType);
+							},
+							stop: true,
+						};
+
+					case '[Content_Types].xml':
+						return {
+							async handler(fileData) {
+								// Use TextDecoder to decode the UTF-8 encoded data
+								let xmlContent = new TextDecoder('utf-8').decode(fileData);
+								const endPos = xmlContent.indexOf('.main+xml"');
+								if (endPos === -1) {
+									const mimeType = 'application/vnd.ms-package.3dmanufacturing-3dmodel+xml';
+									if (xmlContent.includes(`ContentType="${mimeType}"`)) {
+										fileType = getFileTypeFromMimeType(mimeType);
+									}
+								} else {
+									xmlContent = xmlContent.slice(0, Math.max(0, endPos));
+									const firstPos = xmlContent.lastIndexOf('"');
+									const mimeType = xmlContent.slice(Math.max(0, firstPos + 1));
+									fileType = getFileTypeFromMimeType(mimeType);
+								}
+							},
+							stop: true,
+						};
+					default:
+						if (/classes\d*\.dex/.test(zipHeader.filename)) {
+							fileType = {
+								ext: 'apk',
+								mime: 'application/vnd.android.package-archive',
+							};
+							return {stop: true};
+						}
+
+						return {};
+				}
+			});
+
+			return fileType ?? {
+				ext: 'zip',
+				mime: 'application/zip',
+			};
+		}
+
+		if (this.checkString('OggS')) {
+			// This is an OGG container
+			await tokenizer.ignore(28);
+			const type = new Uint8Array(8);
+			await tokenizer.readBuffer(type);
+
+			// Needs to be before `ogg` check
+			if (_check(type, [0x4F, 0x70, 0x75, 0x73, 0x48, 0x65, 0x61, 0x64])) {
+				return {
+					ext: 'opus',
+					mime: 'audio/ogg; codecs=opus',
+				};
+			}
+
+			// If ' theora' in header.
+			if (_check(type, [0x80, 0x74, 0x68, 0x65, 0x6F, 0x72, 0x61])) {
+				return {
+					ext: 'ogv',
+					mime: 'video/ogg',
+				};
+			}
+
+			// If '\x01video' in header.
+			if (_check(type, [0x01, 0x76, 0x69, 0x64, 0x65, 0x6F, 0x00])) {
+				return {
+					ext: 'ogm',
+					mime: 'video/ogg',
+				};
+			}
+
+			// If ' FLAC' in header  https://xiph.org/flac/faq.html
+			if (_check(type, [0x7F, 0x46, 0x4C, 0x41, 0x43])) {
+				return {
+					ext: 'oga',
+					mime: 'audio/ogg',
+				};
+			}
+
+			// 'Speex  ' in header https://en.wikipedia.org/wiki/Speex
+			if (_check(type, [0x53, 0x70, 0x65, 0x65, 0x78, 0x20, 0x20])) {
+				return {
+					ext: 'spx',
+					mime: 'audio/ogg',
+				};
+			}
+
+			// If '\x01vorbis' in header
+			if (_check(type, [0x01, 0x76, 0x6F, 0x72, 0x62, 0x69, 0x73])) {
+				return {
+					ext: 'ogg',
+					mime: 'audio/ogg',
+				};
+			}
+
+			// Default OGG container https://www.iana.org/assignments/media-types/application/ogg
+			return {
+				ext: 'ogx',
+				mime: 'application/ogg',
+			};
+		}
+
+		if (
+			this.check([0x50, 0x4B])
+			&& (this.buffer[2] === 0x3 || this.buffer[2] === 0x5 || this.buffer[2] === 0x7)
+			&& (this.buffer[3] === 0x4 || this.buffer[3] === 0x6 || this.buffer[3] === 0x8)
+		) {
+			return {
+				ext: 'zip',
+				mime: 'application/zip',
+			};
+		}
+
+		if (this.checkString('MThd')) {
+			return {
+				ext: 'mid',
+				mime: 'audio/midi',
+			};
+		}
+
+		if (
+			this.checkString('wOFF')
+			&& (
+				this.check([0x00, 0x01, 0x00, 0x00], {offset: 4})
+				|| this.checkString('OTTO', {offset: 4})
+			)
+		) {
+			return {
+				ext: 'woff',
+				mime: 'font/woff',
+			};
+		}
+
+		if (
+			this.checkString('wOF2')
+			&& (
+				this.check([0x00, 0x01, 0x00, 0x00], {offset: 4})
+				|| this.checkString('OTTO', {offset: 4})
+			)
+		) {
+			return {
+				ext: 'woff2',
+				mime: 'font/woff2',
+			};
+		}
+
+		if (this.check([0xD4, 0xC3, 0xB2, 0xA1]) || this.check([0xA1, 0xB2, 0xC3, 0xD4])) {
+			return {
+				ext: 'pcap',
+				mime: 'application/vnd.tcpdump.pcap',
+			};
+		}
+
+		// Sony DSD Stream File (DSF)
+		if (this.checkString('DSD ')) {
+			return {
+				ext: 'dsf',
+				mime: 'audio/x-dsf', // Non-standard
+			};
+		}
+
+		if (this.checkString('LZIP')) {
+			return {
+				ext: 'lz',
+				mime: 'application/x-lzip',
+			};
+		}
+
+		if (this.checkString('fLaC')) {
+			return {
+				ext: 'flac',
+				mime: 'audio/flac',
+			};
+		}
+
+		if (this.check([0x42, 0x50, 0x47, 0xFB])) {
+			return {
+				ext: 'bpg',
+				mime: 'image/bpg',
+			};
+		}
+
+		if (this.checkString('wvpk')) {
+			return {
+				ext: 'wv',
+				mime: 'audio/wavpack',
+			};
+		}
+
+		if (this.checkString('%PDF')) {
+			// Assume this is just a normal PDF
+			return {
+				ext: 'pdf',
+				mime: 'application/pdf',
+			};
+		}
+
+		if (this.check([0x00, 0x61, 0x73, 0x6D])) {
+			return {
+				ext: 'wasm',
+				mime: 'application/wasm',
+			};
+		}
+
+		// TIFF, little-endian type
+		if (this.check([0x49, 0x49])) {
+			const fileType = await this.readTiffHeader(false);
+			if (fileType) {
+				return fileType;
+			}
+		}
+
+		// TIFF, big-endian type
+		if (this.check([0x4D, 0x4D])) {
+			const fileType = await this.readTiffHeader(true);
+			if (fileType) {
+				return fileType;
+			}
+		}
+
+		if (this.checkString('MAC ')) {
+			return {
+				ext: 'ape',
+				mime: 'audio/ape',
+			};
+		}
+
+		// https://github.com/file/file/blob/master/magic/Magdir/matroska
+		if (this.check([0x1A, 0x45, 0xDF, 0xA3])) { // Root element: EBML
+			async function readField() {
+				const msb = await tokenizer.peekNumber(UINT8);
+				let mask = 0x80;
+				let ic = 0; // 0 = A, 1 = B, 2 = C, 3 = D
+
+				while ((msb & mask) === 0 && mask !== 0) {
+					++ic;
+					mask >>= 1;
+				}
+
+				const id = new Uint8Array(ic + 1);
+				await tokenizer.readBuffer(id);
+				return id;
+			}
+
+			async function readElement() {
+				const idField = await readField();
+				const lengthField = await readField();
+
+				lengthField[0] ^= 0x80 >> (lengthField.length - 1);
+				const nrLength = Math.min(6, lengthField.length); // JavaScript can max read 6 bytes integer
+
+				const idView = new DataView(idField.buffer);
+				const lengthView = new DataView(lengthField.buffer, lengthField.length - nrLength, nrLength);
+
+				return {
+					id: getUintBE(idView),
+					len: getUintBE(lengthView),
+				};
+			}
+
+			async function readChildren(children) {
+				while (children > 0) {
+					const element = await readElement();
+					if (element.id === 0x42_82) {
+						const rawValue = await tokenizer.readToken(new StringType(element.len));
+						return rawValue.replaceAll(/\00.*$/g, ''); // Return DocType
+					}
+
+					await tokenizer.ignore(element.len); // ignore payload
+					--children;
+				}
+			}
+
+			const re = await readElement();
+			const documentType = await readChildren(re.len);
+
+			switch (documentType) {
+				case 'webm':
+					return {
+						ext: 'webm',
+						mime: 'video/webm',
+					};
+
+				case 'matroska':
+					return {
+						ext: 'mkv',
+						mime: 'video/matroska',
+					};
+
+				default:
+					return;
+			}
+		}
+
+		if (this.checkString('SQLi')) {
+			return {
+				ext: 'sqlite',
+				mime: 'application/x-sqlite3',
+			};
+		}
+
+		if (this.check([0x4E, 0x45, 0x53, 0x1A])) {
+			return {
+				ext: 'nes',
+				mime: 'application/x-nintendo-nes-rom',
+			};
+		}
+
+		if (this.checkString('Cr24')) {
+			return {
+				ext: 'crx',
+				mime: 'application/x-google-chrome-extension',
+			};
+		}
+
+		if (
+			this.checkString('MSCF')
+			|| this.checkString('ISc(')
+		) {
+			return {
+				ext: 'cab',
+				mime: 'application/vnd.ms-cab-compressed',
+			};
+		}
+
+		if (this.check([0xED, 0xAB, 0xEE, 0xDB])) {
+			return {
+				ext: 'rpm',
+				mime: 'application/x-rpm',
+			};
+		}
+
+		if (this.check([0xC5, 0xD0, 0xD3, 0xC6])) {
+			return {
+				ext: 'eps',
+				mime: 'application/eps',
+			};
+		}
+
+		if (this.check([0x28, 0xB5, 0x2F, 0xFD])) {
+			return {
+				ext: 'zst',
+				mime: 'application/zstd',
+			};
+		}
+
+		if (this.check([0x7F, 0x45, 0x4C, 0x46])) {
+			return {
+				ext: 'elf',
+				mime: 'application/x-elf',
+			};
+		}
+
+		if (this.check([0x21, 0x42, 0x44, 0x4E])) {
+			return {
+				ext: 'pst',
+				mime: 'application/vnd.ms-outlook',
+			};
+		}
+
+		if (this.checkString('PAR1') || this.checkString('PARE')) {
+			return {
+				ext: 'parquet',
+				mime: 'application/vnd.apache.parquet',
+			};
+		}
+
+		if (this.checkString('ttcf')) {
+			return {
+				ext: 'ttc',
+				mime: 'font/collection',
+			};
+		}
+
+		if (this.check([0xCF, 0xFA, 0xED, 0xFE])) {
+			return {
+				ext: 'macho',
+				mime: 'application/x-mach-binary',
+			};
+		}
+
+		if (this.check([0x04, 0x22, 0x4D, 0x18])) {
+			return {
+				ext: 'lz4',
+				mime: 'application/x-lz4', // Invented by us
+			};
+		}
+
+		// -- 5-byte signatures --
+
+		if (this.check([0x4F, 0x54, 0x54, 0x4F, 0x00])) {
+			return {
+				ext: 'otf',
+				mime: 'font/otf',
+			};
+		}
+
+		if (this.checkString('#!AMR')) {
+			return {
+				ext: 'amr',
+				mime: 'audio/amr',
+			};
+		}
+
+		if (this.checkString('{\\rtf')) {
+			return {
+				ext: 'rtf',
+				mime: 'application/rtf',
+			};
+		}
+
+		if (this.check([0x46, 0x4C, 0x56, 0x01])) {
+			return {
+				ext: 'flv',
+				mime: 'video/x-flv',
+			};
+		}
+
+		if (this.checkString('IMPM')) {
+			return {
+				ext: 'it',
+				mime: 'audio/x-it',
+			};
+		}
+
+		if (
+			this.checkString('-lh0-', {offset: 2})
+			|| this.checkString('-lh1-', {offset: 2})
+			|| this.checkString('-lh2-', {offset: 2})
+			|| this.checkString('-lh3-', {offset: 2})
+			|| this.checkString('-lh4-', {offset: 2})
+			|| this.checkString('-lh5-', {offset: 2})
+			|| this.checkString('-lh6-', {offset: 2})
+			|| this.checkString('-lh7-', {offset: 2})
+			|| this.checkString('-lzs-', {offset: 2})
+			|| this.checkString('-lz4-', {offset: 2})
+			|| this.checkString('-lz5-', {offset: 2})
+			|| this.checkString('-lhd-', {offset: 2})
+		) {
+			return {
+				ext: 'lzh',
+				mime: 'application/x-lzh-compressed',
+			};
+		}
+
+		// MPEG program stream (PS or MPEG-PS)
+		if (this.check([0x00, 0x00, 0x01, 0xBA])) {
+			//  MPEG-PS, MPEG-1 Part 1
+			if (this.check([0x21], {offset: 4, mask: [0xF1]})) {
+				return {
+					ext: 'mpg', // May also be .ps, .mpeg
+					mime: 'video/MP1S',
+				};
+			}
+
+			// MPEG-PS, MPEG-2 Part 1
+			if (this.check([0x44], {offset: 4, mask: [0xC4]})) {
+				return {
+					ext: 'mpg', // May also be .mpg, .m2p, .vob or .sub
+					mime: 'video/MP2P',
+				};
+			}
+		}
+
+		if (this.checkString('ITSF')) {
+			return {
+				ext: 'chm',
+				mime: 'application/vnd.ms-htmlhelp',
+			};
+		}
+
+		if (this.check([0xCA, 0xFE, 0xBA, 0xBE])) {
+			return {
+				ext: 'class',
+				mime: 'application/java-vm',
+			};
+		}
+
+		if (this.checkString('.RMF')) {
+			return {
+				ext: 'rm',
+				mime: 'application/vnd.rn-realmedia',
+			};
+		}
+
+		// -- 5-byte signatures --
+
+		if (this.checkString('DRACO')) {
+			return {
+				ext: 'drc',
+				mime: 'application/vnd.google.draco', // Invented by us
+			};
+		}
+
+		// -- 6-byte signatures --
+
+		if (this.check([0xFD, 0x37, 0x7A, 0x58, 0x5A, 0x00])) {
+			return {
+				ext: 'xz',
+				mime: 'application/x-xz',
+			};
+		}
+
+		if (this.checkString('<?xml ')) {
+			return {
+				ext: 'xml',
+				mime: 'application/xml',
+			};
+		}
+
+		if (this.check([0x37, 0x7A, 0xBC, 0xAF, 0x27, 0x1C])) {
+			return {
+				ext: '7z',
+				mime: 'application/x-7z-compressed',
+			};
+		}
+
+		if (
+			this.check([0x52, 0x61, 0x72, 0x21, 0x1A, 0x7])
+			&& (this.buffer[6] === 0x0 || this.buffer[6] === 0x1)
+		) {
+			return {
+				ext: 'rar',
+				mime: 'application/x-rar-compressed',
+			};
+		}
+
+		if (this.checkString('solid ')) {
+			return {
+				ext: 'stl',
+				mime: 'model/stl',
+			};
+		}
+
+		if (this.checkString('AC')) {
+			const version = new StringType(4, 'latin1').get(this.buffer, 2);
+			if (version.match('^d*') && version >= 1000 && version <= 1050) {
+				return {
+					ext: 'dwg',
+					mime: 'image/vnd.dwg',
+				};
+			}
+		}
+
+		if (this.checkString('070707')) {
+			return {
+				ext: 'cpio',
+				mime: 'application/x-cpio',
+			};
+		}
+
+		// -- 7-byte signatures --
+
+		if (this.checkString('BLENDER')) {
+			return {
+				ext: 'blend',
+				mime: 'application/x-blender',
+			};
+		}
+
+		if (this.checkString('!<arch>')) {
+			await tokenizer.ignore(8);
+			const string = await tokenizer.readToken(new StringType(13, 'ascii'));
+			if (string === 'debian-binary') {
+				return {
+					ext: 'deb',
+					mime: 'application/x-deb',
+				};
+			}
+
+			return {
+				ext: 'ar',
+				mime: 'application/x-unix-archive',
+			};
+		}
+
+		if (
+			this.checkString('WEBVTT')
+			&&	(
+				// One of LF, CR, tab, space, or end of file must follow "WEBVTT" per the spec (see `fixture/fixture-vtt-*.vtt` for examples). Note that `\0` is technically the null character (there is no such thing as an EOF character). However, checking for `\0` gives us the same result as checking for the end of the stream.
+				(['\n', '\r', '\t', ' ', '\0'].some(char7 => this.checkString(char7, {offset: 6}))))
+		) {
+			return {
+				ext: 'vtt',
+				mime: 'text/vtt',
+			};
+		}
+
+		// -- 8-byte signatures --
+
+		if (this.check([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A])) {
+			// APNG format (https://wiki.mozilla.org/APNG_Specification)
+			// 1. Find the first IDAT (image data) chunk (49 44 41 54)
+			// 2. Check if there is an "acTL" chunk before the IDAT one (61 63 54 4C)
+
+			// Offset calculated as follows:
+			// - 8 bytes: PNG signature
+			// - 4 (length) + 4 (chunk type) + 13 (chunk data) + 4 (CRC): IHDR chunk
+
+			await tokenizer.ignore(8); // ignore PNG signature
+
+			async function readChunkHeader() {
+				return {
+					length: await tokenizer.readToken(INT32_BE),
+					type: await tokenizer.readToken(new StringType(4, 'latin1')),
+				};
+			}
+
+			do {
+				const chunk = await readChunkHeader();
+				if (chunk.length < 0) {
+					return; // Invalid chunk length
+				}
+
+				switch (chunk.type) {
+					case 'IDAT':
+						return {
+							ext: 'png',
+							mime: 'image/png',
+						};
+					case 'acTL':
+						return {
+							ext: 'apng',
+							mime: 'image/apng',
+						};
+					default:
+						await tokenizer.ignore(chunk.length + 4); // Ignore chunk-data + CRC
+				}
+			} while (tokenizer.position + 8 < tokenizer.fileInfo.size);
+
+			return {
+				ext: 'png',
+				mime: 'image/png',
+			};
+		}
+
+		if (this.check([0x41, 0x52, 0x52, 0x4F, 0x57, 0x31, 0x00, 0x00])) {
+			return {
+				ext: 'arrow',
+				mime: 'application/vnd.apache.arrow.file',
+			};
+		}
+
+		if (this.check([0x67, 0x6C, 0x54, 0x46, 0x02, 0x00, 0x00, 0x00])) {
+			return {
+				ext: 'glb',
+				mime: 'model/gltf-binary',
+			};
+		}
+
+		// `mov` format variants
+		if (
+			this.check([0x66, 0x72, 0x65, 0x65], {offset: 4}) // `free`
+			|| this.check([0x6D, 0x64, 0x61, 0x74], {offset: 4}) // `mdat` MJPEG
+			|| this.check([0x6D, 0x6F, 0x6F, 0x76], {offset: 4}) // `moov`
+			|| this.check([0x77, 0x69, 0x64, 0x65], {offset: 4}) // `wide`
+		) {
+			return {
+				ext: 'mov',
+				mime: 'video/quicktime',
+			};
+		}
+
+		// -- 9-byte signatures --
+
+		if (this.check([0x49, 0x49, 0x52, 0x4F, 0x08, 0x00, 0x00, 0x00, 0x18])) {
+			return {
+				ext: 'orf',
+				mime: 'image/x-olympus-orf',
+			};
+		}
+
+		if (this.checkString('gimp xcf ')) {
+			return {
+				ext: 'xcf',
+				mime: 'image/x-xcf',
+			};
+		}
+
+		// File Type Box (https://en.wikipedia.org/wiki/ISO_base_media_file_format)
+		// It's not required to be first, but it's recommended to be. Almost all ISO base media files start with `ftyp` box.
+		// `ftyp` box must contain a brand major identifier, which must consist of ISO 8859-1 printable characters.
+		// Here we check for 8859-1 printable characters (for simplicity, it's a mask which also catches one non-printable character).
+		if (
+			this.checkString('ftyp', {offset: 4})
+			&& (this.buffer[8] & 0x60) !== 0x00 // Brand major, first character ASCII?
+		) {
+			// They all can have MIME `video/mp4` except `application/mp4` special-case which is hard to detect.
+			// For some cases, we're specific, everything else falls to `video/mp4` with `mp4` extension.
+			const brandMajor = new StringType(4, 'latin1').get(this.buffer, 8).replace('\0', ' ').trim();
+			switch (brandMajor) {
+				case 'avif':
+				case 'avis':
+					return {ext: 'avif', mime: 'image/avif'};
+				case 'mif1':
+					return {ext: 'heic', mime: 'image/heif'};
+				case 'msf1':
+					return {ext: 'heic', mime: 'image/heif-sequence'};
+				case 'heic':
+				case 'heix':
+					return {ext: 'heic', mime: 'image/heic'};
+				case 'hevc':
+				case 'hevx':
+					return {ext: 'heic', mime: 'image/heic-sequence'};
+				case 'qt':
+					return {ext: 'mov', mime: 'video/quicktime'};
+				case 'M4V':
+				case 'M4VH':
+				case 'M4VP':
+					return {ext: 'm4v', mime: 'video/x-m4v'};
+				case 'M4P':
+					return {ext: 'm4p', mime: 'video/mp4'};
+				case 'M4B':
+					return {ext: 'm4b', mime: 'audio/mp4'};
+				case 'M4A':
+					return {ext: 'm4a', mime: 'audio/x-m4a'};
+				case 'F4V':
+					return {ext: 'f4v', mime: 'video/mp4'};
+				case 'F4P':
+					return {ext: 'f4p', mime: 'video/mp4'};
+				case 'F4A':
+					return {ext: 'f4a', mime: 'audio/mp4'};
+				case 'F4B':
+					return {ext: 'f4b', mime: 'audio/mp4'};
+				case 'crx':
+					return {ext: 'cr3', mime: 'image/x-canon-cr3'};
+				default:
+					if (brandMajor.startsWith('3g')) {
+						if (brandMajor.startsWith('3g2')) {
+							return {ext: '3g2', mime: 'video/3gpp2'};
+						}
+
+						return {ext: '3gp', mime: 'video/3gpp'};
+					}
+
+					return {ext: 'mp4', mime: 'video/mp4'};
+			}
+		}
+
+		// -- 12-byte signatures --
+
+		// RIFF file format which might be AVI, WAV, QCP, etc
+		if (this.check([0x52, 0x49, 0x46, 0x46])) {
+			if (this.checkString('WEBP', {offset: 8})) {
+				return {
+					ext: 'webp',
+					mime: 'image/webp',
+				};
+			}
+
+			if (this.check([0x41, 0x56, 0x49], {offset: 8})) {
+				return {
+					ext: 'avi',
+					mime: 'video/vnd.avi',
+				};
+			}
+
+			if (this.check([0x57, 0x41, 0x56, 0x45], {offset: 8})) {
+				return {
+					ext: 'wav',
+					mime: 'audio/wav',
+				};
+			}
+
+			// QLCM, QCP file
+			if (this.check([0x51, 0x4C, 0x43, 0x4D], {offset: 8})) {
+				return {
+					ext: 'qcp',
+					mime: 'audio/qcelp',
+				};
+			}
+		}
+
+		if (this.check([0x49, 0x49, 0x55, 0x00, 0x18, 0x00, 0x00, 0x00, 0x88, 0xE7, 0x74, 0xD8])) {
+			return {
+				ext: 'rw2',
+				mime: 'image/x-panasonic-rw2',
+			};
+		}
+
+		// ASF_Header_Object first 80 bytes
+		if (this.check([0x30, 0x26, 0xB2, 0x75, 0x8E, 0x66, 0xCF, 0x11, 0xA6, 0xD9])) {
+			async function readHeader() {
+				const guid = new Uint8Array(16);
+				await tokenizer.readBuffer(guid);
+				return {
+					id: guid,
+					size: Number(await tokenizer.readToken(UINT64_LE)),
+				};
+			}
+
+			await tokenizer.ignore(30);
+			// Search for header should be in first 1KB of file.
+			while (tokenizer.position + 24 < tokenizer.fileInfo.size) {
+				const header = await readHeader();
+				let payload = header.size - 24;
+				if (_check(header.id, [0x91, 0x07, 0xDC, 0xB7, 0xB7, 0xA9, 0xCF, 0x11, 0x8E, 0xE6, 0x00, 0xC0, 0x0C, 0x20, 0x53, 0x65])) {
+					// Sync on Stream-Properties-Object (B7DC0791-A9B7-11CF-8EE6-00C00C205365)
+					const typeId = new Uint8Array(16);
+					payload -= await tokenizer.readBuffer(typeId);
+
+					if (_check(typeId, [0x40, 0x9E, 0x69, 0xF8, 0x4D, 0x5B, 0xCF, 0x11, 0xA8, 0xFD, 0x00, 0x80, 0x5F, 0x5C, 0x44, 0x2B])) {
+						// Found audio:
+						return {
+							ext: 'asf',
+							mime: 'audio/x-ms-asf',
+						};
+					}
+
+					if (_check(typeId, [0xC0, 0xEF, 0x19, 0xBC, 0x4D, 0x5B, 0xCF, 0x11, 0xA8, 0xFD, 0x00, 0x80, 0x5F, 0x5C, 0x44, 0x2B])) {
+						// Found video:
+						return {
+							ext: 'asf',
+							mime: 'video/x-ms-asf',
+						};
+					}
+
+					break;
+				}
+
+				await tokenizer.ignore(payload);
+			}
+
+			// Default to ASF generic extension
+			return {
+				ext: 'asf',
+				mime: 'application/vnd.ms-asf',
+			};
+		}
+
+		if (this.check([0xAB, 0x4B, 0x54, 0x58, 0x20, 0x31, 0x31, 0xBB, 0x0D, 0x0A, 0x1A, 0x0A])) {
+			return {
+				ext: 'ktx',
+				mime: 'image/ktx',
+			};
+		}
+
+		if ((this.check([0x7E, 0x10, 0x04]) || this.check([0x7E, 0x18, 0x04])) && this.check([0x30, 0x4D, 0x49, 0x45], {offset: 4})) {
+			return {
+				ext: 'mie',
+				mime: 'application/x-mie',
+			};
+		}
+
+		if (this.check([0x27, 0x0A, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00], {offset: 2})) {
+			return {
+				ext: 'shp',
+				mime: 'application/x-esri-shape',
+			};
+		}
+
+		if (this.check([0xFF, 0x4F, 0xFF, 0x51])) {
+			return {
+				ext: 'j2c',
+				mime: 'image/j2c',
+			};
+		}
+
+		if (this.check([0x00, 0x00, 0x00, 0x0C, 0x6A, 0x50, 0x20, 0x20, 0x0D, 0x0A, 0x87, 0x0A])) {
+			// JPEG-2000 family
+
+			await tokenizer.ignore(20);
+			const type = await tokenizer.readToken(new StringType(4, 'ascii'));
+			switch (type) {
+				case 'jp2 ':
+					return {
+						ext: 'jp2',
+						mime: 'image/jp2',
+					};
+				case 'jpx ':
+					return {
+						ext: 'jpx',
+						mime: 'image/jpx',
+					};
+				case 'jpm ':
+					return {
+						ext: 'jpm',
+						mime: 'image/jpm',
+					};
+				case 'mjp2':
+					return {
+						ext: 'mj2',
+						mime: 'image/mj2',
+					};
+				default:
+					return;
+			}
+		}
+
+		if (
+			this.check([0xFF, 0x0A])
+			|| this.check([0x00, 0x00, 0x00, 0x0C, 0x4A, 0x58, 0x4C, 0x20, 0x0D, 0x0A, 0x87, 0x0A])
+		) {
+			return {
+				ext: 'jxl',
+				mime: 'image/jxl',
+			};
+		}
+
+		if (this.check([0xFE, 0xFF])) { // UTF-16-BOM-LE
+			if (this.check([0, 60, 0, 63, 0, 120, 0, 109, 0, 108], {offset: 2})) {
+				return {
+					ext: 'xml',
+					mime: 'application/xml',
+				};
+			}
+
+			return undefined; // Some unknown text based format
+		}
+
+		if (this.check([0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1])) {
+			// Detected Microsoft Compound File Binary File (MS-CFB) Format.
+			return {
+				ext: 'cfb',
+				mime: 'application/x-cfb',
+			};
+		}
+
+		// Increase sample size from 12 to 256.
+		await tokenizer.peekBuffer(this.buffer, {length: Math.min(256, tokenizer.fileInfo.size), mayBeLess: true});
+
+		if (this.check([0x61, 0x63, 0x73, 0x70], {offset: 36})) {
+			return {
+				ext: 'icc',
+				mime: 'application/vnd.iccprofile',
+			};
+		}
+
+		// ACE: requires 14 bytes in the buffer
+		if (this.checkString('**ACE', {offset: 7}) && this.checkString('**', {offset: 12})) {
+			return {
+				ext: 'ace',
+				mime: 'application/x-ace-compressed',
+			};
+		}
+
+		// -- 15-byte signatures --
+
+		if (this.checkString('BEGIN:')) {
+			if (this.checkString('VCARD', {offset: 6})) {
+				return {
+					ext: 'vcf',
+					mime: 'text/vcard',
+				};
+			}
+
+			if (this.checkString('VCALENDAR', {offset: 6})) {
+				return {
+					ext: 'ics',
+					mime: 'text/calendar',
+				};
+			}
+		}
+
+		// `raf` is here just to keep all the raw image detectors together.
+		if (this.checkString('FUJIFILMCCD-RAW')) {
+			return {
+				ext: 'raf',
+				mime: 'image/x-fujifilm-raf',
+			};
+		}
+
+		if (this.checkString('Extended Module:')) {
+			return {
+				ext: 'xm',
+				mime: 'audio/x-xm',
+			};
+		}
+
+		if (this.checkString('Creative Voice File')) {
+			return {
+				ext: 'voc',
+				mime: 'audio/x-voc',
+			};
+		}
+
+		if (this.check([0x04, 0x00, 0x00, 0x00]) && this.buffer.length >= 16) { // Rough & quick check Pickle/ASAR
+			const jsonSize = new DataView(this.buffer.buffer).getUint32(12, true);
+
+			if (jsonSize > 12 && this.buffer.length >= jsonSize + 16) {
+				try {
+					const header = new TextDecoder().decode(this.buffer.subarray(16, jsonSize + 16));
+					const json = JSON.parse(header);
+					// Check if Pickle is ASAR
+					if (json.files) { // Final check, assuring Pickle/ASAR format
+						return {
+							ext: 'asar',
+							mime: 'application/x-asar',
+						};
+					}
+				} catch {}
+			}
+		}
+
+		if (this.check([0x06, 0x0E, 0x2B, 0x34, 0x02, 0x05, 0x01, 0x01, 0x0D, 0x01, 0x02, 0x01, 0x01, 0x02])) {
+			return {
+				ext: 'mxf',
+				mime: 'application/mxf',
+			};
+		}
+
+		if (this.checkString('SCRM', {offset: 44})) {
+			return {
+				ext: 's3m',
+				mime: 'audio/x-s3m',
+			};
+		}
+
+		// Raw MPEG-2 transport stream (188-byte packets)
+		if (this.check([0x47]) && this.check([0x47], {offset: 188})) {
+			return {
+				ext: 'mts',
+				mime: 'video/mp2t',
+			};
+		}
+
+		// Blu-ray Disc Audio-Video (BDAV) MPEG-2 transport stream has 4-byte TP_extra_header before each 188-byte packet
+		if (this.check([0x47], {offset: 4}) && this.check([0x47], {offset: 196})) {
+			return {
+				ext: 'mts',
+				mime: 'video/mp2t',
+			};
+		}
+
+		if (this.check([0x42, 0x4F, 0x4F, 0x4B, 0x4D, 0x4F, 0x42, 0x49], {offset: 60})) {
+			return {
+				ext: 'mobi',
+				mime: 'application/x-mobipocket-ebook',
+			};
+		}
+
+		if (this.check([0x44, 0x49, 0x43, 0x4D], {offset: 128})) {
+			return {
+				ext: 'dcm',
+				mime: 'application/dicom',
+			};
+		}
+
+		if (this.check([0x4C, 0x00, 0x00, 0x00, 0x01, 0x14, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46])) {
+			return {
+				ext: 'lnk',
+				mime: 'application/x.ms.shortcut', // Invented by us
+			};
+		}
+
+		if (this.check([0x62, 0x6F, 0x6F, 0x6B, 0x00, 0x00, 0x00, 0x00, 0x6D, 0x61, 0x72, 0x6B, 0x00, 0x00, 0x00, 0x00])) {
+			return {
+				ext: 'alias',
+				mime: 'application/x.apple.alias', // Invented by us
+			};
+		}
+
+		if (this.checkString('Kaydara FBX Binary  \u0000')) {
+			return {
+				ext: 'fbx',
+				mime: 'application/x.autodesk.fbx', // Invented by us
+			};
+		}
+
+		if (
+			this.check([0x4C, 0x50], {offset: 34})
+			&& (
+				this.check([0x00, 0x00, 0x01], {offset: 8})
+				|| this.check([0x01, 0x00, 0x02], {offset: 8})
+				|| this.check([0x02, 0x00, 0x02], {offset: 8})
+			)
+		) {
+			return {
+				ext: 'eot',
+				mime: 'application/vnd.ms-fontobject',
+			};
+		}
+
+		if (this.check([0x06, 0x06, 0xED, 0xF5, 0xD8, 0x1D, 0x46, 0xE5, 0xBD, 0x31, 0xEF, 0xE7, 0xFE, 0x74, 0xB7, 0x1D])) {
+			return {
+				ext: 'indd',
+				mime: 'application/x-indesign',
+			};
+		}
+
+		// Increase sample size from 256 to 512
+		await tokenizer.peekBuffer(this.buffer, {length: Math.min(512, tokenizer.fileInfo.size), mayBeLess: true});
+
+		// Requires a buffer size of 512 bytes
+		if ((this.checkString('ustar', {offset: 257}) && (this.checkString('\0', {offset: 262}) || this.checkString(' ', {offset: 262})))
+			|| (this.check([0, 0, 0, 0, 0, 0], {offset: 257}) && tarHeaderChecksumMatches(this.buffer))) {
+			return {
+				ext: 'tar',
+				mime: 'application/x-tar',
+			};
+		}
+
+		if (this.check([0xFF, 0xFE])) { // UTF-16-BOM-BE
+			if (this.check([60, 0, 63, 0, 120, 0, 109, 0, 108, 0], {offset: 2})) {
+				return {
+					ext: 'xml',
+					mime: 'application/xml',
+				};
+			}
+
+			if (this.check([0xFF, 0x0E, 0x53, 0x00, 0x6B, 0x00, 0x65, 0x00, 0x74, 0x00, 0x63, 0x00, 0x68, 0x00, 0x55, 0x00, 0x70, 0x00, 0x20, 0x00, 0x4D, 0x00, 0x6F, 0x00, 0x64, 0x00, 0x65, 0x00, 0x6C, 0x00], {offset: 2})) {
+				return {
+					ext: 'skp',
+					mime: 'application/vnd.sketchup.skp',
+				};
+			}
+
+			return undefined; // Some text based format
+		}
+
+		if (this.checkString('-----BEGIN PGP MESSAGE-----')) {
+			return {
+				ext: 'pgp',
+				mime: 'application/pgp-encrypted',
+			};
+		}
+	};
+	// Detections with limited supporting data, resulting in a higher likelihood of false positives
+	detectImprecise = async tokenizer => {
+		this.buffer = new Uint8Array(reasonableDetectionSizeInBytes);
+
+		// Read initial sample size of 8 bytes
+		await tokenizer.peekBuffer(this.buffer, {length: Math.min(8, tokenizer.fileInfo.size), mayBeLess: true});
+
+		if (
+			this.check([0x0, 0x0, 0x1, 0xBA])
+			|| this.check([0x0, 0x0, 0x1, 0xB3])
+		) {
+			return {
+				ext: 'mpg',
+				mime: 'video/mpeg',
+			};
+		}
+
+		if (this.check([0x00, 0x01, 0x00, 0x00, 0x00])) {
+			return {
+				ext: 'ttf',
+				mime: 'font/ttf',
+			};
+		}
+
+		if (this.check([0x00, 0x00, 0x01, 0x00])) {
+			return {
+				ext: 'ico',
+				mime: 'image/x-icon',
+			};
+		}
+
+		if (this.check([0x00, 0x00, 0x02, 0x00])) {
+			return {
+				ext: 'cur',
+				mime: 'image/x-icon',
+			};
+		}
+
+		// Adjust buffer to `mpegOffsetTolerance`
+		await tokenizer.peekBuffer(this.buffer, {length: Math.min(2 + this.options.mpegOffsetTolerance, tokenizer.fileInfo.size), mayBeLess: true});
+
+		// Check MPEG 1 or 2 Layer 3 header, or 'layer 0' for ADTS (MPEG sync-word 0xFFE)
+		if (this.buffer.length >= (2 + this.options.mpegOffsetTolerance)) {
+			for (let depth = 0; depth <= this.options.mpegOffsetTolerance; ++depth) {
+				const type = this.scanMpeg(depth);
+				if (type) {
+					return type;
+				}
+			}
+		}
+	};
+
+	async readTiffTag(bigEndian) {
+		const tagId = await this.tokenizer.readToken(bigEndian ? UINT16_BE : UINT16_LE);
+		this.tokenizer.ignore(10);
+		switch (tagId) {
+			case 50_341:
+				return {
+					ext: 'arw',
+					mime: 'image/x-sony-arw',
+				};
+			case 50_706:
+				return {
+					ext: 'dng',
+					mime: 'image/x-adobe-dng',
+				};
+		}
+	}
+
+	async readTiffIFD(bigEndian) {
+		const numberOfTags = await this.tokenizer.readToken(bigEndian ? UINT16_BE : UINT16_LE);
+		for (let n = 0; n < numberOfTags; ++n) {
+			const fileType = await this.readTiffTag(bigEndian);
+			if (fileType) {
+				return fileType;
+			}
+		}
+	}
+
+	async readTiffHeader(bigEndian) {
+		const version = (bigEndian ? UINT16_BE : UINT16_LE).get(this.buffer, 2);
+		const ifdOffset = (bigEndian ? UINT32_BE : UINT32_LE).get(this.buffer, 4);
+
+		if (version === 42) {
+			// TIFF file header
+			if (ifdOffset >= 6) {
+				if (this.checkString('CR', {offset: 8})) {
+					return {
+						ext: 'cr2',
+						mime: 'image/x-canon-cr2',
+					};
+				}
+
+				if (ifdOffset >= 8) {
+					const someId1 = (bigEndian ? UINT16_BE : UINT16_LE).get(this.buffer, 8);
+					const someId2 = (bigEndian ? UINT16_BE : UINT16_LE).get(this.buffer, 10);
+
+					if (
+						(someId1 === 0x1C && someId2 === 0xFE)
+						|| (someId1 === 0x1F && someId2 === 0x0B)) {
+						return {
+							ext: 'nef',
+							mime: 'image/x-nikon-nef',
+						};
+					}
+				}
+			}
+
+			await this.tokenizer.ignore(ifdOffset);
+			const fileType = await this.readTiffIFD(bigEndian);
+			return fileType ?? {
+				ext: 'tif',
+				mime: 'image/tiff',
+			};
+		}
+
+		if (version === 43) {	// Big TIFF file header
+			return {
+				ext: 'tif',
+				mime: 'image/tiff',
+			};
+		}
+	}
+
+	/**
+	Scan check MPEG 1 or 2 Layer 3 header, or 'layer 0' for ADTS (MPEG sync-word 0xFFE).
+
+	@param offset - Offset to scan for sync-preamble.
+	@returns {{ext: string, mime: string}}
+	*/
+	scanMpeg(offset) {
+		if (this.check([0xFF, 0xE0], {offset, mask: [0xFF, 0xE0]})) {
+			if (this.check([0x10], {offset: offset + 1, mask: [0x16]})) {
+				// Check for (ADTS) MPEG-2
+				if (this.check([0x08], {offset: offset + 1, mask: [0x08]})) {
+					return {
+						ext: 'aac',
+						mime: 'audio/aac',
+					};
+				}
+
+				// Must be (ADTS) MPEG-4
+				return {
+					ext: 'aac',
+					mime: 'audio/aac',
+				};
+			}
+
+			// MPEG 1 or 2 Layer 3 header
+			// Check for MPEG layer 3
+			if (this.check([0x02], {offset: offset + 1, mask: [0x06]})) {
+				return {
+					ext: 'mp3',
+					mime: 'audio/mpeg',
+				};
+			}
+
+			// Check for MPEG layer 2
+			if (this.check([0x04], {offset: offset + 1, mask: [0x06]})) {
+				return {
+					ext: 'mp2',
+					mime: 'audio/mpeg',
+				};
+			}
+
+			// Check for MPEG layer 1
+			if (this.check([0x06], {offset: offset + 1, mask: [0x06]})) {
+				return {
+					ext: 'mp1',
+					mime: 'audio/mpeg',
+				};
+			}
+		}
+	}
+};
+
+new Set(extensions);
+new Set(mimeTypes);
+
+/**
+Node.js specific entry point.
+*/
+
+
+class FileTypeParser extends FileTypeParser$1 {
+	async fromStream(stream) {
+		const tokenizer = await (stream instanceof ReadableStream ? fromWebStream(stream, this.tokenizerOptions) : fromStream(stream, this.tokenizerOptions));
+		try {
+			return await super.fromTokenizer(tokenizer);
+		} finally {
+			await tokenizer.close();
+		}
+	}
+
+	async fromFile(path) {
+		const tokenizer = await fromFile(path);
+		try {
+			return await super.fromTokenizer(tokenizer);
+		} finally {
+			await tokenizer.close();
+		}
+	}
+
+	async toDetectionStream(readableStream, options = {}) {
+		if (!(readableStream instanceof Readable)) {
+			return super.toDetectionStream(readableStream, options);
+		}
+
+		const {sampleSize = reasonableDetectionSizeInBytes} = options;
+
+		return new Promise((resolve, reject) => {
+			readableStream.on('error', reject);
+
+			readableStream.once('readable', () => {
+				(async () => {
+					try {
+						// Set up output stream
+						const pass = new PassThrough();
+						const outputStream = pipeline ? pipeline(readableStream, pass, () => {}) : readableStream.pipe(pass);
+
+						// Read the input stream and detect the filetype
+						const chunk = readableStream.read(sampleSize) ?? readableStream.read() ?? new Uint8Array(0);
+						try {
+							pass.fileType = await this.fromBuffer(chunk);
+						} catch (error) {
+							if (error instanceof EndOfStreamError) {
+								pass.fileType = undefined;
+							} else {
+								reject(error);
+							}
+						}
+
+						resolve(outputStream);
+					} catch (error) {
+						reject(error);
+					}
+				})();
+			});
+		});
+	}
+}
+
+async function fileTypeFromFile(path, options) {
+	return (new FileTypeParser(options)).fromFile(path, options);
+}
+
+/**
+ * Gets the MIME-type of the given file
+ * @param filePath
+ */
+const getMime = async function (filePath) {
+    const result = await fileTypeFromFile(filePath);
+    return result?.mime;
+};
+
+// lib/fromFile.ts
+
+// lib/types/utils.ts
+var decoder = new TextDecoder();
+var toUTF8String = (input, start = 0, end = input.length) => decoder.decode(input.slice(start, end));
+var toHexString = (input, start = 0, end = input.length) => input.slice(start, end).reduce((memo, i) => memo + `0${i.toString(16)}`.slice(-2), "");
+var getView = (input, offset) => new DataView(input.buffer, input.byteOffset + offset);
+var readInt16LE = (input, offset = 0) => getView(input, offset).getInt16(0, true);
+var readUInt16BE = (input, offset = 0) => getView(input, offset).getUint16(0, false);
+var readUInt16LE = (input, offset = 0) => getView(input, offset).getUint16(0, true);
+var readUInt24LE = (input, offset = 0) => {
+  const view = getView(input, offset);
+  return view.getUint16(0, true) + (view.getUint8(2) << 16);
+};
+var readInt32LE = (input, offset = 0) => getView(input, offset).getInt32(0, true);
+var readUInt32BE = (input, offset = 0) => getView(input, offset).getUint32(0, false);
+var readUInt32LE = (input, offset = 0) => getView(input, offset).getUint32(0, true);
+var readUInt64 = (input, offset, isBigEndian) => getView(input, offset).getBigUint64(0, !isBigEndian);
+var methods = {
+  readUInt16BE,
+  readUInt16LE,
+  readUInt32BE,
+  readUInt32LE
+};
+function readUInt(input, bits, offset = 0, isBigEndian = false) {
+  const endian = isBigEndian ? "BE" : "LE";
+  const methodName = `readUInt${bits}${endian}`;
+  return methods[methodName](input, offset);
+}
+function readBox(input, offset) {
+  if (input.length - offset < 4) return;
+  const boxSize = readUInt32BE(input, offset);
+  if (input.length - offset < boxSize) return;
+  return {
+    name: toUTF8String(input, 4 + offset, 8 + offset),
+    offset,
+    size: boxSize
+  };
+}
+function findBox(input, boxName, currentOffset) {
+  while (currentOffset < input.length) {
+    const box = readBox(input, currentOffset);
+    if (!box) break;
+    if (box.name === boxName) return box;
+    currentOffset += box.size > 0 ? box.size : 8;
+  }
+}
+
+// lib/types/bmp.ts
+var BMP = {
+  validate: (input) => toUTF8String(input, 0, 2) === "BM",
+  calculate: (input) => ({
+    height: Math.abs(readInt32LE(input, 22)),
+    width: readUInt32LE(input, 18)
+  })
+};
+
+// lib/types/ico.ts
+var TYPE_ICON = 1;
+var SIZE_HEADER = 2 + 2 + 2;
+var SIZE_IMAGE_ENTRY = 1 + 1 + 1 + 1 + 2 + 2 + 4 + 4;
+function getSizeFromOffset(input, offset) {
+  const value = input[offset];
+  return value === 0 ? 256 : value;
+}
+function getImageSize(input, imageIndex) {
+  const offset = SIZE_HEADER + imageIndex * SIZE_IMAGE_ENTRY;
+  return {
+    height: getSizeFromOffset(input, offset + 1),
+    width: getSizeFromOffset(input, offset)
+  };
+}
+var ICO = {
+  validate(input) {
+    const reserved = readUInt16LE(input, 0);
+    const imageCount = readUInt16LE(input, 4);
+    if (reserved !== 0 || imageCount === 0) return false;
+    const imageType = readUInt16LE(input, 2);
+    return imageType === TYPE_ICON;
+  },
+  calculate(input) {
+    const nbImages = readUInt16LE(input, 4);
+    const imageSize2 = getImageSize(input, 0);
+    if (nbImages === 1) return imageSize2;
+    const images = [];
+    for (let imageIndex = 0; imageIndex < nbImages; imageIndex += 1) {
+      images.push(getImageSize(input, imageIndex));
+    }
+    return {
+      width: imageSize2.width,
+      height: imageSize2.height,
+      images
+    };
+  }
+};
+
+// lib/types/cur.ts
+var TYPE_CURSOR = 2;
+var CUR = {
+  validate(input) {
+    const reserved = readUInt16LE(input, 0);
+    const imageCount = readUInt16LE(input, 4);
+    if (reserved !== 0 || imageCount === 0) return false;
+    const imageType = readUInt16LE(input, 2);
+    return imageType === TYPE_CURSOR;
+  },
+  calculate: (input) => ICO.calculate(input)
+};
+
+// lib/types/dds.ts
+var DDS = {
+  validate: (input) => readUInt32LE(input, 0) === 542327876,
+  calculate: (input) => ({
+    height: readUInt32LE(input, 12),
+    width: readUInt32LE(input, 16)
+  })
+};
+
+// lib/types/gif.ts
+var gifRegexp = /^GIF8[79]a/;
+var GIF = {
+  validate: (input) => gifRegexp.test(toUTF8String(input, 0, 6)),
+  calculate: (input) => ({
+    height: readUInt16LE(input, 8),
+    width: readUInt16LE(input, 6)
+  })
+};
+
+// lib/types/heif.ts
+var brandMap = {
+  avif: "avif",
+  mif1: "heif",
+  msf1: "heif",
+  // heif-sequence
+  heic: "heic",
+  heix: "heic",
+  hevc: "heic",
+  // heic-sequence
+  hevx: "heic"
+  // heic-sequence
+};
+var HEIF = {
+  validate(input) {
+    const boxType = toUTF8String(input, 4, 8);
+    if (boxType !== "ftyp") return false;
+    const ftypBox = findBox(input, "ftyp", 0);
+    if (!ftypBox) return false;
+    const brand = toUTF8String(input, ftypBox.offset + 8, ftypBox.offset + 12);
+    return brand in brandMap;
+  },
+  calculate(input) {
+    const metaBox = findBox(input, "meta", 0);
+    const iprpBox = metaBox && findBox(input, "iprp", metaBox.offset + 12);
+    const ipcoBox = iprpBox && findBox(input, "ipco", iprpBox.offset + 8);
+    if (!ipcoBox) {
+      throw new TypeError("Invalid HEIF, no ipco box found");
+    }
+    const type = toUTF8String(input, 8, 12);
+    const images = [];
+    let currentOffset = ipcoBox.offset + 8;
+    while (currentOffset < ipcoBox.offset + ipcoBox.size) {
+      const ispeBox = findBox(input, "ispe", currentOffset);
+      if (!ispeBox) break;
+      const rawWidth = readUInt32BE(input, ispeBox.offset + 12);
+      const rawHeight = readUInt32BE(input, ispeBox.offset + 16);
+      const clapBox = findBox(input, "clap", currentOffset);
+      let width = rawWidth;
+      let height = rawHeight;
+      if (clapBox && clapBox.offset < ipcoBox.offset + ipcoBox.size) {
+        const cropRight = readUInt32BE(input, clapBox.offset + 12);
+        width = rawWidth - cropRight;
+      }
+      images.push({ height, width });
+      currentOffset = ispeBox.offset + ispeBox.size;
+    }
+    if (images.length === 0) {
+      throw new TypeError("Invalid HEIF, no sizes found");
+    }
+    return {
+      width: images[0].width,
+      height: images[0].height,
+      type,
+      ...images.length > 1 ? { images } : {}
+    };
+  }
+};
+
+// lib/types/icns.ts
+var SIZE_HEADER2 = 4 + 4;
+var FILE_LENGTH_OFFSET = 4;
+var ENTRY_LENGTH_OFFSET = 4;
+var ICON_TYPE_SIZE = {
+  ICON: 32,
+  "ICN#": 32,
+  // m => 16 x 16
+  "icm#": 16,
+  icm4: 16,
+  icm8: 16,
+  // s => 16 x 16
+  "ics#": 16,
+  ics4: 16,
+  ics8: 16,
+  is32: 16,
+  s8mk: 16,
+  icp4: 16,
+  // l => 32 x 32
+  icl4: 32,
+  icl8: 32,
+  il32: 32,
+  l8mk: 32,
+  icp5: 32,
+  ic11: 32,
+  // h => 48 x 48
+  ich4: 48,
+  ich8: 48,
+  ih32: 48,
+  h8mk: 48,
+  // . => 64 x 64
+  icp6: 64,
+  ic12: 32,
+  // t => 128 x 128
+  it32: 128,
+  t8mk: 128,
+  ic07: 128,
+  // . => 256 x 256
+  ic08: 256,
+  ic13: 256,
+  // . => 512 x 512
+  ic09: 512,
+  ic14: 512,
+  // . => 1024 x 1024
+  ic10: 1024
+};
+function readImageHeader(input, imageOffset) {
+  const imageLengthOffset = imageOffset + ENTRY_LENGTH_OFFSET;
+  return [
+    toUTF8String(input, imageOffset, imageLengthOffset),
+    readUInt32BE(input, imageLengthOffset)
+  ];
+}
+function getImageSize2(type) {
+  const size = ICON_TYPE_SIZE[type];
+  return { width: size, height: size, type };
+}
+var ICNS = {
+  validate: (input) => toUTF8String(input, 0, 4) === "icns",
+  calculate(input) {
+    const inputLength = input.length;
+    const fileLength = readUInt32BE(input, FILE_LENGTH_OFFSET);
+    let imageOffset = SIZE_HEADER2;
+    const images = [];
+    while (imageOffset < fileLength && imageOffset < inputLength) {
+      const imageHeader = readImageHeader(input, imageOffset);
+      const imageSize2 = getImageSize2(imageHeader[0]);
+      images.push(imageSize2);
+      imageOffset += imageHeader[1];
+    }
+    if (images.length === 0) {
+      throw new TypeError("Invalid ICNS, no sizes found");
+    }
+    return {
+      width: images[0].width,
+      height: images[0].height,
+      ...images.length > 1 ? { images } : {}
+    };
+  }
+};
+
+// lib/types/j2c.ts
+var J2C = {
+  // TODO: this doesn't seem right. SIZ marker doesn't have to be right after the SOC
+  validate: (input) => readUInt32BE(input, 0) === 4283432785,
+  calculate: (input) => ({
+    height: readUInt32BE(input, 12),
+    width: readUInt32BE(input, 8)
+  })
+};
+
+// lib/types/jp2.ts
+var JP2 = {
+  validate(input) {
+    const boxType = toUTF8String(input, 4, 8);
+    if (boxType !== "jP  ") return false;
+    const ftypBox = findBox(input, "ftyp", 0);
+    if (!ftypBox) return false;
+    const brand = toUTF8String(input, ftypBox.offset + 8, ftypBox.offset + 12);
+    return brand === "jp2 ";
+  },
+  calculate(input) {
+    const jp2hBox = findBox(input, "jp2h", 0);
+    const ihdrBox = jp2hBox && findBox(input, "ihdr", jp2hBox.offset + 8);
+    if (ihdrBox) {
+      return {
+        height: readUInt32BE(input, ihdrBox.offset + 8),
+        width: readUInt32BE(input, ihdrBox.offset + 12)
+      };
+    }
+    throw new TypeError("Unsupported JPEG 2000 format");
+  }
+};
+
+// lib/types/jpg.ts
+var EXIF_MARKER = "45786966";
+var APP1_DATA_SIZE_BYTES = 2;
+var EXIF_HEADER_BYTES = 6;
+var TIFF_BYTE_ALIGN_BYTES = 2;
+var BIG_ENDIAN_BYTE_ALIGN = "4d4d";
+var LITTLE_ENDIAN_BYTE_ALIGN = "4949";
+var IDF_ENTRY_BYTES = 12;
+var NUM_DIRECTORY_ENTRIES_BYTES = 2;
+function isEXIF(input) {
+  return toHexString(input, 2, 6) === EXIF_MARKER;
+}
+function extractSize(input, index) {
+  return {
+    height: readUInt16BE(input, index),
+    width: readUInt16BE(input, index + 2)
+  };
+}
+function extractOrientation(exifBlock, isBigEndian) {
+  const idfOffset = 8;
+  const offset = EXIF_HEADER_BYTES + idfOffset;
+  const idfDirectoryEntries = readUInt(exifBlock, 16, offset, isBigEndian);
+  for (let directoryEntryNumber = 0; directoryEntryNumber < idfDirectoryEntries; directoryEntryNumber++) {
+    const start = offset + NUM_DIRECTORY_ENTRIES_BYTES + directoryEntryNumber * IDF_ENTRY_BYTES;
+    const end = start + IDF_ENTRY_BYTES;
+    if (start > exifBlock.length) {
+      return;
+    }
+    const block = exifBlock.slice(start, end);
+    const tagNumber = readUInt(block, 16, 0, isBigEndian);
+    if (tagNumber === 274) {
+      const dataFormat = readUInt(block, 16, 2, isBigEndian);
+      if (dataFormat !== 3) {
+        return;
+      }
+      const numberOfComponents = readUInt(block, 32, 4, isBigEndian);
+      if (numberOfComponents !== 1) {
+        return;
+      }
+      return readUInt(block, 16, 8, isBigEndian);
+    }
+  }
+}
+function validateExifBlock(input, index) {
+  const exifBlock = input.slice(APP1_DATA_SIZE_BYTES, index);
+  const byteAlign = toHexString(
+    exifBlock,
+    EXIF_HEADER_BYTES,
+    EXIF_HEADER_BYTES + TIFF_BYTE_ALIGN_BYTES
+  );
+  const isBigEndian = byteAlign === BIG_ENDIAN_BYTE_ALIGN;
+  const isLittleEndian = byteAlign === LITTLE_ENDIAN_BYTE_ALIGN;
+  if (isBigEndian || isLittleEndian) {
+    return extractOrientation(exifBlock, isBigEndian);
+  }
+}
+function validateInput(input, index) {
+  if (index > input.length) {
+    throw new TypeError("Corrupt JPG, exceeded buffer limits");
+  }
+}
+var JPG = {
+  validate: (input) => toHexString(input, 0, 2) === "ffd8",
+  calculate(_input) {
+    let input = _input.slice(4);
+    let orientation;
+    let next;
+    while (input.length) {
+      const i = readUInt16BE(input, 0);
+      validateInput(input, i);
+      if (input[i] !== 255) {
+        input = input.slice(1);
+        continue;
+      }
+      if (isEXIF(input)) {
+        orientation = validateExifBlock(input, i);
+      }
+      next = input[i + 1];
+      if (next === 192 || next === 193 || next === 194) {
+        const size = extractSize(input, i + 5);
+        if (!orientation) {
+          return size;
+        }
+        return {
+          height: size.height,
+          orientation,
+          width: size.width
+        };
+      }
+      input = input.slice(i + 2);
+    }
+    throw new TypeError("Invalid JPG, no size found");
+  }
+};
+
+// lib/utils/bit-reader.ts
+var BitReader = class {
+  constructor(input, endianness) {
+    this.input = input;
+    this.endianness = endianness;
+    // Skip the first 16 bits (2 bytes) of signature
+    this.byteOffset = 2;
+    this.bitOffset = 0;
+  }
+  /** Reads a specified number of bits, and move the offset */
+  getBits(length = 1) {
+    let result = 0;
+    let bitsRead = 0;
+    while (bitsRead < length) {
+      if (this.byteOffset >= this.input.length) {
+        throw new Error("Reached end of input");
+      }
+      const currentByte = this.input[this.byteOffset];
+      const bitsLeft = 8 - this.bitOffset;
+      const bitsToRead = Math.min(length - bitsRead, bitsLeft);
+      if (this.endianness === "little-endian") {
+        const mask = (1 << bitsToRead) - 1;
+        const bits = currentByte >> this.bitOffset & mask;
+        result |= bits << bitsRead;
+      } else {
+        const mask = (1 << bitsToRead) - 1 << 8 - this.bitOffset - bitsToRead;
+        const bits = (currentByte & mask) >> 8 - this.bitOffset - bitsToRead;
+        result = result << bitsToRead | bits;
+      }
+      bitsRead += bitsToRead;
+      this.bitOffset += bitsToRead;
+      if (this.bitOffset === 8) {
+        this.byteOffset++;
+        this.bitOffset = 0;
+      }
+    }
+    return result;
+  }
+};
+
+// lib/types/jxl-stream.ts
+function calculateImageDimension(reader, isSmallImage) {
+  if (isSmallImage) {
+    return 8 * (1 + reader.getBits(5));
+  }
+  const sizeClass = reader.getBits(2);
+  const extraBits = [9, 13, 18, 30][sizeClass];
+  return 1 + reader.getBits(extraBits);
+}
+function calculateImageWidth(reader, isSmallImage, widthMode, height) {
+  if (isSmallImage && widthMode === 0) {
+    return 8 * (1 + reader.getBits(5));
+  }
+  if (widthMode === 0) {
+    return calculateImageDimension(reader, false);
+  }
+  const aspectRatios = [1, 1.2, 4 / 3, 1.5, 16 / 9, 5 / 4, 2];
+  return Math.floor(height * aspectRatios[widthMode - 1]);
+}
+var JXLStream = {
+  validate: (input) => {
+    return toHexString(input, 0, 2) === "ff0a";
+  },
+  calculate(input) {
+    const reader = new BitReader(input, "little-endian");
+    const isSmallImage = reader.getBits(1) === 1;
+    const height = calculateImageDimension(reader, isSmallImage);
+    const widthMode = reader.getBits(3);
+    const width = calculateImageWidth(reader, isSmallImage, widthMode, height);
+    return { width, height };
+  }
+};
+
+// lib/types/jxl.ts
+function extractCodestream(input) {
+  const jxlcBox = findBox(input, "jxlc", 0);
+  if (jxlcBox) {
+    return input.slice(jxlcBox.offset + 8, jxlcBox.offset + jxlcBox.size);
+  }
+  const partialStreams = extractPartialStreams(input);
+  if (partialStreams.length > 0) {
+    return concatenateCodestreams(partialStreams);
+  }
+  return void 0;
+}
+function extractPartialStreams(input) {
+  const partialStreams = [];
+  let offset = 0;
+  while (offset < input.length) {
+    const jxlpBox = findBox(input, "jxlp", offset);
+    if (!jxlpBox) break;
+    partialStreams.push(
+      input.slice(jxlpBox.offset + 12, jxlpBox.offset + jxlpBox.size)
+    );
+    offset = jxlpBox.offset + jxlpBox.size;
+  }
+  return partialStreams;
+}
+function concatenateCodestreams(partialCodestreams) {
+  const totalLength = partialCodestreams.reduce(
+    (acc, curr) => acc + curr.length,
+    0
+  );
+  const codestream = new Uint8Array(totalLength);
+  let position = 0;
+  for (const partial of partialCodestreams) {
+    codestream.set(partial, position);
+    position += partial.length;
+  }
+  return codestream;
+}
+var JXL = {
+  validate: (input) => {
+    const boxType = toUTF8String(input, 4, 8);
+    if (boxType !== "JXL ") return false;
+    const ftypBox = findBox(input, "ftyp", 0);
+    if (!ftypBox) return false;
+    const brand = toUTF8String(input, ftypBox.offset + 8, ftypBox.offset + 12);
+    return brand === "jxl ";
+  },
+  calculate(input) {
+    const codestream = extractCodestream(input);
+    if (codestream) return JXLStream.calculate(codestream);
+    throw new Error("No codestream found in JXL container");
+  }
+};
+
+// lib/types/ktx.ts
+var KTX = {
+  validate: (input) => {
+    const signature = toUTF8String(input, 1, 7);
+    return ["KTX 11", "KTX 20"].includes(signature);
+  },
+  calculate: (input) => {
+    const type = input[5] === 49 ? "ktx" : "ktx2";
+    const offset = type === "ktx" ? 36 : 20;
+    return {
+      height: readUInt32LE(input, offset + 4),
+      width: readUInt32LE(input, offset),
+      type
+    };
+  }
+};
+
+// lib/types/png.ts
+var pngSignature = "PNG\r\n\n";
+var pngImageHeaderChunkName = "IHDR";
+var pngFriedChunkName = "CgBI";
+var PNG = {
+  validate(input) {
+    if (pngSignature === toUTF8String(input, 1, 8)) {
+      let chunkName = toUTF8String(input, 12, 16);
+      if (chunkName === pngFriedChunkName) {
+        chunkName = toUTF8String(input, 28, 32);
+      }
+      if (chunkName !== pngImageHeaderChunkName) {
+        throw new TypeError("Invalid PNG");
+      }
+      return true;
+    }
+    return false;
+  },
+  calculate(input) {
+    if (toUTF8String(input, 12, 16) === pngFriedChunkName) {
+      return {
+        height: readUInt32BE(input, 36),
+        width: readUInt32BE(input, 32)
+      };
+    }
+    return {
+      height: readUInt32BE(input, 20),
+      width: readUInt32BE(input, 16)
+    };
+  }
+};
+
+// lib/types/pnm.ts
+var PNMTypes = {
+  P1: "pbm/ascii",
+  P2: "pgm/ascii",
+  P3: "ppm/ascii",
+  P4: "pbm",
+  P5: "pgm",
+  P6: "ppm",
+  P7: "pam",
+  PF: "pfm"
+};
+var handlers = {
+  default: (lines) => {
+    let dimensions = [];
+    while (lines.length > 0) {
+      const line = lines.shift();
+      if (line[0] === "#") {
+        continue;
+      }
+      dimensions = line.split(" ");
+      break;
+    }
+    if (dimensions.length === 2) {
+      return {
+        height: Number.parseInt(dimensions[1], 10),
+        width: Number.parseInt(dimensions[0], 10)
+      };
+    }
+    throw new TypeError("Invalid PNM");
+  },
+  pam: (lines) => {
+    const size = {};
+    while (lines.length > 0) {
+      const line = lines.shift();
+      if (line.length > 16 || line.charCodeAt(0) > 128) {
+        continue;
+      }
+      const [key, value] = line.split(" ");
+      if (key && value) {
+        size[key.toLowerCase()] = Number.parseInt(value, 10);
+      }
+      if (size.height && size.width) {
+        break;
+      }
+    }
+    if (size.height && size.width) {
+      return {
+        height: size.height,
+        width: size.width
+      };
+    }
+    throw new TypeError("Invalid PAM");
+  }
+};
+var PNM = {
+  validate: (input) => toUTF8String(input, 0, 2) in PNMTypes,
+  calculate(input) {
+    const signature = toUTF8String(input, 0, 2);
+    const type = PNMTypes[signature];
+    const lines = toUTF8String(input, 3).split(/[\r\n]+/);
+    const handler = handlers[type] || handlers.default;
+    return handler(lines);
+  }
+};
+
+// lib/types/psd.ts
+var PSD = {
+  validate: (input) => toUTF8String(input, 0, 4) === "8BPS",
+  calculate: (input) => ({
+    height: readUInt32BE(input, 14),
+    width: readUInt32BE(input, 18)
+  })
+};
+
+// lib/types/svg.ts
+var svgReg = /<svg\s([^>"']|"[^"]*"|'[^']*')*>/;
+var extractorRegExps = {
+  height: /\sheight=(['"])([^%]+?)\1/,
+  root: svgReg,
+  viewbox: /\sviewBox=(['"])(.+?)\1/i,
+  width: /\swidth=(['"])([^%]+?)\1/
+};
+var INCH_CM = 2.54;
+var units = {
+  in: 96,
+  cm: 96 / INCH_CM,
+  em: 16,
+  ex: 8,
+  m: 96 / INCH_CM * 100,
+  mm: 96 / INCH_CM / 10,
+  pc: 96 / 72 / 12,
+  pt: 96 / 72,
+  px: 1
+};
+var unitsReg = new RegExp(
+  `^([0-9.]+(?:e\\d+)?)(${Object.keys(units).join("|")})?$`
+);
+function parseLength(len) {
+  const m = unitsReg.exec(len);
+  if (!m) {
+    return void 0;
+  }
+  return Math.round(Number(m[1]) * (units[m[2]] || 1));
+}
+function parseViewbox(viewbox) {
+  const bounds = viewbox.split(" ");
+  return {
+    height: parseLength(bounds[3]),
+    width: parseLength(bounds[2])
+  };
+}
+function parseAttributes(root) {
+  const width = root.match(extractorRegExps.width);
+  const height = root.match(extractorRegExps.height);
+  const viewbox = root.match(extractorRegExps.viewbox);
+  return {
+    height: height && parseLength(height[2]),
+    viewbox: viewbox && parseViewbox(viewbox[2]),
+    width: width && parseLength(width[2])
+  };
+}
+function calculateByDimensions(attrs) {
+  return {
+    height: attrs.height,
+    width: attrs.width
+  };
+}
+function calculateByViewbox(attrs, viewbox) {
+  const ratio = viewbox.width / viewbox.height;
+  if (attrs.width) {
+    return {
+      height: Math.floor(attrs.width / ratio),
+      width: attrs.width
+    };
+  }
+  if (attrs.height) {
+    return {
+      height: attrs.height,
+      width: Math.floor(attrs.height * ratio)
+    };
+  }
+  return {
+    height: viewbox.height,
+    width: viewbox.width
+  };
+}
+var SVG = {
+  // Scan only the first kilo-byte to speed up the check on larger files
+  validate: (input) => svgReg.test(toUTF8String(input, 0, 1e3)),
+  calculate(input) {
+    const root = toUTF8String(input).match(extractorRegExps.root);
+    if (root) {
+      const attrs = parseAttributes(root[0]);
+      if (attrs.width && attrs.height) {
+        return calculateByDimensions(attrs);
+      }
+      if (attrs.viewbox) {
+        return calculateByViewbox(attrs, attrs.viewbox);
+      }
+    }
+    throw new TypeError("Invalid SVG");
+  }
+};
+
+// lib/types/tga.ts
+var TGA = {
+  validate(input) {
+    return readUInt16LE(input, 0) === 0 && readUInt16LE(input, 4) === 0;
+  },
+  calculate(input) {
+    return {
+      height: readUInt16LE(input, 14),
+      width: readUInt16LE(input, 12)
+    };
+  }
+};
+
+// lib/types/tiff.ts
+var CONSTANTS = {
+  TAG: {
+    WIDTH: 256,
+    HEIGHT: 257,
+    COMPRESSION: 259
+  },
+  TYPE: {
+    SHORT: 3,
+    LONG: 4,
+    LONG8: 16
+  },
+  ENTRY_SIZE: {
+    STANDARD: 12,
+    BIG: 20
+  },
+  COUNT_SIZE: {
+    STANDARD: 2,
+    BIG: 8
+  }
+};
+function readIFD(input, { isBigEndian, isBigTiff }) {
+  const ifdOffset = isBigTiff ? Number(readUInt64(input, 8, isBigEndian)) : readUInt(input, 32, 4, isBigEndian);
+  const entryCountSize = isBigTiff ? CONSTANTS.COUNT_SIZE.BIG : CONSTANTS.COUNT_SIZE.STANDARD;
+  return input.slice(ifdOffset + entryCountSize);
+}
+function readTagValue(input, type, offset, isBigEndian) {
+  switch (type) {
+    case CONSTANTS.TYPE.SHORT:
+      return readUInt(input, 16, offset, isBigEndian);
+    case CONSTANTS.TYPE.LONG:
+      return readUInt(input, 32, offset, isBigEndian);
+    case CONSTANTS.TYPE.LONG8: {
+      const value = Number(readUInt64(input, offset, isBigEndian));
+      if (value > Number.MAX_SAFE_INTEGER) {
+        throw new TypeError("Value too large");
+      }
+      return value;
+    }
+    default:
+      return 0;
+  }
+}
+function nextTag(input, isBigTiff) {
+  const entrySize = isBigTiff ? CONSTANTS.ENTRY_SIZE.BIG : CONSTANTS.ENTRY_SIZE.STANDARD;
+  if (input.length > entrySize) {
+    return input.slice(entrySize);
+  }
+}
+function extractTags(input, { isBigEndian, isBigTiff }) {
+  const tags = {};
+  let temp = input;
+  while (temp?.length) {
+    const code = readUInt(temp, 16, 0, isBigEndian);
+    const type = readUInt(temp, 16, 2, isBigEndian);
+    const length = isBigTiff ? Number(readUInt64(temp, 4, isBigEndian)) : readUInt(temp, 32, 4, isBigEndian);
+    if (code === 0) break;
+    if (length === 1 && (type === CONSTANTS.TYPE.SHORT || type === CONSTANTS.TYPE.LONG || isBigTiff && type === CONSTANTS.TYPE.LONG8)) {
+      const valueOffset = isBigTiff ? 12 : 8;
+      tags[code] = readTagValue(temp, type, valueOffset, isBigEndian);
+    }
+    temp = nextTag(temp, isBigTiff);
+  }
+  return tags;
+}
+function determineFormat(input) {
+  const signature = toUTF8String(input, 0, 2);
+  const version = readUInt(input, 16, 2, signature === "MM");
+  return {
+    isBigEndian: signature === "MM",
+    isBigTiff: version === 43
+  };
+}
+function validateBigTIFFHeader(input, isBigEndian) {
+  const byteSize = readUInt(input, 16, 4, isBigEndian);
+  const reserved = readUInt(input, 16, 6, isBigEndian);
+  if (byteSize !== 8 || reserved !== 0) {
+    throw new TypeError("Invalid BigTIFF header");
+  }
+}
+var signatures = /* @__PURE__ */ new Set([
+  "49492a00",
+  // Little Endian
+  "4d4d002a",
+  // Big Endian
+  "49492b00",
+  // BigTIFF Little Endian
+  "4d4d002b"
+  // BigTIFF Big Endian
+]);
+var TIFF = {
+  validate: (input) => {
+    const signature = toHexString(input, 0, 4);
+    return signatures.has(signature);
+  },
+  calculate(input) {
+    const format = determineFormat(input);
+    if (format.isBigTiff) {
+      validateBigTIFFHeader(input, format.isBigEndian);
+    }
+    const ifdBuffer = readIFD(input, format);
+    const tags = extractTags(ifdBuffer, format);
+    const info = {
+      height: tags[CONSTANTS.TAG.HEIGHT],
+      width: tags[CONSTANTS.TAG.WIDTH],
+      type: format.isBigTiff ? "bigtiff" : "tiff"
+    };
+    if (tags[CONSTANTS.TAG.COMPRESSION]) {
+      info.compression = tags[CONSTANTS.TAG.COMPRESSION];
+    }
+    if (!info.width || !info.height) {
+      throw new TypeError("Invalid Tiff. Missing tags");
+    }
+    return info;
+  }
+};
+
+// lib/types/webp.ts
+function calculateExtended(input) {
+  return {
+    height: 1 + readUInt24LE(input, 7),
+    width: 1 + readUInt24LE(input, 4)
+  };
+}
+function calculateLossless(input) {
+  return {
+    height: 1 + ((input[4] & 15) << 10 | input[3] << 2 | (input[2] & 192) >> 6),
+    width: 1 + ((input[2] & 63) << 8 | input[1])
+  };
+}
+function calculateLossy(input) {
+  return {
+    height: readInt16LE(input, 8) & 16383,
+    width: readInt16LE(input, 6) & 16383
+  };
+}
+var WEBP = {
+  validate(input) {
+    const riffHeader = "RIFF" === toUTF8String(input, 0, 4);
+    const webpHeader = "WEBP" === toUTF8String(input, 8, 12);
+    const vp8Header = "VP8" === toUTF8String(input, 12, 15);
+    return riffHeader && webpHeader && vp8Header;
+  },
+  calculate(_input) {
+    const chunkHeader = toUTF8String(_input, 12, 16);
+    const input = _input.slice(20, 30);
+    if (chunkHeader === "VP8X") {
+      const extendedHeader = input[0];
+      const validStart = (extendedHeader & 192) === 0;
+      const validEnd = (extendedHeader & 1) === 0;
+      if (validStart && validEnd) {
+        return calculateExtended(input);
+      }
+      throw new TypeError("Invalid WebP");
+    }
+    if (chunkHeader === "VP8 " && input[0] !== 47) {
+      return calculateLossy(input);
+    }
+    const signature = toHexString(input, 3, 6);
+    if (chunkHeader === "VP8L" && signature !== "9d012a") {
+      return calculateLossless(input);
+    }
+    throw new TypeError("Invalid WebP");
+  }
+};
+
+// lib/types/index.ts
+var typeHandlers = /* @__PURE__ */ new Map([
+  ["bmp", BMP],
+  ["cur", CUR],
+  ["dds", DDS],
+  ["gif", GIF],
+  ["heif", HEIF],
+  ["icns", ICNS],
+  ["ico", ICO],
+  ["j2c", J2C],
+  ["jp2", JP2],
+  ["jpg", JPG],
+  ["jxl", JXL],
+  ["jxl-stream", JXLStream],
+  ["ktx", KTX],
+  ["png", PNG],
+  ["pnm", PNM],
+  ["psd", PSD],
+  ["svg", SVG],
+  ["tga", TGA],
+  ["tiff", TIFF],
+  ["webp", WEBP]
+]);
+var types = Array.from(typeHandlers.keys());
+
+// lib/detector.ts
+var firstBytes = /* @__PURE__ */ new Map([
+  [0, "heif"],
+  [56, "psd"],
+  [66, "bmp"],
+  [68, "dds"],
+  [71, "gif"],
+  [73, "tiff"],
+  [77, "tiff"],
+  [82, "webp"],
+  [105, "icns"],
+  [137, "png"],
+  [255, "jpg"]
+]);
+function detector(input) {
+  const byte = input[0];
+  const type = firstBytes.get(byte);
+  if (type && typeHandlers.get(type).validate(input)) {
+    return type;
+  }
+  return types.find((type2) => typeHandlers.get(type2).validate(input));
+}
+
+// lib/lookup.ts
+var globalOptions = {
+  disabledTypes: []
+};
+function imageSize(input) {
+  const type = detector(input);
+  if (typeof type !== "undefined") {
+    if (globalOptions.disabledTypes.indexOf(type) > -1) {
+      throw new TypeError(`disabled file type: ${type}`);
+    }
+    const size = typeHandlers.get(type).calculate(input);
+    if (size !== void 0) {
+      size.type = size.type ?? type;
+      if (size.images && size.images.length > 1) {
+        const largestImage = size.images.reduce((largest, current) => {
+          return current.width * current.height > largest.width * largest.height ? current : largest;
+        }, size.images[0]);
+        size.width = largestImage.width;
+        size.height = largestImage.height;
+      }
+      return size;
+    }
+  }
+  throw new TypeError(`unsupported file type: ${type}`);
+}
+
+// lib/fromFile.ts
+var MaxInputSize = 512 * 1024;
+var queue = [];
+var concurrency = 100;
+var processQueue = async () => {
+  const jobs = queue.splice(0, concurrency);
+  const promises2 = jobs.map(async ({ filePath, resolve: resolve2, reject }) => {
+    let handle;
+    try {
+      handle = await fs.promises.open(path.resolve(filePath), "r");
+    } catch (err) {
+      return reject(err);
+    }
+    try {
+      const { size } = await handle.stat();
+      if (size <= 0) {
+        throw new Error("Empty file");
+      }
+      const inputSize = Math.min(size, MaxInputSize);
+      const input = new Uint8Array(inputSize);
+      await handle.read(input, 0, inputSize, 0);
+      resolve2(imageSize(input));
+    } catch (err) {
+      reject(err);
+    } finally {
+      await handle.close();
+    }
+  });
+  await Promise.allSettled(promises2);
+  if (queue.length) setTimeout(processQueue, 100);
+};
+var imageSizeFromFile = async (filePath) => new Promise((resolve2, reject) => {
+  queue.push({ filePath, resolve: resolve2, reject });
+  processQueue();
+});
+
+var ErrorCodes;
+(function (ErrorCodes) {
+    /**
+     * Used when a file is missing
+     */
+    ErrorCodes["FILE_NOT_FOUND"] = "FILE_NOT_FOUND";
+    /**
+     * Used when a file is of the wrong format
+     */
+    ErrorCodes["FILE_WRONG_FORMAT"] = "FILE_WRONG_FORMAT";
+    /**
+     * Used when a different MIME what expected
+     */
+    ErrorCodes["INVALID_MIME"] = "INVALID_MIME";
+    /**
+     * Used when an image has the wrong dimensions
+     */
+    ErrorCodes["INVALID_IMAGE_SIZE"] = "INVALID_IMAGE_SIZE";
+    /**
+     * Used when a RegExp does not find any match
+     */
+    ErrorCodes["NO_REGEX_MATCH"] = "NO_REGEX_MATCH";
+    /**
+     * Used when a property is missing
+     */
+    ErrorCodes["PROPERTY_MISSING"] = "PROPERTY_MISSING";
+    /**
+     * Used when a property is of the wrong type
+     */
+    ErrorCodes["PROPERTY_WRONG_TYPE"] = "PROPERTY_WRONG_TYPE";
+    /**
+     * Used when a text doesn't meet the minimum length
+     */
+    ErrorCodes["TEXT_TOO_SMALL"] = "TEXT_TOO_SMALL";
+    /**
+     * Used when a text doesn't meet the maximum length
+     */
+    ErrorCodes["TEXT_TOO_BIG"] = "TEXT_TOO_BIG";
+})(ErrorCodes || (ErrorCodes = {}));
+class ValidationError extends Error {
+    code;
+    constructor(code, message) {
+        super(message);
+        this.code = code;
+    }
+}
+
+/**
+ * Validates if the given icon is valid
+ * @param directory
+ * @param fileName
+ */
+async function validateIcon(directory, fileName) {
+    const filePath = path__default.join(directory, fileName);
+    // Check if ICON exists
+    if (!fs__default.existsSync(filePath))
+        throw new ValidationError(ErrorCodes.FILE_NOT_FOUND, `File '${fileName}' was not found.`);
+    // Check if ICON is an image
+    if ((await getMime(filePath)) !== 'image/png')
+        throw new ValidationError(ErrorCodes.INVALID_MIME, `'${fileName}' must be a PNG.`);
+    // Check if ICON is 256x256
+    const size = await imageSizeFromFile(filePath);
+    if (size.height !== 256 || size.width !== 256)
+        throw new ValidationError(ErrorCodes.INVALID_IMAGE_SIZE, `'${fileName}' must be exactly 256x256.`);
+}
+
+/**
+ * Validates if the given README is valid
+ * @param directory
+ * @param fileName
+ */
+async function validateReadme(directory, fileName) {
+    const filePath = path__default.join(directory, fileName);
+    // Check if README exists
+    if (!fs__default.existsSync(filePath))
+        throw new ValidationError(ErrorCodes.FILE_NOT_FOUND, `File '${fileName}' was not found.`);
+}
+
+const NAME_PATH = 'name';
+const DESCRIPTION_PATH = 'description';
+const VERSION_NUMBER_PATH = 'version_number';
+const DEPENDENCIES_PATH = 'dependencies';
+const WEBSITE_URL_PATH = 'website_url';
+const NAME_REGEX = '[a-zA-Z 0-9_]+';
+const VERSION_REGEX = '[0-9]+.[0-9]+.[0-9]+';
+// --- ASSERTS ---
+function assertIn(obj, key) {
+    if (key in obj)
+        return;
+    throw new ValidationError(ErrorCodes.PROPERTY_MISSING, `'${key}' is missing.`);
+}
+function assertType(value, propertyName, type) {
+    switch (type) {
+        case String:
+            if (typeof value === 'string')
+                return;
+            break;
+        default:
+            if (value instanceof type)
+                return;
+    }
+    throw new ValidationError(ErrorCodes.PROPERTY_WRONG_TYPE, `'${propertyName}' must be of type ${typeof type}.`);
+}
+// --- UTILS ---
+/**
+ * Gets the string value for the given property
+ * @param json
+ * @param propertyName
+ */
+function getString(json, propertyName) {
+    assertIn(json, propertyName);
+    const value = json[propertyName];
+    assertType(value, propertyName, String);
+    return value;
+}
+/**
+ * Checks if the given value's length is between the min and the max inclusively
+ * @param value
+ * @param propertyName
+ * @param min
+ * @param max
+ */
+function lengthBetween(value, propertyName, min, max) {
+    if (value.length < min)
+        throw new ValidationError(ErrorCodes.TEXT_TOO_SMALL, `'${propertyName}' must be at least ${min} characters.`);
+    if (value.length > max)
+        throw new ValidationError(ErrorCodes.TEXT_TOO_BIG, `'${propertyName}' must be at most ${max} characters.`);
+}
+function matchRegex(value, propertyName, regex) {
+    if (!regex.test(value))
+        throw new ValidationError(ErrorCodes.NO_REGEX_MATCH, `'${propertyName}' must be valid for the following pattern: ${regex}`);
+}
+/**
+ * Validates if the given manifest is valid
+ * @param directory
+ * @param fileName
+ */
+async function validateManifest(directory, fileName) {
+    const filePath = path__default.join(directory, fileName);
+    // Check if MANIFEST exists
+    if (!fs__default.existsSync(filePath))
+        throw new ValidationError(ErrorCodes.FILE_NOT_FOUND, `File '${fileName}' was not found.`);
+    // Check if MANIFEST is valid JSON
+    let json;
+    try {
+        json = JSON.parse(fs__default.readFileSync(filePath, 'utf-8'));
+    }
+    catch (_) {
+        json = undefined;
+    }
+    if (json === undefined || json instanceof Array)
+        throw new ValidationError(ErrorCodes.FILE_WRONG_FORMAT, `'${fileName}' is not a valid JSON object file.`);
+    // Check 'name'
+    const name = getString(json, NAME_PATH);
+    lengthBetween(name, NAME_PATH, 1, 128);
+    matchRegex(name, NAME_PATH, new RegExp(`^${NAME_REGEX}$`));
+    // Check 'description'
+    const description = getString(json, DESCRIPTION_PATH);
+    lengthBetween(description, DESCRIPTION_PATH, 0, 250);
+    // Check 'version_number'
+    const version = getString(json, VERSION_NUMBER_PATH);
+    lengthBetween(version, VERSION_NUMBER_PATH, 5, 16);
+    matchRegex(version, VERSION_NUMBER_PATH, new RegExp(`^${VERSION_REGEX}$`));
+    // Check 'dependencies'
+    assertIn(json, DEPENDENCIES_PATH);
+    const dependencies = json[DEPENDENCIES_PATH];
+    assertType(dependencies, DEPENDENCIES_PATH, Array);
+    for (const dependency of dependencies) {
+        assertType(dependency, DEPENDENCIES_PATH, String);
+        matchRegex(dependency.toString(), DEPENDENCIES_PATH, new RegExp(`^(?!_)[a-zA-Z0-9_]+(?<!_)-${NAME_REGEX}-${VERSION_REGEX}$`));
+    }
+    // Check 'website_url'
+    const websiteURL = getString(json, WEBSITE_URL_PATH);
+    lengthBetween(websiteURL, WEBSITE_URL_PATH, 0, 1024);
+    if (websiteURL.length > 0)
+        matchRegex(websiteURL, WEBSITE_URL_PATH, /^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b[-a-zA-Z0-9()@:%_+.~#?&/=]*$/);
 }
 
 /**
@@ -27266,21 +37071,37 @@ async function wait(milliseconds) {
  * @returns Resolves when the action is complete.
  */
 async function run() {
+    const destinationPath = path__default.join(process.cwd(), 'unzipped');
     try {
-        const ms = coreExports.getInput('milliseconds');
-        // Debug logs are only output if the `ACTIONS_STEP_DEBUG` secret is true
-        coreExports.debug(`Waiting ${ms} milliseconds ...`);
-        // Log the current timestamp, wait, then log the new timestamp
-        coreExports.debug(new Date().toTimeString());
-        await wait(parseInt(ms, 10));
-        coreExports.debug(new Date().toTimeString());
-        // Set outputs for other workflow steps to use
-        coreExports.setOutput('time', new Date().toTimeString());
+        // Check if input is given
+        const packagePath = coreExports.getInput('package-path', { required: true });
+        // Check if package exists
+        if (!fs.existsSync(packagePath)) {
+            coreExports.setFailed('File defined by input was not found.');
+            return;
+        }
+        // Check if file is ZIP
+        if ((await getMime(packagePath)) !== 'application/zip') {
+            coreExports.setFailed('File defined by input must be a ZIP file.');
+            return;
+        }
+        // Unzip file
+        const zip = new AdmZip(packagePath);
+        zip.extractAllTo(destinationPath, true);
+        // Validate icon
+        await validateIcon(destinationPath, 'icon.png');
+        await validateReadme(destinationPath, 'README.md');
+        await validateManifest(destinationPath, 'manifest.json');
     }
     catch (error) {
-        // Fail the workflow run if an error occurs
+        let message = 'Unexpected error occurred.';
         if (error instanceof Error)
-            coreExports.setFailed(error.message);
+            message = error.message;
+        coreExports.setFailed(message);
+    }
+    finally {
+        if (fs.existsSync(destinationPath))
+            fs.rmSync(destinationPath, { recursive: true });
     }
 }
 

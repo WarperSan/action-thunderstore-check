@@ -1,62 +1,77 @@
-/**
- * Unit tests for the action's main functionality, src/main.ts
- *
- * To mock dependencies in ESM, you can create fixtures that export mock
- * functions and objects. For example, the core module is mocked in this test,
- * so that the actual '@actions/core' module is not imported.
- */
 import { jest } from '@jest/globals'
 import * as core from '../__fixtures__/core.js'
-import { wait } from '../__fixtures__/wait.js'
+import path from 'node:path'
 
-// Mocks should be declared before the module being tested is imported.
 jest.unstable_mockModule('@actions/core', () => core)
-jest.unstable_mockModule('../src/wait.js', () => ({ wait }))
 
-// The module being tested should be imported dynamically. This ensures that the
-// mocks are used in place of any actual dependencies.
 const { run } = await import('../src/main.js')
 
 describe('main.ts', () => {
-  beforeEach(() => {
-    // Set the action's inputs as return values from core.getInput().
-    core.getInput.mockImplementation(() => '500')
-
-    // Mock the wait function so that it does not actually wait.
-    wait.mockImplementation(() => Promise.resolve('done!'))
-  })
-
   afterEach(() => {
     jest.resetAllMocks()
   })
 
-  it('Sets the time output', async () => {
+  test('No input', async () => {
     await run()
 
-    // Verify the time output was set.
-    expect(core.setOutput).toHaveBeenNthCalledWith(
-      1,
-      'time',
-      // Simple regex to match a time string in the format HH:MM:SS.
-      expect.stringMatching(/^\d{2}:\d{2}:\d{2}/)
+    expect(core.setFailed).toHaveBeenCalledWith(
+      'File defined by input was not found.'
     )
   })
 
-  it('Sets a failed status', async () => {
-    // Clear the getInput mock and return an invalid value.
-    core.getInput.mockClear().mockReturnValueOnce('this is not a number')
-
-    // Clear the wait mock and return a rejected promise.
-    wait
-      .mockClear()
-      .mockRejectedValueOnce(new Error('milliseconds is not a number'))
+  test('Input file not found', async () => {
+    core.getInput.mockReturnValueOnce(
+      path.join(process.cwd(), '__tests__/assets/main/missing.zip')
+    )
 
     await run()
 
-    // Verify that the action was marked as failed.
-    expect(core.setFailed).toHaveBeenNthCalledWith(
-      1,
-      'milliseconds is not a number'
+    expect(core.setFailed).toHaveBeenCalledWith(
+      'File defined by input was not found.'
     )
+  })
+
+  test('Input file to a non-zip (extension)', async () => {
+    core.getInput.mockReturnValueOnce(
+      path.join(process.cwd(), '__tests__/assets/main/not-zip-extension.png')
+    )
+
+    await run()
+
+    expect(core.setFailed).toHaveBeenCalledWith(
+      'File defined by input must be a ZIP file.'
+    )
+  })
+
+  test('Input file to a non-zip (header)', async () => {
+    core.getInput.mockReturnValueOnce(
+      path.join(process.cwd(), '__tests__/assets/main/not-zip-header.zip')
+    )
+
+    await run()
+
+    expect(core.setFailed).toHaveBeenCalledWith(
+      'File defined by input must be a ZIP file.'
+    )
+  })
+
+  test('Invalid', async () => {
+    core.getInput.mockReturnValueOnce(
+      path.join(process.cwd(), '__tests__/assets/main/invalid.zip')
+    )
+
+    await run()
+
+    expect(core.setFailed).toHaveBeenCalled()
+  })
+
+  test('Valid', async () => {
+    core.getInput.mockReturnValueOnce(
+      path.join(process.cwd(), '__tests__/assets/main/valid.zip')
+    )
+
+    await run()
+
+    expect(core.setFailed).not.toHaveBeenCalled()
   })
 })

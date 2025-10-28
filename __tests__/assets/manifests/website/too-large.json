@@ -1,0 +1,9 @@
+{
+  "name": "Ship_Warp",
+  "description": "This is my fabulous mod!",
+  "version_number": "1.1.0",
+  "dependencies": [
+    "bbepis-BepInExPack-5.4.2121"
+  ],
+  "website_url": "https://github.com/github/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/local-action/"
+}
