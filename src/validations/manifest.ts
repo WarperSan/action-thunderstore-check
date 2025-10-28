@@ -8,7 +8,7 @@ const VERSION_NUMBER_PATH = 'version_number'
 const DEPENDENCIES_PATH = 'dependencies'
 const WEBSITE_URL_PATH = 'website_url'
 
-const NAME_REGEX = '[a-zA-Z0-9_]+'
+const NAME_REGEX = '[a-zA-Z 0-9_]+'
 const VERSION_REGEX = '[0-9]+.[0-9]+.[0-9]+'
 
 // --- ASSERTS ---
@@ -159,7 +159,7 @@ export async function validateManifest(
     matchRegex(
       dependency.toString(),
       DEPENDENCIES_PATH,
-      new RegExp(`^.*?-${NAME_REGEX}-${VERSION_REGEX}$`)
+      new RegExp(`^(?!_)[a-zA-Z0-9_]+(?<!_)-${NAME_REGEX}-${VERSION_REGEX}$`)
     )
   }
 
