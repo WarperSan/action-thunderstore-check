@@ -13,7 +13,7 @@ import require$$0$5 from 'stream';
 import require$$7 from 'buffer';
 import require$$8 from 'querystring';
 import require$$14 from 'stream/web';
-import require$$0$7 from 'node:stream';
+import require$$0$7, { Readable, PassThrough, pipeline } from 'node:stream';
 import require$$1$2 from 'node:util';
 import require$$0$6 from 'node:events';
 import require$$0$8 from 'worker_threads';
@@ -31,6 +31,9 @@ import * as fs from 'node:fs';
 import fs__default from 'node:fs';
 import * as path from 'node:path';
 import path__default from 'node:path';
+import { ReadableStream } from 'node:stream/web';
+import { open, stat } from 'node:fs/promises';
+import { createRequire } from 'module';
 import require$$1$6 from 'tty';
 
 var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
@@ -30579,309 +30582,6 @@ function requireAdmZip () {
 var admZipExports = requireAdmZip();
 var AdmZip = /*@__PURE__*/getDefaultExportFromCjs(admZipExports);
 
-var ieee754 = {};
-
-/*! ieee754. BSD-3-Clause License. Feross Aboukhadijeh <https://feross.org/opensource> */
-
-var hasRequiredIeee754;
-
-function requireIeee754 () {
-	if (hasRequiredIeee754) return ieee754;
-	hasRequiredIeee754 = 1;
-	ieee754.read = function (buffer, offset, isLE, mLen, nBytes) {
-	  var e, m;
-	  var eLen = (nBytes * 8) - mLen - 1;
-	  var eMax = (1 << eLen) - 1;
-	  var eBias = eMax >> 1;
-	  var nBits = -7;
-	  var i = isLE ? (nBytes - 1) : 0;
-	  var d = isLE ? -1 : 1;
-	  var s = buffer[offset + i];
-
-	  i += d;
-
-	  e = s & ((1 << (-nBits)) - 1);
-	  s >>= (-nBits);
-	  nBits += eLen;
-	  for (; nBits > 0; e = (e * 256) + buffer[offset + i], i += d, nBits -= 8) {}
-
-	  m = e & ((1 << (-nBits)) - 1);
-	  e >>= (-nBits);
-	  nBits += mLen;
-	  for (; nBits > 0; m = (m * 256) + buffer[offset + i], i += d, nBits -= 8) {}
-
-	  if (e === 0) {
-	    e = 1 - eBias;
-	  } else if (e === eMax) {
-	    return m ? NaN : ((s ? -1 : 1) * Infinity)
-	  } else {
-	    m = m + Math.pow(2, mLen);
-	    e = e - eBias;
-	  }
-	  return (s ? -1 : 1) * m * Math.pow(2, e - mLen)
-	};
-
-	ieee754.write = function (buffer, value, offset, isLE, mLen, nBytes) {
-	  var e, m, c;
-	  var eLen = (nBytes * 8) - mLen - 1;
-	  var eMax = (1 << eLen) - 1;
-	  var eBias = eMax >> 1;
-	  var rt = (mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0);
-	  var i = isLE ? 0 : (nBytes - 1);
-	  var d = isLE ? 1 : -1;
-	  var s = value < 0 || (value === 0 && 1 / value < 0) ? 1 : 0;
-
-	  value = Math.abs(value);
-
-	  if (isNaN(value) || value === Infinity) {
-	    m = isNaN(value) ? 1 : 0;
-	    e = eMax;
-	  } else {
-	    e = Math.floor(Math.log(value) / Math.LN2);
-	    if (value * (c = Math.pow(2, -e)) < 1) {
-	      e--;
-	      c *= 2;
-	    }
-	    if (e + eBias >= 1) {
-	      value += rt / c;
-	    } else {
-	      value += rt * Math.pow(2, 1 - eBias);
-	    }
-	    if (value * c >= 2) {
-	      e++;
-	      c /= 2;
-	    }
-
-	    if (e + eBias >= eMax) {
-	      m = 0;
-	      e = eMax;
-	    } else if (e + eBias >= 1) {
-	      m = ((value * c) - 1) * Math.pow(2, mLen);
-	      e = e + eBias;
-	    } else {
-	      m = value * Math.pow(2, eBias - 1) * Math.pow(2, mLen);
-	      e = 0;
-	    }
-	  }
-
-	  for (; mLen >= 8; buffer[offset + i] = m & 0xff, i += d, m /= 256, mLen -= 8) {}
-
-	  e = (e << mLen) | m;
-	  eLen += mLen;
-	  for (; eLen > 0; buffer[offset + i] = e & 0xff, i += d, e /= 256, eLen -= 8) {}
-
-	  buffer[offset + i - d] |= s * 128;
-	};
-	return ieee754;
-}
-
-requireIeee754();
-
-// text-polyfill.ts
-// Minimal encode/decode for utf-8, utf-16le, ascii, latin1, windows-1252
-const WINDOWS_1252_EXTRA = {
-    0x80: "€", 0x82: "‚", 0x83: "ƒ", 0x84: "„", 0x85: "…", 0x86: "†",
-    0x87: "‡", 0x88: "ˆ", 0x89: "‰", 0x8a: "Š", 0x8b: "‹", 0x8c: "Œ",
-    0x8e: "Ž", 0x91: "‘", 0x92: "’", 0x93: "“", 0x94: "”", 0x95: "•",
-    0x96: "–", 0x97: "—", 0x98: "˜", 0x99: "™", 0x9a: "š", 0x9b: "›",
-    0x9c: "œ", 0x9e: "ž", 0x9f: "Ÿ",
-};
-for (const [code, char] of Object.entries(WINDOWS_1252_EXTRA)) {
-}
-/**
- * Decode text from binary data
- * @param bytes Binary data
- * @param encoding Encoding
- */
-function textDecode(bytes, encoding = "utf-8") {
-    switch (encoding.toLowerCase()) {
-        case "utf-8":
-        case "utf8":
-            if (typeof globalThis.TextDecoder !== "undefined") {
-                return new globalThis.TextDecoder("utf-8").decode(bytes);
-            }
-            return decodeUTF8(bytes);
-        case "utf-16le":
-            return decodeUTF16LE(bytes);
-        case "ascii":
-            return decodeASCII(bytes);
-        case "latin1":
-        case "iso-8859-1":
-            return decodeLatin1(bytes);
-        case "windows-1252":
-            return decodeWindows1252(bytes);
-        default:
-            throw new RangeError(`Encoding '${encoding}' not supported`);
-    }
-}
-// --- Internal helpers ---
-function decodeUTF8(bytes) {
-    let out = "";
-    let i = 0;
-    while (i < bytes.length) {
-        const b1 = bytes[i++];
-        if (b1 < 0x80) {
-            out += String.fromCharCode(b1);
-        }
-        else if (b1 < 0xe0) {
-            const b2 = bytes[i++] & 0x3f;
-            out += String.fromCharCode(((b1 & 0x1f) << 6) | b2);
-        }
-        else if (b1 < 0xf0) {
-            const b2 = bytes[i++] & 0x3f;
-            const b3 = bytes[i++] & 0x3f;
-            out += String.fromCharCode(((b1 & 0x0f) << 12) | (b2 << 6) | b3);
-        }
-        else {
-            const b2 = bytes[i++] & 0x3f;
-            const b3 = bytes[i++] & 0x3f;
-            const b4 = bytes[i++] & 0x3f;
-            let cp = ((b1 & 0x07) << 18) |
-                (b2 << 12) |
-                (b3 << 6) |
-                b4;
-            cp -= 0x10000;
-            out += String.fromCharCode(0xd800 + ((cp >> 10) & 0x3ff), 0xdc00 + (cp & 0x3ff));
-        }
-    }
-    return out;
-}
-function decodeUTF16LE(bytes) {
-    let out = "";
-    for (let i = 0; i < bytes.length; i += 2) {
-        out += String.fromCharCode(bytes[i] | (bytes[i + 1] << 8));
-    }
-    return out;
-}
-function decodeASCII(bytes) {
-    return String.fromCharCode(...bytes.map((b) => b & 0x7f));
-}
-function decodeLatin1(bytes) {
-    return String.fromCharCode(...bytes);
-}
-function decodeWindows1252(bytes) {
-    let out = "";
-    for (const b of bytes) {
-        if (b >= 0x80 && b <= 0x9f && WINDOWS_1252_EXTRA[b]) {
-            out += WINDOWS_1252_EXTRA[b];
-        }
-        else {
-            out += String.fromCharCode(b);
-        }
-    }
-    return out;
-}
-
-// Primitive types
-function dv(array) {
-    return new DataView(array.buffer, array.byteOffset);
-}
-/*
- * 8-bit unsigned integer
- */
-const UINT8 = {
-    len: 1,
-    get(array, offset) {
-        return dv(array).getUint8(offset);
-    },
-    put(array, offset, value) {
-        dv(array).setUint8(offset, value);
-        return offset + 1;
-    }
-};
-/**
- * 16-bit unsigned integer, Little Endian byte order
- */
-const UINT16_LE = {
-    len: 2,
-    get(array, offset) {
-        return dv(array).getUint16(offset, true);
-    },
-    put(array, offset, value) {
-        dv(array).setUint16(offset, value, true);
-        return offset + 2;
-    }
-};
-/**
- * 16-bit unsigned integer, Big Endian byte order
- */
-const UINT16_BE = {
-    len: 2,
-    get(array, offset) {
-        return dv(array).getUint16(offset);
-    },
-    put(array, offset, value) {
-        dv(array).setUint16(offset, value);
-        return offset + 2;
-    }
-};
-/**
- * 32-bit unsigned integer, Little Endian byte order
- */
-const UINT32_LE = {
-    len: 4,
-    get(array, offset) {
-        return dv(array).getUint32(offset, true);
-    },
-    put(array, offset, value) {
-        dv(array).setUint32(offset, value, true);
-        return offset + 4;
-    }
-};
-/**
- * 32-bit unsigned integer, Big Endian byte order
- */
-const UINT32_BE = {
-    len: 4,
-    get(array, offset) {
-        return dv(array).getUint32(offset);
-    },
-    put(array, offset, value) {
-        dv(array).setUint32(offset, value);
-        return offset + 4;
-    }
-};
-/**
- * 32-bit signed integer, Big Endian byte order
- */
-const INT32_BE = {
-    len: 4,
-    get(array, offset) {
-        return dv(array).getInt32(offset);
-    },
-    put(array, offset, value) {
-        dv(array).setInt32(offset, value);
-        return offset + 4;
-    }
-};
-/**
- * 64-bit unsigned integer, Little Endian byte order
- */
-const UINT64_LE = {
-    len: 8,
-    get(array, offset) {
-        return dv(array).getBigUint64(offset, true);
-    },
-    put(array, offset, value) {
-        dv(array).setBigUint64(offset, value, true);
-        return offset + 8;
-    }
-};
-/**
- * Consume a fixed number of bytes from the stream and return a string with a specified encoding.
- * Supports all encodings supported by TextDecoder, plus 'windows-1252'.
- */
-class StringType {
-    constructor(len, encoding) {
-        this.len = len;
-        this.encoding = encoding;
-    }
-    get(data, offset = 0) {
-        const bytes = data.subarray(offset, offset + this.len);
-        return textDecode(bytes, this.encoding);
-    }
-}
-
 const defaultMessages = 'End-Of-Stream';
 /**
  * Thrown on read operation of the end of file or stream has been reached
@@ -30896,6 +30596,17 @@ class AbortError extends Error {
     constructor(message = "The operation was aborted") {
         super(message);
         this.name = "AbortError";
+    }
+}
+
+class Deferred {
+    constructor() {
+        this.resolve = () => null;
+        this.reject = () => null;
+        this.promise = new Promise((resolve, reject) => {
+            this.reject = reject;
+            this.resolve = resolve;
+        });
     }
 }
 
@@ -30967,6 +30678,87 @@ class AbstractStreamReader {
             throw new EndOfStreamError();
         }
         return bytesRead;
+    }
+}
+
+/**
+ * Node.js Readable Stream Reader
+ * Ref: https://nodejs.org/api/stream.html#readable-streams
+ */
+class StreamReader extends AbstractStreamReader {
+    constructor(s) {
+        super();
+        this.s = s;
+        /**
+         * Deferred used for postponed read request (as not data is yet available to read)
+         */
+        this.deferred = null;
+        if (!s.read || !s.once) {
+            throw new Error('Expected an instance of stream.Readable');
+        }
+        this.s.once('end', () => {
+            this.endOfStream = true;
+            if (this.deferred) {
+                this.deferred.resolve(0);
+            }
+        });
+        this.s.once('error', err => this.reject(err));
+        this.s.once('close', () => this.abort());
+    }
+    /**
+     * Read chunk from stream
+     * @param buffer Target Uint8Array (or Buffer) to store data read from stream in
+     * @param mayBeLess - If true, may fill the buffer partially
+     * @returns Number of bytes read
+     */
+    async readFromStream(buffer, mayBeLess) {
+        if (buffer.length === 0)
+            return 0;
+        const readBuffer = this.s.read(buffer.length);
+        if (readBuffer) {
+            buffer.set(readBuffer);
+            return readBuffer.length;
+        }
+        const request = {
+            buffer,
+            mayBeLess,
+            deferred: new Deferred()
+        };
+        this.deferred = request.deferred;
+        this.s.once('readable', () => {
+            this.readDeferred(request);
+        });
+        return request.deferred.promise;
+    }
+    /**
+     * Process deferred read request
+     * @param request Deferred read request
+     */
+    readDeferred(request) {
+        const readBuffer = this.s.read(request.buffer.length);
+        if (readBuffer) {
+            request.buffer.set(readBuffer);
+            request.deferred.resolve(readBuffer.length);
+            this.deferred = null;
+        }
+        else {
+            this.s.once('readable', () => {
+                this.readDeferred(request);
+            });
+        }
+    }
+    reject(err) {
+        this.interrupted = true;
+        if (this.deferred) {
+            this.deferred.reject(err);
+            this.deferred = null;
+        }
+    }
+    async abort() {
+        this.reject(new AbortError());
+    }
+    async close() {
+        return this.abort();
     }
 }
 
@@ -31350,6 +31142,25 @@ class BufferTokenizer extends AbstractTokenizer {
 }
 
 /**
+ * Construct ReadStreamTokenizer from given Stream.
+ * Will set fileSize, if provided given Stream has set the .path property/
+ * @param stream - Read from Node.js Stream.Readable
+ * @param options - Tokenizer options
+ * @returns ReadStreamTokenizer
+ */
+function fromStream$1(stream, options) {
+    const streamReader = new StreamReader(stream);
+    const _options = options ?? {};
+    const chainedClose = _options.onClose;
+    _options.onClose = async () => {
+        await streamReader.close();
+        if (chainedClose) {
+            return chainedClose();
+        }
+    };
+    return new ReadStreamTokenizer(streamReader, _options);
+}
+/**
  * Construct ReadStreamTokenizer from given ReadableStream (WebStream API).
  * Will set fileSize, if provided given Stream has set the .path property/
  * @param webStream - Read from Node.js Stream.Readable (must be a byte stream)
@@ -31378,6 +31189,387 @@ function fromBuffer(uint8Array, options) {
     return new BufferTokenizer(uint8Array, options);
 }
 
+class FileTokenizer extends AbstractTokenizer {
+    /**
+     * Create tokenizer from provided file path
+     * @param sourceFilePath File path
+     */
+    static async fromFile(sourceFilePath) {
+        const fileHandle = await open(sourceFilePath, 'r');
+        const stat = await fileHandle.stat();
+        return new FileTokenizer(fileHandle, { fileInfo: { path: sourceFilePath, size: stat.size } });
+    }
+    constructor(fileHandle, options) {
+        super(options);
+        this.fileHandle = fileHandle;
+        this.fileInfo = options.fileInfo;
+    }
+    /**
+     * Read buffer from file
+     * @param uint8Array - Uint8Array to write result to
+     * @param options - Read behaviour options
+     * @returns Promise number of bytes read
+     */
+    async readBuffer(uint8Array, options) {
+        const normOptions = this.normalizeOptions(uint8Array, options);
+        this.position = normOptions.position;
+        if (normOptions.length === 0)
+            return 0;
+        const res = await this.fileHandle.read(uint8Array, 0, normOptions.length, normOptions.position);
+        this.position += res.bytesRead;
+        if (res.bytesRead < normOptions.length && (!options || !options.mayBeLess)) {
+            throw new EndOfStreamError();
+        }
+        return res.bytesRead;
+    }
+    /**
+     * Peek buffer from file
+     * @param uint8Array - Uint8Array (or Buffer) to write data to
+     * @param options - Read behaviour options
+     * @returns Promise number of bytes read
+     */
+    async peekBuffer(uint8Array, options) {
+        const normOptions = this.normalizeOptions(uint8Array, options);
+        const res = await this.fileHandle.read(uint8Array, 0, normOptions.length, normOptions.position);
+        if ((!normOptions.mayBeLess) && res.bytesRead < normOptions.length) {
+            throw new EndOfStreamError();
+        }
+        return res.bytesRead;
+    }
+    async close() {
+        await this.fileHandle.close();
+        return super.close();
+    }
+    setPosition(position) {
+        this.position = position;
+    }
+    supportsRandomAccess() {
+        return true;
+    }
+}
+
+/**
+ * Construct ReadStreamTokenizer from given Stream.
+ * Will set fileSize, if provided given Stream has set the .path property.
+ * @param stream - Node.js Stream.Readable
+ * @param options - Pass additional file information to the tokenizer
+ * @returns Tokenizer
+ */
+async function fromStream(stream, options) {
+    const rst = fromStream$1(stream, options);
+    if (stream.path) {
+        const stat$1 = await stat(stream.path);
+        rst.fileInfo.path = stream.path;
+        rst.fileInfo.size = stat$1.size;
+    }
+    return rst;
+}
+const fromFile = FileTokenizer.fromFile;
+
+var ieee754 = {};
+
+/*! ieee754. BSD-3-Clause License. Feross Aboukhadijeh <https://feross.org/opensource> */
+
+var hasRequiredIeee754;
+
+function requireIeee754 () {
+	if (hasRequiredIeee754) return ieee754;
+	hasRequiredIeee754 = 1;
+	ieee754.read = function (buffer, offset, isLE, mLen, nBytes) {
+	  var e, m;
+	  var eLen = (nBytes * 8) - mLen - 1;
+	  var eMax = (1 << eLen) - 1;
+	  var eBias = eMax >> 1;
+	  var nBits = -7;
+	  var i = isLE ? (nBytes - 1) : 0;
+	  var d = isLE ? -1 : 1;
+	  var s = buffer[offset + i];
+
+	  i += d;
+
+	  e = s & ((1 << (-nBits)) - 1);
+	  s >>= (-nBits);
+	  nBits += eLen;
+	  for (; nBits > 0; e = (e * 256) + buffer[offset + i], i += d, nBits -= 8) {}
+
+	  m = e & ((1 << (-nBits)) - 1);
+	  e >>= (-nBits);
+	  nBits += mLen;
+	  for (; nBits > 0; m = (m * 256) + buffer[offset + i], i += d, nBits -= 8) {}
+
+	  if (e === 0) {
+	    e = 1 - eBias;
+	  } else if (e === eMax) {
+	    return m ? NaN : ((s ? -1 : 1) * Infinity)
+	  } else {
+	    m = m + Math.pow(2, mLen);
+	    e = e - eBias;
+	  }
+	  return (s ? -1 : 1) * m * Math.pow(2, e - mLen)
+	};
+
+	ieee754.write = function (buffer, value, offset, isLE, mLen, nBytes) {
+	  var e, m, c;
+	  var eLen = (nBytes * 8) - mLen - 1;
+	  var eMax = (1 << eLen) - 1;
+	  var eBias = eMax >> 1;
+	  var rt = (mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0);
+	  var i = isLE ? 0 : (nBytes - 1);
+	  var d = isLE ? 1 : -1;
+	  var s = value < 0 || (value === 0 && 1 / value < 0) ? 1 : 0;
+
+	  value = Math.abs(value);
+
+	  if (isNaN(value) || value === Infinity) {
+	    m = isNaN(value) ? 1 : 0;
+	    e = eMax;
+	  } else {
+	    e = Math.floor(Math.log(value) / Math.LN2);
+	    if (value * (c = Math.pow(2, -e)) < 1) {
+	      e--;
+	      c *= 2;
+	    }
+	    if (e + eBias >= 1) {
+	      value += rt / c;
+	    } else {
+	      value += rt * Math.pow(2, 1 - eBias);
+	    }
+	    if (value * c >= 2) {
+	      e++;
+	      c /= 2;
+	    }
+
+	    if (e + eBias >= eMax) {
+	      m = 0;
+	      e = eMax;
+	    } else if (e + eBias >= 1) {
+	      m = ((value * c) - 1) * Math.pow(2, mLen);
+	      e = e + eBias;
+	    } else {
+	      m = value * Math.pow(2, eBias - 1) * Math.pow(2, mLen);
+	      e = 0;
+	    }
+	  }
+
+	  for (; mLen >= 8; buffer[offset + i] = m & 0xff, i += d, m /= 256, mLen -= 8) {}
+
+	  e = (e << mLen) | m;
+	  eLen += mLen;
+	  for (; eLen > 0; buffer[offset + i] = e & 0xff, i += d, e /= 256, eLen -= 8) {}
+
+	  buffer[offset + i - d] |= s * 128;
+	};
+	return ieee754;
+}
+
+requireIeee754();
+
+// text-polyfill.ts
+// Minimal encode/decode for utf-8, utf-16le, ascii, latin1, windows-1252
+const WINDOWS_1252_EXTRA = {
+    0x80: "€", 0x82: "‚", 0x83: "ƒ", 0x84: "„", 0x85: "…", 0x86: "†",
+    0x87: "‡", 0x88: "ˆ", 0x89: "‰", 0x8a: "Š", 0x8b: "‹", 0x8c: "Œ",
+    0x8e: "Ž", 0x91: "‘", 0x92: "’", 0x93: "“", 0x94: "”", 0x95: "•",
+    0x96: "–", 0x97: "—", 0x98: "˜", 0x99: "™", 0x9a: "š", 0x9b: "›",
+    0x9c: "œ", 0x9e: "ž", 0x9f: "Ÿ",
+};
+for (const [code, char] of Object.entries(WINDOWS_1252_EXTRA)) {
+}
+/**
+ * Decode text from binary data
+ * @param bytes Binary data
+ * @param encoding Encoding
+ */
+function textDecode(bytes, encoding = "utf-8") {
+    switch (encoding.toLowerCase()) {
+        case "utf-8":
+        case "utf8":
+            if (typeof globalThis.TextDecoder !== "undefined") {
+                return new globalThis.TextDecoder("utf-8").decode(bytes);
+            }
+            return decodeUTF8(bytes);
+        case "utf-16le":
+            return decodeUTF16LE(bytes);
+        case "ascii":
+            return decodeASCII(bytes);
+        case "latin1":
+        case "iso-8859-1":
+            return decodeLatin1(bytes);
+        case "windows-1252":
+            return decodeWindows1252(bytes);
+        default:
+            throw new RangeError(`Encoding '${encoding}' not supported`);
+    }
+}
+// --- Internal helpers ---
+function decodeUTF8(bytes) {
+    let out = "";
+    let i = 0;
+    while (i < bytes.length) {
+        const b1 = bytes[i++];
+        if (b1 < 0x80) {
+            out += String.fromCharCode(b1);
+        }
+        else if (b1 < 0xe0) {
+            const b2 = bytes[i++] & 0x3f;
+            out += String.fromCharCode(((b1 & 0x1f) << 6) | b2);
+        }
+        else if (b1 < 0xf0) {
+            const b2 = bytes[i++] & 0x3f;
+            const b3 = bytes[i++] & 0x3f;
+            out += String.fromCharCode(((b1 & 0x0f) << 12) | (b2 << 6) | b3);
+        }
+        else {
+            const b2 = bytes[i++] & 0x3f;
+            const b3 = bytes[i++] & 0x3f;
+            const b4 = bytes[i++] & 0x3f;
+            let cp = ((b1 & 0x07) << 18) |
+                (b2 << 12) |
+                (b3 << 6) |
+                b4;
+            cp -= 0x10000;
+            out += String.fromCharCode(0xd800 + ((cp >> 10) & 0x3ff), 0xdc00 + (cp & 0x3ff));
+        }
+    }
+    return out;
+}
+function decodeUTF16LE(bytes) {
+    let out = "";
+    for (let i = 0; i < bytes.length; i += 2) {
+        out += String.fromCharCode(bytes[i] | (bytes[i + 1] << 8));
+    }
+    return out;
+}
+function decodeASCII(bytes) {
+    return String.fromCharCode(...bytes.map((b) => b & 0x7f));
+}
+function decodeLatin1(bytes) {
+    return String.fromCharCode(...bytes);
+}
+function decodeWindows1252(bytes) {
+    let out = "";
+    for (const b of bytes) {
+        if (b >= 0x80 && b <= 0x9f && WINDOWS_1252_EXTRA[b]) {
+            out += WINDOWS_1252_EXTRA[b];
+        }
+        else {
+            out += String.fromCharCode(b);
+        }
+    }
+    return out;
+}
+
+// Primitive types
+function dv(array) {
+    return new DataView(array.buffer, array.byteOffset);
+}
+/*
+ * 8-bit unsigned integer
+ */
+const UINT8 = {
+    len: 1,
+    get(array, offset) {
+        return dv(array).getUint8(offset);
+    },
+    put(array, offset, value) {
+        dv(array).setUint8(offset, value);
+        return offset + 1;
+    }
+};
+/**
+ * 16-bit unsigned integer, Little Endian byte order
+ */
+const UINT16_LE = {
+    len: 2,
+    get(array, offset) {
+        return dv(array).getUint16(offset, true);
+    },
+    put(array, offset, value) {
+        dv(array).setUint16(offset, value, true);
+        return offset + 2;
+    }
+};
+/**
+ * 16-bit unsigned integer, Big Endian byte order
+ */
+const UINT16_BE = {
+    len: 2,
+    get(array, offset) {
+        return dv(array).getUint16(offset);
+    },
+    put(array, offset, value) {
+        dv(array).setUint16(offset, value);
+        return offset + 2;
+    }
+};
+/**
+ * 32-bit unsigned integer, Little Endian byte order
+ */
+const UINT32_LE = {
+    len: 4,
+    get(array, offset) {
+        return dv(array).getUint32(offset, true);
+    },
+    put(array, offset, value) {
+        dv(array).setUint32(offset, value, true);
+        return offset + 4;
+    }
+};
+/**
+ * 32-bit unsigned integer, Big Endian byte order
+ */
+const UINT32_BE = {
+    len: 4,
+    get(array, offset) {
+        return dv(array).getUint32(offset);
+    },
+    put(array, offset, value) {
+        dv(array).setUint32(offset, value);
+        return offset + 4;
+    }
+};
+/**
+ * 32-bit signed integer, Big Endian byte order
+ */
+const INT32_BE = {
+    len: 4,
+    get(array, offset) {
+        return dv(array).getInt32(offset);
+    },
+    put(array, offset, value) {
+        dv(array).setInt32(offset, value);
+        return offset + 4;
+    }
+};
+/**
+ * 64-bit unsigned integer, Little Endian byte order
+ */
+const UINT64_LE = {
+    len: 8,
+    get(array, offset) {
+        return dv(array).getBigUint64(offset, true);
+    },
+    put(array, offset, value) {
+        dv(array).setBigUint64(offset, value, true);
+        return offset + 8;
+    }
+};
+/**
+ * Consume a fixed number of bytes from the stream and return a string with a specified encoding.
+ * Supports all encodings supported by TextDecoder, plus 'windows-1252'.
+ */
+class StringType {
+    constructor(len, encoding) {
+        this.len = len;
+        this.encoding = encoding;
+    }
+    get(data, offset = 0) {
+        const bytes = data.subarray(offset, offset + this.len);
+        return textDecode(bytes, this.encoding);
+    }
+}
+
+var require$1 = createRequire('/');
 // DEFLATE is a complex format; to read this code, you should probably check the RFC first:
 // https://tools.ietf.org/html/rfc1951
 // You may also wish to take a look at the guide I made about this program:
@@ -31387,6 +31579,13 @@ function fromBuffer(uint8Array, options) {
 // However, the vast majority of the codebase has diverged from UZIP.js to increase performance and reduce bundle size.
 // Sometimes 0 will appear where -1 would be more appropriate. This is because using a uint
 // is better for memory in most engines (I *think*).
+// Mediocre shim
+var Worker;
+try {
+    Worker = require$1('worker_threads').Worker;
+}
+catch (e) {
+}
 
 // aliases for shorter compressed code (most minifers don't do this)
 var u8 = Uint8Array, u16 = Uint16Array, i32 = Int32Array;
@@ -33935,7 +34134,7 @@ function _check(buffer, headers, options) {
 	return true;
 }
 
-class FileTypeParser {
+let FileTypeParser$1 = class FileTypeParser {
 	constructor(options) {
 		this.options = {
 			mpegOffsetTolerance: 0,
@@ -35582,18 +35781,84 @@ class FileTypeParser {
 			}
 		}
 	}
-}
+};
 
 new Set(extensions);
 new Set(mimeTypes);
+
+/**
+Node.js specific entry point.
+*/
+
+
+class FileTypeParser extends FileTypeParser$1 {
+	async fromStream(stream) {
+		const tokenizer = await (stream instanceof ReadableStream ? fromWebStream(stream, this.tokenizerOptions) : fromStream(stream, this.tokenizerOptions));
+		try {
+			return await super.fromTokenizer(tokenizer);
+		} finally {
+			await tokenizer.close();
+		}
+	}
+
+	async fromFile(path) {
+		const tokenizer = await fromFile(path);
+		try {
+			return await super.fromTokenizer(tokenizer);
+		} finally {
+			await tokenizer.close();
+		}
+	}
+
+	async toDetectionStream(readableStream, options = {}) {
+		if (!(readableStream instanceof Readable)) {
+			return super.toDetectionStream(readableStream, options);
+		}
+
+		const {sampleSize = reasonableDetectionSizeInBytes} = options;
+
+		return new Promise((resolve, reject) => {
+			readableStream.on('error', reject);
+
+			readableStream.once('readable', () => {
+				(async () => {
+					try {
+						// Set up output stream
+						const pass = new PassThrough();
+						const outputStream = pipeline ? pipeline(readableStream, pass, () => {}) : readableStream.pipe(pass);
+
+						// Read the input stream and detect the filetype
+						const chunk = readableStream.read(sampleSize) ?? readableStream.read() ?? new Uint8Array(0);
+						try {
+							pass.fileType = await this.fromBuffer(chunk);
+						} catch (error) {
+							if (error instanceof EndOfStreamError) {
+								pass.fileType = undefined;
+							} else {
+								reject(error);
+							}
+						}
+
+						resolve(outputStream);
+					} catch (error) {
+						reject(error);
+					}
+				})();
+			});
+		});
+	}
+}
+
+async function fileTypeFromFile(path, options) {
+	return (new FileTypeParser(options)).fromFile(path, options);
+}
 
 /**
  * Gets the MIME-type of the given file
  * @param filePath
  */
 const getMime = async function (filePath) {
-    const parser = new FileTypeParser();
-    const result = await parser.fromFile(filePath);
+    const result = await fileTypeFromFile(filePath);
     return result?.mime;
 };
 
@@ -36717,14 +36982,6 @@ function assertType(value, propertyName, type) {
     switch (type) {
         case String:
             if (typeof value === 'string')
-                return;
-            break;
-        case Number:
-            if (typeof value === 'number')
-                return;
-            break;
-        case Boolean:
-            if (typeof value === 'boolean')
                 return;
             break;
         default:

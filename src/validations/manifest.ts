@@ -33,12 +33,6 @@ function assertType<T>(
     case String:
       if (typeof value === 'string') return
       break
-    case Number:
-      if (typeof value === 'number') return
-      break
-    case Boolean:
-      if (typeof value === 'boolean') return
-      break
     default:
       if (value instanceof type) return
   }
